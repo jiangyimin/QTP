@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Text.RegularExpressions;
 
-namespace MdTZ
+namespace QTP.DBAccess
 {
     /// <summary>
     /// SqlHelper操作类

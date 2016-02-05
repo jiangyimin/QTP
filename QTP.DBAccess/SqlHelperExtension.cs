@@ -6,7 +6,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Text.RegularExpressions;
-namespace MdTZ
+
+namespace QTP.DBAccess
 {
     /// <summary>
     /// SqlHelper¿©’π(“¿¿µAutoMapper.dll)

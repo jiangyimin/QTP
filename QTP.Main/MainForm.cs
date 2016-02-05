@@ -30,6 +30,7 @@ namespace QTP.Main
                 this.Close();
             }
 
+            策略ToolStripMenuItem_Click(this, null);
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)

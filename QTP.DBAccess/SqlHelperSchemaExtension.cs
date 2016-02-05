@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace MdTZ
+namespace QTP.DBAccess
 {
     public sealed partial class SqlHelper
     {

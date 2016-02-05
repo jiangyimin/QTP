@@ -55,12 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CRUD.cs" />
-    <Compile Include="MySqlHelper.cs" />
-    <Compile Include="MysqlHelper1.cs" />
-    <Compile Include="MySqlHelperExtension.cs" />
     <Compile Include="SqlHelper.cs" />
-    <Compile Include="SqlHelperExtension.cs" />
-    <Compile Include="SqlHelperSchemaExtension.cs" />
     <Compile Include="TPosition.cs" />
     <Compile Include="TInstrument.cs" />
     <Compile Include="TStrategy.cs" />
