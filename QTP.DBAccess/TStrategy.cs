@@ -16,10 +16,8 @@ namespace QTP.DBAccess
         public string MonitorClass { get; set; }
         public string RiskMClass { get; set; }
         public string TradeChannel { get; set; }
-        // GM UserName and Password
-        public string UserName { get; set; }
-        public string Password { get; set; }
 
+        public TLogin Login { get; set; }
         public List<TInstrument> Instruments { get; set; }
         public List<TPosition> Positions { get; set; }
 
