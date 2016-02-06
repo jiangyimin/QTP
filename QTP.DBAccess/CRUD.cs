@@ -27,11 +27,11 @@ namespace QTP.DBAccess
                     {
                         t.Id = (int)reader["Id"];
                         t.Name = (string)reader["Name"];
-                        t.GMID = (string)reader["GMID"];
-                        t.RiskMClass = (string)reader["RiskMClass"];
+                        t.Status = (string)reader["Status"];
                         t.PoolId = (int)reader["PoolId"];
-                        t.Args = (string)reader["Args"];
-                        t.MDMode = (int)reader["MDMode"];
+                        t.MonitorClass = (string)reader["MonitorClass"];
+                        t.RiskMClass = (string)reader["RiskMClass"];
+                        t.TradeChannel = (string)reader["TradeChannel"];
                     }
                     command.Connection.Close();
                 }

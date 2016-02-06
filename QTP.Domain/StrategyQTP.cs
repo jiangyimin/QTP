@@ -43,9 +43,9 @@ namespace QTP.Domain
 
         public void Start()
         {
-            WriteInfo(string.Format("策略({0}, {1})初始化开始", strategyT.GMID, strategyT.Id));
+            WriteInfo(string.Format("策略({0}, {1})初始化开始", strategyT.TradeChannel, strategyT.Id));
 
-            int ret = base.Init(strategyT.UserName, strategyT.Password, strategyT.GMID, "", (MDMode)strategyT.MDMode, "localhost:8001");
+            int ret = base.Init(strategyT.UserName, strategyT.Password, strategyT.TradeChannel, "", (MDMode)2, "localhost:8001");
             if (ret != 0)
             {
                 WriteInfo("策略初始化错误");
