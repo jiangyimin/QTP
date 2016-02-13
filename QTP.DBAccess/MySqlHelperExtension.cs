@@ -5,7 +5,7 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using System.Data;
 
-namespace MdTZ
+namespace QTP.DBAccess
 {
     /// <summary>
     /// MySqlHelper扩展(依赖AutoMapper.dll)

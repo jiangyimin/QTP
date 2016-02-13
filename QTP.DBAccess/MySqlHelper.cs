@@ -7,7 +7,7 @@ using MySql.Data.MySqlClient;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace MdTZ
+namespace QTP.DBAccess
 {
     /// <summary>
     /// MySqlHelper操作类
@@ -28,9 +28,9 @@ namespace MdTZ
         ///初始化MySqlHelper实例
         /// </summary>
         /// <param name="connectionString">数据库连接字符串</param>
-        public MySqlHelper()
+        public MySqlHelper(string connectionString)
         {
-            this.ConnectionString = "Server=localhost;Port=3306;Database=guopiao;Uid=root;Pwd=root;";
+            this.ConnectionString = connectionString;
         }
 
         /// <summary>

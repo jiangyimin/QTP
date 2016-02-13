@@ -28,22 +28,19 @@ namespace QTP.Main
             if (form.ShowDialog() == DialogResult.Cancel)
             {
                 this.Close();
+                return;
             }
 
             策略ToolStripMenuItem_Click(this, null);
         }
 
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-        }
-
         #region menus
         private void 退出ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Global.CanClose = true;
             Close();
         }
 
-        #endregion
 
         private void 行情ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -72,23 +69,26 @@ namespace QTP.Main
 
         private void 策略ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!ShowChildrenForm("StrategyForm"))
+            if (!ShowChildrenForm("策略管理"))
             {
                 Form frm = new StrategyForm();
                 frm.MdiParent = this;
+                frm.WindowState = FormWindowState.Maximized;
                 frm.Show();
             }
         }
+        #endregion
 
-        //防止打开多个窗体
-        private bool ShowChildrenForm(string name)
+        #region util
+        // 防止打开多个窗体
+        private bool ShowChildrenForm(string text)
         {
             int i;
             //依次检测当前窗体的子窗体
             for (i = 0; i < this.MdiChildren.Length; i++)
             {
                 //判断当前子窗体的Text属性值是否与传入的字符串值相同
-                if (this.MdiChildren[i].Name == name)
+                if (this.MdiChildren[i].Text == text)
                 {
                     //如果值相同则表示此子窗体为想要调用的子窗体，激活此子窗体并返回true值
                     this.MdiChildren[i].Activate();
@@ -98,5 +98,7 @@ namespace QTP.Main
             //如果没有相同的值则表示要调用的子窗体还没有被打开，返回false值
             return false;
         }
+
+        #endregion
     }
 }

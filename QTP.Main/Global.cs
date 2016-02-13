@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+
 using QTP.Domain;
+using QTP.DBAccess;
 
 namespace QTP.Main
 {
@@ -14,8 +16,11 @@ namespace QTP.Main
     {
         #region global settings
 
-        // ConnectionString
-        public static string ConnectionString;
+        // can close
+        public static bool CanClose = false;
+
+        // Tlogin
+        public static TLogin Login;
 
         // EventServer
 //        public EventServer ES;
@@ -26,8 +31,9 @@ namespace QTP.Main
         // http://cloud.myquant.cn:7000/v1/stkbase?fields=sec_name
         // http://cloud.myquant.cn:7000/v1/contracts?fields=sec_name
 
-        // Strategies
-        // public List<StrategyQTP> Strategies;
+        // Running Strategies
+        public static Dictionary<int, StrategyQTP> RunningStrategies = new Dictionary<int, StrategyQTP>();
+
 
 
         #endregion

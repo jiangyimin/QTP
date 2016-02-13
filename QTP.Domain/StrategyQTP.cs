@@ -15,11 +15,13 @@ namespace QTP.Domain
     public class StrategyQTP : Strategy
     {
         #region Members
-        private NLog log;
+        protected TStrategy strategyT;
+        protected Type monitorType;
+        protected RiskM risk;
+        protected MDMode mdmode;
+
         private Dictionary<string, Monitor> monitors;
 
-        protected TStrategy strategyT;
-        protected RiskM risk;
 
         // pusle
         private System.Timers.Timer timer;
@@ -27,25 +29,30 @@ namespace QTP.Domain
         private int messageInterval = 40;       // 30s
         #endregion
 
+        #region events
+        public delegate void MessageEventHandler(string msg);  
+        public event MessageEventHandler OnMessage;
+
+        #endregion
+
         #region Public methods
 
-        public StrategyQTP(TStrategy s, RiskM t, NLog log)
+        public StrategyQTP(TStrategy s, Type monitorType, Type riskType, bool vt)
         {
             strategyT = s;
-
-            t.SetStrategy(this);
-            risk = t;
-            
-            this.log = log;
-
-            monitors = new Dictionary<string, Monitor>();
+            this.monitorType = monitorType;
+            risk = (RiskM)Activator.CreateInstance(riskType);
+            risk.SetStrategy(this);
+            mdmode = vt ? MDMode.MD_MODE_SIMULATED : MDMode.MD_MODE_LIVE;
         }
 
         public void Start()
         {
-            WriteInfo(string.Format("策略({0}, {1})初始化开始", strategyT.TradeChannel, strategyT.Id));
 
-            int ret = base.Init(strategyT.Login.UserName, strategyT.Login.Password, strategyT.TradeChannel, "", (MDMode)2, "localhost:8001");
+            //WriteInfo(string.Format("策略({0}, {1})初始化开始", strategyT.TradeChannel, strategyT.Id));
+
+
+            int ret = base.Init(strategyT.Login.UserName, strategyT.Login.Password, strategyT.GMID, "", mdmode, "localhost:8001");
             if (ret != 0)
             {
                 WriteInfo("策略初始化错误");
@@ -94,33 +101,31 @@ namespace QTP.Domain
 
         public void WriteDebug(string msg)
         {
-            log.WriteDebug(msg);
+            //log.WriteDebug(msg);
         }
         public void WriteError(string msg)
         {
-            Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
-            log.WriteError(msg);
+            //Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
+            //log.WriteError(msg);
         }
         public void WriteWarning(string msg)
         {
-            Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
-            log.WriteWarning(msg);
+            //Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
+            //log.WriteWarning(msg);
         }
         public void WriteInfo(string msg)
         {
-            Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
-            log.WriteInfo(msg);
+            OnMessage(string.Format("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg));
+            //log.WriteInfo(msg);
         }
 
         private void InitAction()
         {
+            monitors = new Dictionary<string, Monitor>();
             // monitors
-            Assembly assembly = Assembly.LoadFrom(@"QTP.Domain.dll");
             foreach (TInstrument ins in strategyT.Instruments)
             {
-                Type type = assembly.GetType(string.Format("QTP.Domain.{0}", ins.MonitorClass));
-
-                Monitor monitor = (Monitor)Activator.CreateInstance(type);
+                Monitor monitor = (Monitor)Activator.CreateInstance(monitorType);
                 monitor.SetTInstrument(this, ins); 
 
                 monitor.Initialize();

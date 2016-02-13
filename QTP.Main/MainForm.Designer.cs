@@ -32,10 +32,12 @@
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.行情ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.窗口ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.窗口ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.关闭所有运行策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -75,6 +77,22 @@
             this.行情ToolStripMenuItem.Text = "行情";
             this.行情ToolStripMenuItem.Click += new System.EventHandler(this.行情ToolStripMenuItem_Click);
             // 
+            // 策略ToolStripMenuItem
+            // 
+            this.策略ToolStripMenuItem.Name = "策略ToolStripMenuItem";
+            this.策略ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.策略ToolStripMenuItem.Text = "策略管理";
+            this.策略ToolStripMenuItem.Click += new System.EventHandler(this.策略ToolStripMenuItem_Click);
+            // 
+            // 窗口ToolStripMenuItem
+            // 
+            this.窗口ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.关闭所有运行策略ToolStripMenuItem,
+            this.toolStripMenuItem1});
+            this.窗口ToolStripMenuItem.Name = "窗口ToolStripMenuItem";
+            this.窗口ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
+            this.窗口ToolStripMenuItem.Text = "窗口";
+            // 
             // 帮助ToolStripMenuItem
             // 
             this.帮助ToolStripMenuItem.Name = "帮助ToolStripMenuItem";
@@ -89,18 +107,16 @@
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // 窗口ToolStripMenuItem
+            // 关闭所有运行策略ToolStripMenuItem
             // 
-            this.窗口ToolStripMenuItem.Name = "窗口ToolStripMenuItem";
-            this.窗口ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.窗口ToolStripMenuItem.Text = "窗口";
+            this.关闭所有运行策略ToolStripMenuItem.Name = "关闭所有运行策略ToolStripMenuItem";
+            this.关闭所有运行策略ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.关闭所有运行策略ToolStripMenuItem.Text = "关闭所有运行策略";
             // 
-            // 策略ToolStripMenuItem
+            // toolStripMenuItem1
             // 
-            this.策略ToolStripMenuItem.Name = "策略ToolStripMenuItem";
-            this.策略ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.策略ToolStripMenuItem.Text = "策略管理";
-            this.策略ToolStripMenuItem.Click += new System.EventHandler(this.策略ToolStripMenuItem_Click);
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(169, 6);
             // 
             // MainForm
             // 
@@ -114,7 +130,6 @@
             this.Name = "MainForm";
             this.Text = "QTP-量化交易平台";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -133,6 +148,8 @@
         private System.Windows.Forms.ToolStripMenuItem 行情ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 策略ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 窗口ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 关闭所有运行策略ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

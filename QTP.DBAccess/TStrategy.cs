@@ -11,10 +11,10 @@ namespace QTP.DBAccess
         public int Id { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
-        public int PoolId { get; set; }
 
         public string MonitorClass { get; set; }
         public string RiskMClass { get; set; }
+        public string GMID { get; set; }
         public string TradeChannel { get; set; }
 
         public TLogin Login { get; set; }
