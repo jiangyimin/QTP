@@ -23,6 +23,11 @@ namespace QTP.Domain
         private Dictionary<string, Monitor> monitors;
 
 
+        public TStrategy StrategyT 
+        {
+            get { return strategyT; }
+        }
+
         // pusle
         private System.Timers.Timer timer;
         private int countPusle;
@@ -115,6 +120,7 @@ namespace QTP.Domain
         }
         public void WriteInfo(string msg)
         {
+            //mainThreadSynContext.Post(new SendOrPostCallback(OnConnected), null);
             OnMessage(string.Format("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg));
             //log.WriteInfo(msg);
         }
