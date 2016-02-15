@@ -16,8 +16,9 @@ namespace QTP.Main
 {
     public partial class StrategyMonitorForm : Form
     {
+        private bool canClose = false;
+
         private StrategyQTP qtp;
-        private int strategyId;
 
         private IntPtr tradeWin; 
         public StrategyMonitorForm()
@@ -25,15 +26,20 @@ namespace QTP.Main
             InitializeComponent();
         }
 
-        public void SetStrategy(StrategyQTP s, int id)
+        public void StartStrategy(StrategyQTP s)
         {
             qtp = s;
-            strategyId = id;
             s.OnMessage += OnMessage;
             Task t = new Task(s.Start);
             t.Start();
         }
 
+        public void StopStrategy()
+        {
+            canClose = true;
+            qtp.Stop();
+            this.Close();
+        }
         private void OnMessage(string msg)
         {
             if (this.listBox1.InvokeRequired == false)
@@ -54,11 +60,6 @@ namespace QTP.Main
 
         }
 
-        private void StrategyMonitorForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            qtp.Stop();
-            Global.RunningStrategies.Remove(strategyId);
-        }
 
         private void btnStartTrade_Click(object sender, EventArgs e)
         {
@@ -105,6 +106,12 @@ namespace QTP.Main
             SendKeys.SendWait("{Enter}");
             SendKeys.SendWait("^y");
 
+        }
+
+        private void StrategyMonitorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!canClose)
+                e.Cancel = true;
         }
     }
   }

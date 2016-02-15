@@ -93,7 +93,7 @@
             this.columnHeader5,
             this.columnHeader6});
             this.lvStrategy.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvStrategy.Font = new System.Drawing.Font("SimSun", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lvStrategy.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lvStrategy.FullRowSelect = true;
             this.lvStrategy.GridLines = true;
             this.lvStrategy.HideSelection = false;
@@ -156,6 +156,7 @@
             this.btnStop.TabIndex = 3;
             this.btnStop.Text = "停止";
             this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // groupBox1
             // 
@@ -247,7 +248,7 @@
             this.columnHeader8,
             this.columnHeader9});
             this.lvInstrument.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvInstrument.Font = new System.Drawing.Font("SimSun", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lvInstrument.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lvInstrument.FullRowSelect = true;
             this.lvInstrument.GridLines = true;
             this.lvInstrument.Location = new System.Drawing.Point(3, 42);

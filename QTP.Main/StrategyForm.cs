@@ -17,11 +17,15 @@ namespace QTP.Main
 {
     public partial class StrategyForm : Form
     {
+        private bool canClose = false;
+
+        private MainForm mainForm;
         private List<TStrategy> lst;
         private TStrategy current;
 
-        public StrategyForm()
+        public StrategyForm(MainForm main)
         {
+            mainForm = main;
             InitializeComponent();
         }
 
@@ -91,7 +95,7 @@ namespace QTP.Main
                 return;
             }
 
-            if (Global.RunningStrategies.ContainsKey(current.Id))
+            if (mainForm.ExistRunningStrategy(current.Id))
             {
                 MessageBox.Show("此策略实例已在运行中");
                 return;
@@ -108,14 +112,10 @@ namespace QTP.Main
                 Type riskType = assembly.GetType(string.Format("QTP.Domain.{0}", name));
 
                 current.Login = Global.Login;
-                StrategyQTP s = new StrategyQTP(current, monitorType, riskType, vt);
+                StrategyQTP qtp = new StrategyQTP(current, monitorType, riskType, vt);
 
                 // new Monitor form
-                StrategyMonitorForm frm = new StrategyMonitorForm();
-                frm.MdiParent = this.MdiParent;
-                frm.WindowState = FormWindowState.Maximized;
-                frm.Show();
-                frm.SetStrategy(s, current.Id);
+                mainForm.NewStrategyMonitorForm(qtp);
             }
             catch (Exception ex)
             {
@@ -127,8 +127,25 @@ namespace QTP.Main
 
         private void StrategyForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!Global.CanClose)
+            if (!this.canClose)
                 e.Cancel = true;
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            if (current == null) return;
+            
+            if (mainForm.ExistRunningStrategy(current.Id))
+            {
+                mainForm.CloseStrategyMonitorForm(current.Id);
+            }
+
+        }
+
+        public void Stop()
+        {
+            canClose = true;
+            this.Close();
         }
     }
 }

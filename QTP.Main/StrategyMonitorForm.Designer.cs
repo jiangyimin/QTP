@@ -31,8 +31,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnStartTrade = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.btnStartTrade = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -76,16 +76,6 @@
             this.panel1.Size = new System.Drawing.Size(405, 54);
             this.panel1.TabIndex = 1;
             // 
-            // btnStartTrade
-            // 
-            this.btnStartTrade.Location = new System.Drawing.Point(29, 12);
-            this.btnStartTrade.Name = "btnStartTrade";
-            this.btnStartTrade.Size = new System.Drawing.Size(160, 23);
-            this.btnStartTrade.TabIndex = 0;
-            this.btnStartTrade.Text = "启动下单程序";
-            this.btnStartTrade.UseVisualStyleBackColor = true;
-            this.btnStartTrade.Click += new System.EventHandler(this.btnStartTrade_Click);
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(195, 12);
@@ -96,6 +86,16 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // btnStartTrade
+            // 
+            this.btnStartTrade.Location = new System.Drawing.Point(29, 12);
+            this.btnStartTrade.Name = "btnStartTrade";
+            this.btnStartTrade.Size = new System.Drawing.Size(160, 23);
+            this.btnStartTrade.TabIndex = 0;
+            this.btnStartTrade.Text = "启动下单程序";
+            this.btnStartTrade.UseVisualStyleBackColor = true;
+            this.btnStartTrade.Click += new System.EventHandler(this.btnStartTrade_Click);
+            // 
             // StrategyMonitorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -104,7 +104,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Name = "StrategyMonitorForm";
             this.Text = "StrategyMonitorForm";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.StrategyMonitorForm_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StrategyMonitorForm_FormClosing);
             this.Load += new System.EventHandler(this.StrategyMonitorForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

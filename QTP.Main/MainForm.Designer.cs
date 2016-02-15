@@ -34,10 +34,10 @@
             this.行情ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.窗口ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.关闭所有运行策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,21 +66,21 @@
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.退出ToolStripMenuItem.Text = "退出";
             this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
             // 
             // 行情ToolStripMenuItem
             // 
             this.行情ToolStripMenuItem.Name = "行情ToolStripMenuItem";
-            this.行情ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.行情ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.行情ToolStripMenuItem.Text = "行情";
             this.行情ToolStripMenuItem.Click += new System.EventHandler(this.行情ToolStripMenuItem_Click);
             // 
             // 策略ToolStripMenuItem
             // 
             this.策略ToolStripMenuItem.Name = "策略ToolStripMenuItem";
-            this.策略ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.策略ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.策略ToolStripMenuItem.Text = "策略管理";
             this.策略ToolStripMenuItem.Click += new System.EventHandler(this.策略ToolStripMenuItem_Click);
             // 
@@ -92,6 +92,18 @@
             this.窗口ToolStripMenuItem.Name = "窗口ToolStripMenuItem";
             this.窗口ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.窗口ToolStripMenuItem.Text = "窗口";
+            // 
+            // 关闭所有运行策略ToolStripMenuItem
+            // 
+            this.关闭所有运行策略ToolStripMenuItem.Name = "关闭所有运行策略ToolStripMenuItem";
+            this.关闭所有运行策略ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.关闭所有运行策略ToolStripMenuItem.Text = "关闭所有运行策略";
+            this.关闭所有运行策略ToolStripMenuItem.Click += new System.EventHandler(this.关闭所有运行策略ToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(169, 6);
             // 
             // 帮助ToolStripMenuItem
             // 
@@ -106,17 +118,6 @@
             this.statusStrip1.Size = new System.Drawing.Size(933, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
-            // 
-            // 关闭所有运行策略ToolStripMenuItem
-            // 
-            this.关闭所有运行策略ToolStripMenuItem.Name = "关闭所有运行策略ToolStripMenuItem";
-            this.关闭所有运行策略ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.关闭所有运行策略ToolStripMenuItem.Text = "关闭所有运行策略";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(169, 6);
             // 
             // MainForm
             // 

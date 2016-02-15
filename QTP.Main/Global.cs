@@ -16,9 +16,6 @@ namespace QTP.Main
     {
         #region global settings
 
-        // can close
-        public static bool CanClose = false;
-
         // Tlogin
         public static TLogin Login;
 
@@ -30,11 +27,7 @@ namespace QTP.Main
         // public SecList SecNames; 
         // http://cloud.myquant.cn:7000/v1/stkbase?fields=sec_name
         // http://cloud.myquant.cn:7000/v1/contracts?fields=sec_name
-
-        // Running Strategies
-        public static Dictionary<int, StrategyQTP> RunningStrategies = new Dictionary<int, StrategyQTP>();
-
-
+        
 
         #endregion
 

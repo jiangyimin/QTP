@@ -35,8 +35,12 @@ namespace QTP.Domain
         #endregion
 
         #region events
+        public delegate void KBTradeEventHandler(string instument);
         public delegate void MessageEventHandler(string msg);  
         public event MessageEventHandler OnMessage;
+        public event KBTradeEventHandler OnOpenLong;
+        public event KBTradeEventHandler OnCloseLong;
+
 
         #endregion
 
@@ -60,7 +64,7 @@ namespace QTP.Domain
             int ret = base.Init(strategyT.Login.UserName, strategyT.Login.Password, strategyT.GMID, "", mdmode, "localhost:8001");
             if (ret != 0)
             {
-                WriteInfo("策略初始化错误");
+                WriteInfo(string.Format("策略初始化错误{0}", ret));
                 return; 
             }
 
@@ -120,7 +124,6 @@ namespace QTP.Domain
         }
         public void WriteInfo(string msg)
         {
-            //mainThreadSynContext.Post(new SendOrPostCallback(OnConnected), null);
             OnMessage(string.Format("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg));
             //log.WriteInfo(msg);
         }

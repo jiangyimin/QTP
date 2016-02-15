@@ -16,6 +16,11 @@ namespace QTP.Main
 {
     public partial class MainForm : Form
     {
+        private StrategyForm strategyForm;
+
+        // Running Strategies
+        private static Dictionary<int, StrategyQTP> runningStrategies = new Dictionary<int, StrategyQTP>();
+
         public MainForm()
         {
             InitializeComponent();
@@ -37,8 +42,9 @@ namespace QTP.Main
         #region menus
         private void 退出ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Global.CanClose = true;
-            Close();
+            关闭所有运行策略ToolStripMenuItem_Click(this, null);
+            strategyForm.Stop();
+            this.Close();
         }
 
 
@@ -71,10 +77,10 @@ namespace QTP.Main
         {
             if (!ShowChildrenForm("策略管理"))
             {
-                Form frm = new StrategyForm();
-                frm.MdiParent = this;
-                frm.WindowState = FormWindowState.Maximized;
-                frm.Show();
+                strategyForm = new StrategyForm(this);
+                strategyForm.MdiParent = this;
+                strategyForm.WindowState = FormWindowState.Maximized;
+                strategyForm.Show();
             }
         }
         #endregion
@@ -99,6 +105,82 @@ namespace QTP.Main
             return false;
         }
 
+        public bool ExistRunningStrategy(int id)
+        {
+            return runningStrategies.ContainsKey(id);
+        }
+
+        public void NewStrategyMonitorForm(StrategyQTP qtp)
+        {
+            // new form
+            StrategyMonitorForm frm = new StrategyMonitorForm();
+            frm.Text = string.Format("{0} {1}", qtp.StrategyT.Id, qtp.StrategyT.Name);
+            frm.MdiParent = this;
+            frm.WindowState = FormWindowState.Maximized;
+            frm.Show();
+
+            // insert menu
+            ToolStripMenuItem item = new ToolStripMenuItem(frm.Text, null, new System.EventHandler(StrategyMenuItem_Click));
+            窗口ToolStripMenuItem.DropDownItems.Add(item);
+
+            // Start Run Strategy
+            frm.StartStrategy(qtp);
+            runningStrategies.Add(qtp.StrategyT.Id, qtp);
+        }
+
+        public void CloseStrategyMonitorForm(int id)
+        {
+            StrategyQTP qtp = runningStrategies[id];
+
+            // close form  
+            string formText = string.Format("{0} {1}", id, qtp.StrategyT.Name);
+            int i;
+            //依次检测当前窗体的子窗体
+            for (i = 0; i < this.MdiChildren.Length; i++)
+            {
+                //判断当前子窗体的Text属性值是否与传入的字符串值相同
+                if (this.MdiChildren[i].Text == formText)
+                {
+                    StrategyMonitorForm frm = (StrategyMonitorForm)this.MdiChildren[i];
+                    frm.StopStrategy();
+                    break;
+                }
+            }
+
+            // remove menu item
+            i = 0;
+            foreach (ToolStripItem item in 窗口ToolStripMenuItem.DropDownItems)
+            {
+                if (item.Text == formText) break;
+                i++;
+            }
+
+            窗口ToolStripMenuItem.DropDownItems.RemoveAt(i);
+            runningStrategies.Remove(id);
+        }
+
+        private void StrategyMenuItem_Click(object sender, EventArgs e)
+        {
+            // Set activeted
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+
+            ShowChildrenForm(item.Text);
+        }
+
         #endregion
+
+        private void 关闭所有运行策略ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<int> IDs = new List<int>();
+            foreach (KeyValuePair<int, StrategyQTP> pair in runningStrategies)
+            {
+                IDs.Add(pair.Key);
+            }
+
+            foreach (int id in IDs)
+                CloseStrategyMonitorForm(id);
+
+        }
+
     }
 }
