@@ -214,14 +214,14 @@ namespace QTP.Domain
                 if (posTrace.side == 1 && StopLossTrigger(posTrace.side))     // Long
                 {
                     strategy.WriteInfo(target.Symbol + " 触发平多信号");
-                    orderLast = strategy.CloseLong(target.Exchange, target.InstrumentId, xsTick[0].bid_p1, posTrace.volume);
+                    strategy.MyCloseLongSync(target.Exchange, target.InstrumentId, xsTick[0].bid_p1, posTrace.volume);
                     orderLasting = 0;
                 }
 
                 if (posTrace.side == 2 && StopLossTrigger(posTrace.side))
                 {
                     strategy.WriteInfo(target.Symbol + " 触发平空信号");
-                    orderLast = strategy.CloseShort(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, posTrace.volume);
+                    strategy.MyCloseShortSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, posTrace.volume);
                     orderLasting = 0;
                 }
             }
@@ -257,7 +257,7 @@ namespace QTP.Domain
                 }
                 else
                 {
-                    orderLast = strategy.OpenLong(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, vol);
+                    strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, vol);
                     strategy.WriteInfo(string.Format("{0} 触发开多信号（订单{1})", target.Symbol, orderLast.cl_ord_id));
                     orderLasting = 0;
                 }
@@ -279,7 +279,7 @@ namespace QTP.Domain
                 }
                 else
                 {
-                    orderLast = strategy.OpenShort(target.Exchange, target.InstrumentId, xsTick[0].bid_p1, vol);
+                    strategy.MyOpenShortSync(target.Exchange, target.InstrumentId, xsTick[0].bid_p1, vol);
                     strategy.WriteInfo(string.Format("{0} 触发开空信号（订单{1})", target.Symbol, orderLast.cl_ord_id));
                     orderLasting = 0;
                 }

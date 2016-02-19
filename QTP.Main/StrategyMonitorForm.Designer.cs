@@ -31,7 +31,6 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnStartTrade = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -41,11 +40,12 @@
             // 
             // listBox1
             // 
+            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(29, 76);
+            this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(322, 340);
+            this.listBox1.Size = new System.Drawing.Size(405, 456);
             this.listBox1.TabIndex = 0;
             // 
             // splitContainer1
@@ -68,27 +68,16 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.btnStartTrade);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 402);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(405, 54);
-            this.panel1.TabIndex = 1;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(195, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(160, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "启动下单程序";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.panel1.TabIndex = 2;
             // 
             // btnStartTrade
             // 
-            this.btnStartTrade.Location = new System.Drawing.Point(29, 12);
+            this.btnStartTrade.Location = new System.Drawing.Point(223, 19);
             this.btnStartTrade.Name = "btnStartTrade";
             this.btnStartTrade.Size = new System.Drawing.Size(160, 23);
             this.btnStartTrade.TabIndex = 0;
@@ -120,6 +109,5 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnStartTrade;
-        private System.Windows.Forms.Button button1;
     }
 }

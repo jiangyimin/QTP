@@ -45,6 +45,8 @@ namespace QTP.Main
             关闭所有运行策略ToolStripMenuItem_Click(this, null);
             strategyForm.Stop();
             this.Close();
+
+            Process.GetCurrentProcess().Kill();  //
         }
 
 

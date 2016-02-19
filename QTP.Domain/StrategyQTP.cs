@@ -20,6 +20,8 @@ namespace QTP.Domain
         protected RiskM risk;
         protected MDMode mdmode;
 
+        protected string tradeChannelType;
+
         private Dictionary<string, Monitor> monitors;
 
 
@@ -35,11 +37,11 @@ namespace QTP.Domain
         #endregion
 
         #region events
-        public delegate void KBTradeEventHandler(string instument);
+        public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
         public delegate void MessageEventHandler(string msg);  
         public event MessageEventHandler OnMessage;
-        public event KBTradeEventHandler OnOpenLong;
-        public event KBTradeEventHandler OnCloseLong;
+        public event KBTradeEventHandler OnKBOpenLong;
+        public event KBTradeEventHandler OnKBCloseLong;
 
 
         #endregion
@@ -53,6 +55,8 @@ namespace QTP.Domain
             risk = (RiskM)Activator.CreateInstance(riskType);
             risk.SetStrategy(this);
             mdmode = vt ? MDMode.MD_MODE_SIMULATED : MDMode.MD_MODE_LIVE;
+
+            tradeChannelType = s.TradeChannel.Split('(')[0];
         }
 
         public void Start()
@@ -217,6 +221,47 @@ namespace QTP.Domain
         #endregion
 
         #region Trader events overide
+
+        public void MyOpenLongSync(string exchange, string sec_id, double price, double volume)
+        {
+            if (tradeChannelType == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            {
+                // trade
+                OpenLongSync(exchange, sec_id, price, volume);
+            }
+            else
+            {
+                // KBTrade
+                OnKBOpenLong(sec_id, price, volume);
+
+            }
+        }
+
+        public void MyOpenShortSync(string exchange, string sec_id, double price, double volume)
+        {
+
+        }
+        public void MyCloseLongSync(string exchange, string sec_id, double price, double volume)
+        {
+            if (tradeChannelType == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            {
+                // trade
+                CloseLongSync(exchange, sec_id, price, volume);
+            }
+            else
+            {
+                // KBTrade
+                OnKBCloseLong(sec_id, price, volume);
+
+            }
+
+        }
+
+        public void MyCloseShortSync(string exchange, string sec_id, double price, double volume)
+        {
+
+        }
+
         /// <summary>
         /// 委托执行回报，订单的任何执行回报都会触发本事件，通过rpt可访问回报信息。
         /// </summary>

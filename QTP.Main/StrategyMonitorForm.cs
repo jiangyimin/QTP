@@ -29,7 +29,9 @@ namespace QTP.Main
         public void StartStrategy(StrategyQTP s)
         {
             qtp = s;
-            s.OnMessage += OnMessage;
+            qtp.OnMessage += OnMessage;
+            qtp.OnKBOpenLong += KBBuy;
+            qtp.OnKBCloseLong += KBSell;
             Task t = new Task(s.Start);
             t.Start();
         }
@@ -73,44 +75,70 @@ namespace QTP.Main
             // Start the process 
             Process process;
             if (processes.Length == 0)
+            {
                 process = System.Diagnostics.Process.Start(exePathName);
+                System.Threading.Thread.Sleep(10000);
+            }
             else
                 process = processes[0];
 
             // Wait for process to be created and enter idle condition 
             tradeWin = process.MainWindowHandle;
 
-            WinAPI.SetParent(process.MainWindowHandle, this.splitContainer1.Panel2.Handle);
-            // Move the window to overlay it on this window
-            WinAPI.MoveWindow(tradeWin, 0, 0, this.splitContainer1.Panel2.Width, this.splitContainer1.Panel2.Height, true);
-            WinAPI.SetForegroundWindow(tradeWin);
+            WinAPI.SetParent(tradeWin, this.splitContainer1.Panel2.Handle);
+
+            Int32 wndStyle = WinAPI.GetWindowLong(tradeWin, WinAPI.GWL_STYLE);
+            wndStyle &= ~WinAPI.WS_BORDER;
+            wndStyle &= ~WinAPI.WS_THICKFRAME;
+            WinAPI.SetWindowLong(tradeWin, WinAPI.GWL_STYLE, wndStyle);
+
+            WinAPI.SetWindowPos(tradeWin, IntPtr.Zero, 0, 0, 0, 0, WinAPI.SWP_NOMOVE | WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER | WinAPI.SWP_FRAMECHANGED);
+            
+            // 在Resize事件中更新目标应用程序的窗体尺寸.
+            splitContainer1_Panel2_Resize(this, null); 
         }
 
         private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
         {
-            WinAPI.SetForegroundWindow(tradeWin);
-            if (tradeWin != IntPtr.Zero)
-            {
-                WinAPI.MoveWindow(tradeWin, 0, 0, this.splitContainer1.Panel2.Width, this.splitContainer1.Panel2.Height, true);
-            }
+            WinAPI.SetWindowPos(tradeWin, IntPtr.Zero, 0, 0, this.splitContainer1.Panel2.Width, this.splitContainer1.Panel2.Height, WinAPI.SWP_NOZORDER);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void KBBuy(string sec_id, double price, double volume)
         {
-            WinAPI.SetForegroundWindow(tradeWin);
-            SendKeys.Send("600100");
-            SendKeys.Send("{TAB}");
-            SendKeys.Send("11.11");
-            SendKeys.Send("{Tab}");
-            SendKeys.Send("100");
-            SendKeys.SendWait("{Enter}");
-            SendKeys.SendWait("^y");
-
+            if (this.InvokeRequired == false)
+            {
+                WinAPI.SetWindowPos(tradeWin, WinAPI.HWND_TOPMOST, 0, 0, this.splitContainer1.Panel2.Width, this.splitContainer1.Panel2.Height, WinAPI.SWP_NOZORDER);
+                //WinAPI.SetForegroundWindow(tradeWin);
+                SendKeys.SendWait("{F1}");
+                SendKeys.Send(sec_id);
+                SendKeys.Send("{TAB}");
+                SendKeys.Send(string.Format("{0}", price));
+                SendKeys.Send("{Tab}");
+                SendKeys.Send(string.Format("{0}", volume));
+                SendKeys.SendWait("{Enter}");
+                SendKeys.SendWait("^y");
+            }
+        }
+        private void KBSell(string sec_id, double price, double volume)
+        {
+            if (this.InvokeRequired == false)
+            {
+                WinAPI.SetWindowPos(tradeWin, WinAPI.HWND_TOPMOST, 0, 0, this.splitContainer1.Panel2.Width, this.splitContainer1.Panel2.Height, WinAPI.SWP_NOZORDER);
+                //WinAPI.SetForegroundWindow(tradeWin);
+                SendKeys.SendWait("{F2}");
+                SendKeys.Send(sec_id);
+                SendKeys.Send("{TAB}");
+                SendKeys.Send(string.Format("{0}", price));
+                SendKeys.Send("{Tab}");
+                SendKeys.Send(string.Format("{0}", volume));
+                SendKeys.SendWait("{Enter}");
+                SendKeys.SendWait("^y");
+            }
         }
 
         private void StrategyMonitorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!canClose)
+            if (!this.canClose)
                 e.Cancel = true;
         }
     }

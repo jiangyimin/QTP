@@ -89,9 +89,9 @@ namespace QTP.Main
             // check
             if (current == null) return;
 
-            if (current.Status != "生产")
+            if (current.Status != "生产" && current.Status != "测试")
             {
-                MessageBox.Show("此策略实例为非生产态");
+                MessageBox.Show("此策略实例为研发阶段");
                 return;
             }
 
