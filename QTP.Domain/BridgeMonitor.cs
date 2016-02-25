@@ -238,7 +238,7 @@ namespace QTP.Domain
             Push(bar);
 
 
-
+            strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1*0.92, 100);
  
             if (OpenTrigger(1))     // Long
             {

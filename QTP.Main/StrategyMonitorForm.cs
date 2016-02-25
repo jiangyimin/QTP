@@ -103,6 +103,9 @@ namespace QTP.Main
             WinAPI.SetWindowPos(tradeWin, IntPtr.Zero, 0, 0, this.splitContainer1.Panel2.Width, this.splitContainer1.Panel2.Height, WinAPI.SWP_NOZORDER);
         }
 
+
+        private delegate void KBTradeDelegate(string sec_id, double price, double volume);
+
         private void KBBuy(string sec_id, double price, double volume)
         {
             if (this.InvokeRequired == false)
@@ -112,11 +115,17 @@ namespace QTP.Main
                 SendKeys.SendWait("{F1}");
                 SendKeys.Send(sec_id);
                 SendKeys.Send("{TAB}");
-                SendKeys.Send(string.Format("{0}", price));
+                SendKeys.Send(string.Format("{0:0.00}", price));
                 SendKeys.Send("{Tab}");
                 SendKeys.Send(string.Format("{0}", volume));
                 SendKeys.SendWait("{Enter}");
-                SendKeys.SendWait("^y");
+//                SendKeys.SendWait("^y");
+            }
+            else
+            {
+                KBTradeDelegate KBBuyD = new KBTradeDelegate(KBBuy);
+                this.Invoke(KBBuyD, sec_id, price, volume);
+
             }
         }
         private void KBSell(string sec_id, double price, double volume)
@@ -133,6 +142,12 @@ namespace QTP.Main
                 SendKeys.Send(string.Format("{0}", volume));
                 SendKeys.SendWait("{Enter}");
                 SendKeys.SendWait("^y");
+            }
+            else
+            {
+                KBTradeDelegate KBSellD = new KBTradeDelegate(KBSell);
+                this.Invoke(KBSellD, sec_id, price, volume);
+
             }
         }
 
