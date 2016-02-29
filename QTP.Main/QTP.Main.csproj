@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="libgmnet, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\QTP.MDWrapper\GMLIB\libgmnet.dll</HintPath>
+      <HintPath>bin\Debug\libgmnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -65,17 +65,29 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="StrategyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StrategyForm.Designer.cs">
-      <DependentUpon>StrategyForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="StrategyMonitorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="StrategyMonitorForm.Designer.cs">
       <DependentUpon>StrategyMonitorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyNavUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategyNavUC.Designer.cs">
+      <DependentUpon>StrategyNavUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyRunUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategyRunUC.Designer.cs">
+      <DependentUpon>StrategyRunUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategyUC.Designer.cs">
+      <DependentUpon>StrategyUC.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
@@ -92,11 +104,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="StrategyForm.resx">
-      <DependentUpon>StrategyForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="StrategyMonitorForm.resx">
       <DependentUpon>StrategyMonitorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StrategyNavUC.resx">
+      <DependentUpon>StrategyNavUC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StrategyRunUC.resx">
+      <DependentUpon>StrategyRunUC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StrategyUC.resx">
+      <DependentUpon>StrategyUC.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

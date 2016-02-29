@@ -37,7 +37,6 @@ namespace QTP.DBAccess
             {
                 t = MySqlHelper.ExecuteObject<TStrategy>(ConnectionString, string.Format("SELECT * FROM Strategy WHERE Id={0}", id));
 
-                t.Login = MySqlHelper.ExecuteObject<TLogin>(ConnectionString, "SELECT * FROM Login", null);
                 t.Instruments = MySqlHelper.ExecuteObjects<TInstrument>(ConnectionString, string.Format("SELECT * FROM Instrument WHERE StrategyId={0}", id));
                 t.Positions = MySqlHelper.ExecuteObjects<TPosition>(ConnectionString, string.Format("SELECT * FROM Position WHERE StrategyId={0}", id)); 
             }

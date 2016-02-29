@@ -22,6 +22,10 @@ namespace QTP.Main
         {
             InitializeComponent();
         }
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+            btnLogin_Click(this, null);
+        }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
@@ -41,5 +45,6 @@ namespace QTP.Main
 
             this.DialogResult = DialogResult.OK;
         }
+
     }
 }

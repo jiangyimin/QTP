@@ -15,66 +15,99 @@ namespace QTP.Domain
     public class StrategyQTP : Strategy
     {
         #region Members
+        private TLogin gmLogin;
+        private Type monitorType;
+        private Type riskMType;
+        private string status = "未打开";
+        private string tradeChannel;
+
         protected TStrategy strategyT;
-        protected Type monitorType;
-        protected RiskM risk;
+        protected RiskM riskM;
         protected MDMode mdmode;
 
-        protected string tradeChannelType;
+        
 
         private Dictionary<string, Monitor> monitors;
 
+        #endregion
 
-        public TStrategy StrategyT 
+        #region Properties
+        public string Status
+        {
+            get { return status; }
+        }
+
+        public TStrategy StrategyT
         {
             get { return strategyT; }
+        }
+
+        public string TradeChannel
+        {
+            get { return tradeChannel; }
+        }
+
+        private string tickSymbol;
+        public string TickSymbol
+        {
+            get { return tickSymbol; }
+            set { tickSymbol = value; }
         }
 
         // pusle
         private System.Timers.Timer timer;
         private int countPusle;
-        private int messageInterval = 40;       // 30s
+        private int messageInterval = 40;    
+        // 30s
         #endregion
 
         #region events
+        public delegate void BringRunUCDelegate(StrategyQTP qtp);
+
         public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
         public delegate void MessageEventHandler(string msg);  
         public event MessageEventHandler OnMessage;
         public event KBTradeEventHandler OnKBOpenLong;
         public event KBTradeEventHandler OnKBCloseLong;
 
-
+        public delegate void ShowTickHandler(Tick tick);
+        public ShowTickHandler ShowTick;
         #endregion
 
         #region Public methods
 
-        public StrategyQTP(TStrategy s, Type monitorType, Type riskType, bool vt)
+        // Create
+        public StrategyQTP(TStrategy s, Type monitorType, Type riskMType, TLogin login)
         {
             strategyT = s;
             this.monitorType = monitorType;
-            risk = (RiskM)Activator.CreateInstance(riskType);
-            risk.SetStrategy(this);
-            mdmode = vt ? MDMode.MD_MODE_SIMULATED : MDMode.MD_MODE_LIVE;
+            this.riskMType = riskMType;
+            this.gmLogin = login;
 
-            tradeChannelType = s.TradeChannel.Split('(')[0];
+            riskM = (RiskM)Activator.CreateInstance(riskMType);
+            riskM.SetStrategy(this);
+
+
+            tradeChannel = s.TradeChannel.Split('(')[0];
+        }
+
+        // Open (Initialize)
+        public void Open()
+        {
+            int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, "", mdmode, "localhost:8001");
+            if (ret != 0)
+            { 
+                throw new Exception(string.Format("初始化掘金错误{0}", ret));
+            }
+
+            // Run Initialize Task
+            //Task.Run(new Action(InitAction));
+
+            status = "已打开";
         }
 
         public void Start()
         {
-
-            //WriteInfo(string.Format("策略({0}, {1})初始化开始", strategyT.TradeChannel, strategyT.Id));
-
-
-            int ret = base.Init(strategyT.Login.UserName, strategyT.Login.Password, strategyT.GMID, "", mdmode, "localhost:8001");
-            if (ret != 0)
-            {
-                WriteInfo(string.Format("策略初始化错误{0}", ret));
-                return; 
-            }
-
-            // Run Initialize Task
-            Task.Run(new Action(InitAction));
-
             // Subscrible Instruments
             foreach (TInstrument ins in strategyT.Instruments)
             {
@@ -82,6 +115,7 @@ namespace QTP.Domain
                 base.Subscribe(ins.Symbol + ".bar.60");
             }
 
+            status = "运行中";
             // Run strategy
             base.Run();
         }
@@ -90,6 +124,8 @@ namespace QTP.Domain
         {
             if (timer != null) timer.Close();
             base.Stop();
+
+            this.status = "已打开";
         }
 
         public Monitor GetMonitor(string symbol)
@@ -106,7 +142,7 @@ namespace QTP.Domain
 
         public double GetVolumn(string exchange, string sec_id)
         {
-            return risk.GetVolume(exchange, sec_id);
+            return riskM.GetVolume(exchange, sec_id);
         }
         #endregion
 
@@ -153,7 +189,7 @@ namespace QTP.Domain
             }
 
             // Trader 资管 
-            risk.Initialize();
+            riskM.Initialize();
 
             // pusle timer 
             PusleTimerHandler(null, null);
@@ -193,7 +229,13 @@ namespace QTP.Domain
 
         public override void OnTick(Tick tick)
         {
-            Monitor monitor = GetMonitor(string.Format("{0}.{1}", tick.exchange, tick.sec_id));
+            string symbol = string.Format("{0}.{1}", tick.exchange, tick.sec_id);
+            if (symbol == tickSymbol)
+            {
+                ShowTick(tick);
+            }
+
+            Monitor monitor = GetMonitor(symbol);
             if (monitor != null)
             {
                 monitor.OnTick(tick);
@@ -224,7 +266,7 @@ namespace QTP.Domain
 
         public void MyOpenLongSync(string exchange, string sec_id, double price, double volume)
         {
-            if (tradeChannelType == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            if (tradeChannel == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
             {
                 // trade
                 OpenLongSync(exchange, sec_id, price, volume);
@@ -243,7 +285,7 @@ namespace QTP.Domain
         }
         public void MyCloseLongSync(string exchange, string sec_id, double price, double volume)
         {
-            if (tradeChannelType == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            if (tradeChannel == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
             {
                 // trade
                 CloseLongSync(exchange, sec_id, price, volume);

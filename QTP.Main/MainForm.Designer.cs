@@ -28,129 +28,77 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.行情ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.窗口ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.关闭所有运行策略ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.menuStrip1.SuspendLayout();
+            this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.btnSimulate = new System.Windows.Forms.Button();
+            this.btnReal = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
+            this.splitMain.Panel1.SuspendLayout();
+            this.splitMain.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip1
+            // splitMain
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.文件ToolStripMenuItem,
-            this.窗口ToolStripMenuItem,
-            this.帮助ToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(933, 25);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            this.splitMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitMain.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitMain.Location = new System.Drawing.Point(0, 0);
+            this.splitMain.Name = "splitMain";
             // 
-            // 文件ToolStripMenuItem
+            // splitMain.Panel1
             // 
-            this.文件ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.退出ToolStripMenuItem,
-            this.行情ToolStripMenuItem,
-            this.策略ToolStripMenuItem});
-            this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
-            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.文件ToolStripMenuItem.Text = "文件";
+            this.splitMain.Panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.splitMain.Panel1.Controls.Add(this.btnSimulate);
+            this.splitMain.Panel1.Controls.Add(this.btnReal);
             // 
-            // 退出ToolStripMenuItem
+            // splitMain.Panel2
             // 
-            this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.退出ToolStripMenuItem.Text = "退出";
-            this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
+            this.splitMain.Panel2.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.splitMain.Size = new System.Drawing.Size(933, 334);
+            this.splitMain.SplitterDistance = 65;
+            this.splitMain.TabIndex = 2;
             // 
-            // 行情ToolStripMenuItem
+            // btnSimulate
             // 
-            this.行情ToolStripMenuItem.Name = "行情ToolStripMenuItem";
-            this.行情ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.行情ToolStripMenuItem.Text = "行情";
-            this.行情ToolStripMenuItem.Click += new System.EventHandler(this.行情ToolStripMenuItem_Click);
+            this.btnSimulate.Location = new System.Drawing.Point(9, 94);
+            this.btnSimulate.Name = "btnSimulate";
+            this.btnSimulate.Size = new System.Drawing.Size(45, 39);
+            this.btnSimulate.TabIndex = 1;
+            this.btnSimulate.Text = "模拟";
+            this.btnSimulate.UseVisualStyleBackColor = true;
+            this.btnSimulate.Click += new System.EventHandler(this.btnSimulate_Click);
             // 
-            // 策略ToolStripMenuItem
+            // btnReal
             // 
-            this.策略ToolStripMenuItem.Name = "策略ToolStripMenuItem";
-            this.策略ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.策略ToolStripMenuItem.Text = "策略管理";
-            this.策略ToolStripMenuItem.Click += new System.EventHandler(this.策略ToolStripMenuItem_Click);
-            // 
-            // 窗口ToolStripMenuItem
-            // 
-            this.窗口ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.关闭所有运行策略ToolStripMenuItem,
-            this.toolStripMenuItem1});
-            this.窗口ToolStripMenuItem.Name = "窗口ToolStripMenuItem";
-            this.窗口ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.窗口ToolStripMenuItem.Text = "窗口";
-            // 
-            // 关闭所有运行策略ToolStripMenuItem
-            // 
-            this.关闭所有运行策略ToolStripMenuItem.Name = "关闭所有运行策略ToolStripMenuItem";
-            this.关闭所有运行策略ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.关闭所有运行策略ToolStripMenuItem.Text = "关闭所有运行策略";
-            this.关闭所有运行策略ToolStripMenuItem.Click += new System.EventHandler(this.关闭所有运行策略ToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(169, 6);
-            // 
-            // 帮助ToolStripMenuItem
-            // 
-            this.帮助ToolStripMenuItem.Name = "帮助ToolStripMenuItem";
-            this.帮助ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.帮助ToolStripMenuItem.Text = "帮助";
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 312);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(933, 22);
-            this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
+            this.btnReal.Location = new System.Drawing.Point(9, 39);
+            this.btnReal.Name = "btnReal";
+            this.btnReal.Size = new System.Drawing.Size(45, 40);
+            this.btnReal.TabIndex = 0;
+            this.btnReal.Text = "实盘";
+            this.btnReal.UseVisualStyleBackColor = true;
+            this.btnReal.Click += new System.EventHandler(this.btnReal_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(933, 334);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.menuStrip1);
-            this.IsMdiContainer = true;
-            this.MainMenuStrip = this.menuStrip1;
+            this.Controls.Add(this.splitMain);
             this.Name = "MainForm";
             this.Text = "QTP-量化交易平台";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.splitMain.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
+            this.splitMain.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem 文件ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 退出ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 帮助ToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripMenuItem 行情ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 策略ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 窗口ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 关闭所有运行策略ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.SplitContainer splitMain;
+        private System.Windows.Forms.Button btnSimulate;
+        private System.Windows.Forms.Button btnReal;
     }
 }
 

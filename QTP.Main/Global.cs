@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Reflection;
 
 using QTP.Domain;
 using QTP.DBAccess;
@@ -19,14 +20,15 @@ namespace QTP.Main
         // Tlogin
         public static TLogin Login;
 
+        public static List<StrategyQTP> RealStrategies = new List<StrategyQTP>();
+        public static List<StrategyQTP> SimuStrategies = new List<StrategyQTP>();
+
         // EventServer
 //        public EventServer ES;
 
         
         // Stocks
         // public SecList SecNames; 
-        // http://cloud.myquant.cn:7000/v1/stkbase?fields=sec_name
-        // http://cloud.myquant.cn:7000/v1/contracts?fields=sec_name
         
 
         #endregion
@@ -34,21 +36,25 @@ namespace QTP.Main
         #region tils
         public static void Load()
         {
-            // Load SecNames
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://cloud.myquant.cn:7000/v1/stkbase?fields=sec_name");
-            request.Timeout = 5000; 
-            request.Method = "GET"; 
+            // Load TStatrategies
+            List<TStrategy> lst = CRUD.GetTStrategies();
+            foreach (TStrategy t in lst)
+            {
+                // get subTables.
+                t.Instruments = CRUD.GetTStrategyInstruments(t.Id);
 
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                StreamReader sr = new StreamReader(response.GetResponseStream());
-//                SecNames = JSON.parse<SecList>(sr.ReadToEnd());
-                sr.Close();
-            }
-            catch
-            {
-                Console.WriteLine("GetResponse wrong!");
+                // Get Type of Monitor and RiskM
+                Assembly assembly = Assembly.LoadFrom(t.DLLName+".DLL");
+                string name = System.Text.RegularExpressions.Regex.Match(t.MonitorClass, @"[^(]+").Value;
+                Type monitorType = assembly.GetType(string.Format("{0}.{1}", t.DLLName, name));
+
+                name = System.Text.RegularExpressions.Regex.Match(t.RiskMClass, @"[^(]+").Value;
+                Type riskType = assembly.GetType(string.Format("{0}.{1}", t.DLLName, name));
+
+                // new StrategyQTP and Add to list.
+                StrategyQTP qtp = new StrategyQTP(t, monitorType, riskType, Global.Login);
+                if (t.RunType == "实盘") RealStrategies.Add(qtp);
+                if (t.RunType == "模拟") SimuStrategies.Add(qtp);
             }
 
         }
