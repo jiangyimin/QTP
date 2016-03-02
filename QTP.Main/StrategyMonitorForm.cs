@@ -18,7 +18,7 @@ namespace QTP.Main
     {
         private bool canClose = false;
 
-        private StrategyQTP qtp;
+        private MyStrategy qtp;
 
         private IntPtr tradeWin; 
         public StrategyMonitorForm()
@@ -26,13 +26,13 @@ namespace QTP.Main
             InitializeComponent();
         }
 
-        public void StartStrategy(StrategyQTP s)
+        public void StartStrategy(MyStrategy s)
         {
             qtp = s;
-            qtp.OnMessage += OnMessage;
+            qtp.MessageHint += OnMessage;
             qtp.OnKBOpenLong += KBBuy;
             qtp.OnKBCloseLong += KBSell;
-            Task t = new Task(s.Start);
+            Task t = new Task(s.Connect);
             t.Start();
         }
 

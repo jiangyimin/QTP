@@ -1,6 +1,6 @@
-﻿namespace QTP.Main
+﻿namespace QTP.Console
 {
-    partial class TicksControl
+    partial class TickUC
     {
         /// <summary> 
         /// 必需的设计器变量。

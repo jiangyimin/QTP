@@ -12,14 +12,14 @@ namespace QTP.Domain
     {
         #region Members
 
-        protected StrategyQTP strategy;
+        protected MyStrategy strategy;
 
         protected Cash cash;
         protected List<Position> positions;
 
         #endregion
 
-        public void SetStrategy(StrategyQTP s)
+        public void SetStrategy(MyStrategy s)
         {
             strategy = s;
         }
@@ -31,12 +31,12 @@ namespace QTP.Domain
             
             if (cash == null)
             {
-                strategy.WriteError("不能打开账户");
+                //strategy.WriteError("不能打开账户");
                 strategy.Stop();
                 return false;
             }
 
-            strategy.WriteInfo(string.Format("账户总资产({0:N2}), 可用资金({1:N2})", cash.nav, cash.available));
+            //strategy.WriteInfo(string.Format("账户总资产({0:N2}), 可用资金({1:N2})", cash.nav, cash.available));
 
             string info = "持仓:";
             positions = strategy.GetPositions();
@@ -50,7 +50,7 @@ namespace QTP.Domain
                     monitor.OnPosition(pos);
                 }
             }
-            strategy.WriteInfo(info);
+            //strategy.WriteInfo(info);
 
             return true;
         }

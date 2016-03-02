@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4B51EAD9-6FA8-4062-8867-3C555698DB6A}</ProjectGuid>
+    <ProjectGuid>{C4547F40-9F25-43AF-8CB0-FB32FE09824A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QTP.Main</RootNamespace>
-    <AssemblyName>QTP.Main</AssemblyName>
+    <RootNamespace>QTP.Console</RootNamespace>
+    <AssemblyName>QTP.Console</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,15 +30,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="libgmnet, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\libgmnet.dll</HintPath>
+    <Reference Include="libgmnet">
+      <HintPath>..\QTP.Domain\bin\Debug\libgmnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -50,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LoginForm.cs">
-      <SubType>Form</SubType>
+    <Compile Include="ChartUC.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
+    <Compile Include="ChartUC.Designer.cs">
+      <DependentUpon>ChartUC.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -62,30 +59,34 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonitorUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MonitorUC.Designer.cs">
+      <DependentUpon>MonitorUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Global.cs" />
-    <Compile Include="StrategyMonitorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StrategyMonitorForm.Designer.cs" />
-    <Compile Include="StrategyNavUC.cs">
+    <Compile Include="RiskMUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="StrategyNavUC.Designer.cs">
-      <DependentUpon>StrategyNavUC.cs</DependentUpon>
+    <Compile Include="RiskMUC.Designer.cs">
+      <DependentUpon>RiskMUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="StrategyUC.cs">
+    <Compile Include="TickUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="StrategyUC.Designer.cs">
-      <DependentUpon>StrategyUC.cs</DependentUpon>
+    <Compile Include="TickUC.Designer.cs">
+      <DependentUpon>TickUC.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
+    <EmbeddedResource Include="ChartUC.resx">
+      <DependentUpon>ChartUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonitorUC.resx">
+      <DependentUpon>MonitorUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -96,12 +97,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="StrategyMonitorForm.resx" />
-    <EmbeddedResource Include="StrategyNavUC.resx">
-      <DependentUpon>StrategyNavUC.cs</DependentUpon>
+    <EmbeddedResource Include="RiskMUC.resx">
+      <DependentUpon>RiskMUC.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="StrategyUC.resx">
-      <DependentUpon>StrategyUC.cs</DependentUpon>
+    <EmbeddedResource Include="TickUC.resx">
+      <DependentUpon>TickUC.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -114,9 +114,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QTP.DBAccess\QTP.DBAccess.csproj">
@@ -126,10 +124,6 @@
     <ProjectReference Include="..\QTP.Domain\QTP.Domain.csproj">
       <Project>{30a8f72d-479f-4bbc-9379-2cb3649b9c57}</Project>
       <Name>QTP.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QTP.Infra\QTP.Infra.csproj">
-      <Project>{b7976781-3a40-475a-a205-f996a78ec79d}</Project>
-      <Name>QTP.Infra</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

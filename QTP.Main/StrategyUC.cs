@@ -14,88 +14,112 @@ namespace QTP.Main
 {
     public partial class StrategyUC : UserControl
     {
-        private StrategyQTP qtp;
-        private StrategyQTP.BringRunUCDelegate bringRunUC;
+        private Control parent;         // parent Container
 
-        public StrategyUC()
+        private MyStrategy subject;
+
+
+        public StrategyUC(Control parent)
         {
             InitializeComponent();
+
+            this.parent = parent;
         }
 
-        public void SetStrategy(StrategyQTP qtp, StrategyQTP.BringRunUCDelegate bringRunUC)
+        public MyStrategy Subject
         {
-            this.qtp = qtp;
-            this.bringRunUC = bringRunUC;
+            get { return subject; }
+            set 
+            { 
+                subject = value; 
+                subject.MessageHint += MessageHintHandler;
+                Subject.StatusChanged += status_Changed;
+            }
+        }
 
+        private void StrategyUC_Load(object sender, EventArgs e)
+        {
             // panel Title
-            lblName.Text = qtp.StrategyT.Name;
-
-            // panel Status
-            UpdateStatus();
+            lblName.Text = subject.StrategyT.Name;
 
             // panel trade
-            lblMonitors.Text = string.Format("品种数:{0}", qtp.StrategyT.Instruments.Count);
-            lblTradeChannel.Text = string.Format("通道:{0}", qtp.TradeChannel);
+            lblMonitors.Text = string.Format("监控数量:{0}", subject.StrategyT.Instruments.Count);
+            lblTradeChannel.Text = string.Format("交易通道:{0}", subject.StrategyT.TradeChannelName);
 
         }
 
-        private void btnAction_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (btnAction.Text == "打开")
-                    qtp.Open();
-                else if (btnAction.Text == "启动")
-                    qtp.Start();
-                else if (btnAction.Text == "停止")
-                    qtp.Stop();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            UpdateStatus();
-
-        }
+        #region Actions
 
         private void btnDetail_Click(object sender, EventArgs e)
         {
-            if (qtp.Status == "未打开")
-            {
-                MessageBox.Show("请先打开策略!");
-                return;
-            }
+            //if (runUC == null)
+            //{
+            //    runUC = new StrategyRunUC();                
+            //    runUC.SetStrategy(subject);
+            //    runUC.Dock = DockStyle.Fill;
+            //    parent.Controls.Add(runUC);
+            //}
 
-            // this is a delegate, call mainForm's CreateOrBringRunUCToFront.
-            bringRunUC(qtp);
+            //runUC.BringToFront();
         }
 
-        private void StrategyUC_DoubleClick(object sender, EventArgs e)
+        private void btnConnect_Click(object sender, EventArgs e)
         {
-            btnDetail_Click(this, null);
+            btnConnect.Enabled = false;
+            if (btnConnect.Text == "连接")
+            {
+                try
+                {
+                    subject.Connect();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+            {
+                subject.Stop();
+            }
+            btnConnect.Enabled = true;
         }
 
-        private void UpdateStatus()
+        private void MessageHintHandler(string msg)
         {
-            lblStatus.Text = qtp.Status;
-
-            if (qtp.Status == "未打开")
+            if (this.listException.InvokeRequired == false)
             {
-                btnAction.Text = "打开";
-                btnDetail.Enabled = false;
+                this.listException.Items.Add(msg);
+                listException.SetSelected(listException.Items.Count - 1, true);     // set last line to visible
             }
-            else if (qtp.Status == "已打开")
+            else
             {
-                btnAction.Text = "启动";
-                btnDetail.Enabled = true;
-            }
-            else if (qtp.Status == "运行中")
-            {
-                btnAction.Text = "停止";
-                btnDetail.Enabled = true;
+                MyStrategy.MessageHintCallback handler = new MyStrategy.MessageHintCallback(MessageHintHandler);
+                this.listException.BeginInvoke(handler, msg);
             }
         }
+
+        private void status_Changed(bool running)
+        {
+            if (this.InvokeRequired == false)
+            {
+                if (running)
+                {
+                    btnDetail.Enabled = true;
+                    btnConnect.Text = "断开";
+                }
+                else
+                {
+                    btnDetail.Enabled = false;
+                    btnConnect.Text = "连接";
+                }
+            }
+            else
+            {
+                MyStrategy.StrategyStatusChangedCallback handler = new MyStrategy.StrategyStatusChangedCallback(status_Changed);
+                this.BeginInvoke(handler, running);
+            }
+        }
+        #endregion
 
     }
 }

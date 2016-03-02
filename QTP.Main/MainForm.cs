@@ -20,7 +20,6 @@ namespace QTP.Main
         private StrategyNavUC realStrategiesNavUC;
         private StrategyNavUC simuStrategiesNavUC;
 
-        private Dictionary<StrategyQTP, StrategyRunUC> runUCs = new Dictionary<StrategyQTP,StrategyRunUC>();
         #endregion
 
 
@@ -60,7 +59,7 @@ namespace QTP.Main
             //strategyForm.Stop();
             //this.Close();
 
-            //Process.GetCurrentProcess().Kill();  //
+            Process.GetCurrentProcess().Kill();  //
 
         }
 
@@ -72,11 +71,11 @@ namespace QTP.Main
             // create first
             if (realStrategiesNavUC == null)
             {
-                realStrategiesNavUC = new StrategyNavUC();
+                realStrategiesNavUC = new StrategyNavUC(this.splitMain.Panel2);
                 realStrategiesNavUC.Dock = DockStyle.Fill;
 
                 realStrategiesNavUC.Title = "实盘交易";
-                realStrategiesNavUC.SetStrategies(Global.RealStrategies, CreateOrBringRunUCToFront);
+                realStrategiesNavUC.SetStrategies(Global.RealStrategies, null);
 
                 splitMain.Panel2.Controls.Add(realStrategiesNavUC);
             }
@@ -91,11 +90,11 @@ namespace QTP.Main
             // create first
             if (simuStrategiesNavUC == null)
             {
-                simuStrategiesNavUC = new StrategyNavUC();
+                simuStrategiesNavUC = new StrategyNavUC(this.splitMain.Panel2);
                 simuStrategiesNavUC.Dock = DockStyle.Fill;
 
                 simuStrategiesNavUC.Title = "模拟交易";
-                simuStrategiesNavUC.SetStrategies(Global.SimuStrategies, CreateOrBringRunUCToFront);
+                simuStrategiesNavUC.SetStrategies(Global.SimuStrategies, null);
 
                 splitMain.Panel2.Controls.Add(simuStrategiesNavUC);
             }
@@ -106,30 +105,5 @@ namespace QTP.Main
 
         #endregion
 
-        #region util
-
-        // Create and/or bring a StrategyRunUC to front
-        private void CreateOrBringRunUCToFront(StrategyQTP qtp)
-        {
-            // get uc from dictionary.
-            StrategyRunUC uc = null;
-            if (runUCs.ContainsKey(qtp)) uc = runUCs[qtp];
-
-            // Create a new one
-            if (uc == null)
-            {
-                uc = new StrategyRunUC();
-                uc.SetStrategy(qtp);
-
-                uc.Dock = DockStyle.Fill;
-                runUCs.Add(qtp, uc);
-                splitMain.Panel2.Controls.Add(uc);
-            }
-
-            // display
-            uc.BringToFront();
-        }
-
-        #endregion
     }
 }

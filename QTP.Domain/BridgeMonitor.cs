@@ -14,9 +14,9 @@ namespace QTP.Domain
     public class BridgeMonitor : Monitor
     {
         #region parameters
-        private int NDailyBars = 20;
-        private int NBars = 20;
-        private int NTicks = 10;
+        private int NDailyBars = 200;
+        private int NBars = 200;
+        private int NTicks = 500;
         #endregion
 
         // basic TA 
@@ -117,13 +117,12 @@ namespace QTP.Domain
         #endregion
 
         #region Init
-        public override void Initialize()
+        public override void Prepare()
         {
-            initializeing = true;
+            if (prepared) return;
 
             // Get Upperlevel Data
-            List<DailyBar> barsDaily = strategy.GetLastNDailyBars(target.Symbol, NDailyBars);
-
+            List<DailyBar> barsDaily =  strategy.GetLastNDailyBars(target.Symbol, NDailyBars);
             baseTA = new DailyTA();
 
             string str = null;
@@ -154,6 +153,8 @@ namespace QTP.Domain
                 Push(ticks[i]);
             }
 
+            // 监控器完成数据准备
+            prepared = true;
             strategy.WriteInfo(string.Format("{0}监控器完成初始化", target.Symbol));
         }
 
@@ -169,7 +170,7 @@ namespace QTP.Domain
                 Push(ticksBuffer[i]);
             }
 
-            initializeing = false;
+            prepared = false;
         }
 
         #endregion
@@ -177,7 +178,7 @@ namespace QTP.Domain
         #region override
         public override string PulseHintMessage()
         {
-            return string.Format("[{0} T:{1},B:{2}]", target.InstrumentId, xsTick.Count - NTicks, xs.Count - NBars);
+            return string.Format("[{0} T:{1},B:{2}]", target.Symbol, xsTick.Count - NTicks, xs.Count - NBars);
         }
         public override void OnPulse()
         {
@@ -200,11 +201,11 @@ namespace QTP.Domain
 
         public override void OnTick(Tick tick)
         {
-            if (initializeing)
-            {
-                ticksBuffer.Add(tick);
-                return;
-            }
+            //if (initializeing)
+            //{
+            //    ticksBuffer.Add(tick);
+            //    return;
+            //}
 
             Push(tick);
 
@@ -214,14 +215,14 @@ namespace QTP.Domain
                 if (posTrace.side == 1 && StopLossTrigger(posTrace.side))     // Long
                 {
                     strategy.WriteInfo(target.Symbol + " 触发平多信号");
-                    strategy.MyCloseLongSync(target.Exchange, target.InstrumentId, xsTick[0].bid_p1, posTrace.volume);
+                    strategy.MyCloseLongSync(target.Exchange, target.Symbol, xsTick[0].bid_p1, posTrace.volume);
                     orderLasting = 0;
                 }
 
                 if (posTrace.side == 2 && StopLossTrigger(posTrace.side))
                 {
                     strategy.WriteInfo(target.Symbol + " 触发平空信号");
-                    strategy.MyCloseShortSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, posTrace.volume);
+                    strategy.MyCloseShortSync(target.Exchange, target.Symbol, xsTick[0].ask_p1, posTrace.volume);
                     orderLasting = 0;
                 }
             }
@@ -229,16 +230,16 @@ namespace QTP.Domain
 
         public override void OnBar(Bar bar)
         {
-            if (initializeing)
-            {
-                barsBuffer.Add(bar);
-                return;
-            }
+            //if (initializeing)
+            //{
+            //    barsBuffer.Add(bar);
+            //    return;
+            //}
 
             Push(bar);
 
 
-            strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1*0.92, 100);
+            strategy.MyOpenLongSync(target.Exchange, target.Symbol, xsTick[0].ask_p1 * 0.92, 100);
  
             if (OpenTrigger(1))     // Long
             {
@@ -249,7 +250,7 @@ namespace QTP.Domain
                     return;
                 }
 
-                double vol = strategy.GetVolumn(target.Exchange, target.InstrumentId);
+                double vol = strategy.GetVolumn(target.Exchange, target.Symbol);
 
                 if (vol == 0.0)
                 {
@@ -257,8 +258,8 @@ namespace QTP.Domain
                 }
                 else
                 {
-                    strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, vol);
-                    strategy.WriteInfo(string.Format("{0} 触发开多信号（订单{1})", target.Symbol, orderLast.cl_ord_id));
+                    //strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, vol);
+                    strategy.WriteInfo(string.Format("{0} 触发开多信号（订单{1})", target.Symbol, 1));
                     orderLasting = 0;
                 }
             }
@@ -279,7 +280,7 @@ namespace QTP.Domain
                 }
                 else
                 {
-                    strategy.MyOpenShortSync(target.Exchange, target.InstrumentId, xsTick[0].bid_p1, vol);
+                    strategy.MyOpenShortSync(target.Exchange, target.Symbol, xsTick[0].bid_p1, vol);
                     strategy.WriteInfo(string.Format("{0} 触发开空信号（订单{1})", target.Symbol, orderLast.cl_ord_id));
                     orderLasting = 0;
                 }

@@ -20,8 +20,8 @@ namespace QTP.Main
         // Tlogin
         public static TLogin Login;
 
-        public static List<StrategyQTP> RealStrategies = new List<StrategyQTP>();
-        public static List<StrategyQTP> SimuStrategies = new List<StrategyQTP>();
+        public static List<MyStrategy> RealStrategies = new List<MyStrategy>();
+        public static List<MyStrategy> SimuStrategies = new List<MyStrategy>();
 
         // EventServer
 //        public EventServer ES;
@@ -40,19 +40,14 @@ namespace QTP.Main
             List<TStrategy> lst = CRUD.GetTStrategies();
             foreach (TStrategy t in lst)
             {
+                // parse monitorName, riskMName, tradeChannel
+                t.Parse();
+
                 // get subTables.
                 t.Instruments = CRUD.GetTStrategyInstruments(t.Id);
 
-                // Get Type of Monitor and RiskM
-                Assembly assembly = Assembly.LoadFrom(t.DLLName+".DLL");
-                string name = System.Text.RegularExpressions.Regex.Match(t.MonitorClass, @"[^(]+").Value;
-                Type monitorType = assembly.GetType(string.Format("{0}.{1}", t.DLLName, name));
-
-                name = System.Text.RegularExpressions.Regex.Match(t.RiskMClass, @"[^(]+").Value;
-                Type riskType = assembly.GetType(string.Format("{0}.{1}", t.DLLName, name));
-
                 // new StrategyQTP and Add to list.
-                StrategyQTP qtp = new StrategyQTP(t, monitorType, riskType, Global.Login);
+                MyStrategy qtp = new MyStrategy(t, Global.Login);
                 if (t.RunType == "实盘") RealStrategies.Add(qtp);
                 if (t.RunType == "模拟") SimuStrategies.Add(qtp);
             }

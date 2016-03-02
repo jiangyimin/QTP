@@ -31,9 +31,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="libgmnet, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\QTP.MDWrapper\GMLIB\libgmnet.dll</HintPath>
+    <Reference Include="libgmnet">
+      <HintPath>..\QTP.Main\bin\Debug\libgmnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,7 +51,7 @@
     <Compile Include="RiskM.cs" />
     <Compile Include="Monitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StrategyQTP.cs" />
+    <Compile Include="MyStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QTP.DBAccess\QTP.DBAccess.csproj">

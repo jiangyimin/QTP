@@ -4,110 +4,114 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
 
 using QTP.Infra;
 using QTP.DBAccess;
 using GMSDK;
+using System.Threading;
 
 namespace QTP.Domain
 {
-    public class StrategyQTP : Strategy
+    public class MyStrategy : Strategy
     {
         #region Members
+        public static Dictionary<string, Instrument> DictInstruments;
         private TLogin gmLogin;
-        private Type monitorType;
-        private Type riskMType;
-        private string status = "未打开";
-        private string tradeChannel;
-
-        protected TStrategy strategyT;
-        protected RiskM riskM;
-        protected MDMode mdmode;
-
-        
 
         private Dictionary<string, Monitor> monitors;
+        protected RiskM riskM;
+        protected MDMode mdmode = MDMode.MD_MODE_SIMULATED;
+
+
+        // pusle
+        private System.Timers.Timer timer;
+        private int countPusle;
+        private int messageInterval = 30;           // 30s
 
         #endregion
 
         #region Properties
-        public string Status
-        {
-            get { return status; }
-        }
 
+        protected TStrategy strategyT;
+
+        // Table Strategy
         public TStrategy StrategyT
         {
             get { return strategyT; }
         }
 
-        public string TradeChannel
+        // Strategy's status;
+        private bool running = false;
+        public bool Running
         {
-            get { return tradeChannel; }
+            get { return running; }
         }
 
-        private string tickSymbol;
-        public string TickSymbol
+        private TInstrument focusInstrument;
+        public TInstrument FocusInstrument
         {
-            get { return tickSymbol; }
-            set { tickSymbol = value; }
+            get { return focusInstrument; }
+            set { focusInstrument = value; }
         }
 
-        // pusle
-        private System.Timers.Timer timer;
-        private int countPusle;
-        private int messageInterval = 40;    
-        // 30s
         #endregion
 
-        #region events
-        public delegate void BringRunUCDelegate(StrategyQTP qtp);
+        #region delegates and events
 
+        // -------------- only define ---------------------//
+        public delegate void BringRunUCDelegate(MyStrategy qtp);  
+        // ------------------------------------------------//
+
+        public delegate void MessageHintCallback(string msg);
+        public delegate void StrategyStatusChangedCallback(bool running);
         public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
-        public delegate void MessageEventHandler(string msg);  
-        public event MessageEventHandler OnMessage;
+ 
+
+        public event StrategyStatusChangedCallback StatusChanged;
+        public event MessageHintCallback MessageHint;
+
         public event KBTradeEventHandler OnKBOpenLong;
         public event KBTradeEventHandler OnKBCloseLong;
 
-        public delegate void ShowTickHandler(Tick tick);
-        public ShowTickHandler ShowTick;
+        // FocusInstrument
+        public delegate void FocusTickHandlerDelegate(Tick tick);
+        public FocusTickHandlerDelegate FocusTickHandler;
+
         #endregion
 
         #region Public methods
 
         // Create
-        public StrategyQTP(TStrategy s, Type monitorType, Type riskMType, TLogin login)
+        public MyStrategy(TStrategy s, TLogin login)
         {
             strategyT = s;
-            this.monitorType = monitorType;
-            this.riskMType = riskMType;
             this.gmLogin = login;
 
-            riskM = (RiskM)Activator.CreateInstance(riskMType);
-            riskM.SetStrategy(this);
+            // monitors
+            monitors = new Dictionary<string, Monitor>();
+            foreach (TInstrument ins in strategyT.Instruments)
+            {
+                Monitor monitor = (Monitor)Activator.CreateInstance(StrategyT.MonitorType);
 
-
-            tradeChannel = s.TradeChannel.Split('(')[0];
-        }
-
-        // Open (Initialize)
-        public void Open()
-        {
-            int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, "", mdmode, "localhost:8001");
-            if (ret != 0)
-            { 
-                throw new Exception(string.Format("初始化掘金错误{0}", ret));
+                // get Instrumnt
+                monitor.SetTInstrument(this, ins);
+                monitors.Add(ins.Symbol, monitor);
             }
 
-            // Run Initialize Task
-            //Task.Run(new Action(InitAction));
+            riskM = (RiskM)Activator.CreateInstance(s.RiskMType);
+            riskM.SetStrategy(this);
 
-            status = "已打开";
+            timer = new System.Timers.Timer(1000);          // set 1s pusle timer 
+            timer.Elapsed += PusleTimerHandler;
         }
 
-        public void Start()
+        // Start
+        public void Connect()
         {
+            // init GM and Prepare
+            Prepare();
+
             // Subscrible Instruments
             foreach (TInstrument ins in strategyT.Instruments)
             {
@@ -115,17 +119,60 @@ namespace QTP.Domain
                 base.Subscribe(ins.Symbol + ".bar.60");
             }
 
-            status = "运行中";
-            // Run strategy
-            base.Run();
+            // async run strategy
+            Task.Run(new Action(Run));
+        }
+
+        private void Prepare()
+        {
+            // Init GM
+            int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, "", mdmode, "localhost:8001");
+            if (ret != 0)
+            {
+                throw new Exception(string.Format("初始化掘金错误{0}", ret));
+            }
+
+            // Once Get DictInstruments
+            if (DictInstruments == null)
+            {
+                DictInstruments = new Dictionary<string, Instrument>();
+
+                List<Instrument> lst = new List<Instrument>();
+                lst = base.GetInstruments("SZSE", 1, 0);
+                lst.AddRange(base.GetInstruments("SHSE", 1, 0));
+
+                foreach (Instrument ins in lst)
+                {
+                    DictInstruments.Add(ins.symbol, ins);
+                }
+            }
+
+            // prepare monitors'data 
+            foreach (KeyValuePair<string, Monitor> pair in monitors)
+            {
+                Monitor m = pair.Value;
+                m.Prepare();
+            }
+
+            // Trader 资管 
+            //riskM.Initialize();
+        }
+
+        private new void Run()
+        {
+            // start pulse timer
+            timer.Start();
+            int ret = base.Run();
+
+            // if exit to this line
+            running = false;
+            if (StatusChanged != null) StatusChanged(running);
         }
 
         public new void Stop()
         {
-            if (timer != null) timer.Close();
+            timer.Enabled = false;
             base.Stop();
-
-            this.status = "已打开";
         }
 
         public Monitor GetMonitor(string symbol)
@@ -164,40 +211,11 @@ namespace QTP.Domain
         }
         public void WriteInfo(string msg)
         {
-            OnMessage(string.Format("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg));
+            if (MessageHint != null)
+                MessageHint(msg);
             //log.WriteInfo(msg);
         }
 
-        private void InitAction()
-        {
-            monitors = new Dictionary<string, Monitor>();
-            // monitors
-            foreach (TInstrument ins in strategyT.Instruments)
-            {
-                Monitor monitor = (Monitor)Activator.CreateInstance(monitorType);
-                monitor.SetTInstrument(this, ins); 
-
-                monitor.Initialize();
-                monitors.Add(ins.Symbol, monitor);
-            }
-
-            // process buffer data of monitors
-            foreach (KeyValuePair<string, Monitor> pair in monitors)
-            {
-                Monitor m = pair.Value;
-                m.InitializeBufferData();
-            }
-
-            // Trader 资管 
-            riskM.Initialize();
-
-            // pusle timer 
-            PusleTimerHandler(null, null);
-
-            timer = new System.Timers.Timer(1000);          // set 1s pusle timer 
-            timer.Elapsed += PusleTimerHandler;
-            timer.Start();
-        }
 
         private void PusleTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -230,10 +248,10 @@ namespace QTP.Domain
         public override void OnTick(Tick tick)
         {
             string symbol = string.Format("{0}.{1}", tick.exchange, tick.sec_id);
-            if (symbol == tickSymbol)
-            {
-                ShowTick(tick);
-            }
+            //if (symbol == focusInstrument.Symbol)
+            //{
+            //    FocusTickHandler(tick);
+            //}
 
             Monitor monitor = GetMonitor(symbol);
             if (monitor != null)
@@ -242,6 +260,11 @@ namespace QTP.Domain
             }
         }
 
+        public override void OnLogin()
+        {
+            running = true;
+            if (StatusChanged != null) StatusChanged(running);
+        }
         public override void OnBar(Bar bar)
         {
             Monitor monitor = GetMonitor(string.Format("{0}.{1}", bar.exchange, bar.sec_id));
@@ -266,7 +289,7 @@ namespace QTP.Domain
 
         public void MyOpenLongSync(string exchange, string sec_id, double price, double volume)
         {
-            if (tradeChannel == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            if (StrategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
             {
                 // trade
                 OpenLongSync(exchange, sec_id, price, volume);
@@ -285,7 +308,7 @@ namespace QTP.Domain
         }
         public void MyCloseLongSync(string exchange, string sec_id, double price, double volume)
         {
-            if (tradeChannel == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            if (StrategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
             {
                 // trade
                 CloseLongSync(exchange, sec_id, price, volume);

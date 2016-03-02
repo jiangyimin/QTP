@@ -12,17 +12,19 @@ namespace QTP.Domain
     public abstract class Monitor
     {
         #region MD
+        protected Instrument instrument { get; set; }
         protected TInstrument target { get; set; }
-        protected StrategyQTP strategy;
+        protected MyStrategy strategy;
 
-        protected bool initializeing;
+        protected bool prepared = false;
         protected List<Bar> barsBuffer;
         protected List<Tick> ticksBuffer;
 
-        public void SetTInstrument(StrategyQTP strategy, TInstrument target)
+        public void SetTInstrument(MyStrategy strategy, TInstrument target)
         {
             this.strategy = strategy;
             this.target = target;
+            //this.instrument = StrategyQTP.DictInstruments[target.Symbol];
 
             barsBuffer = new List<Bar>();
             ticksBuffer = new List<Tick>();
@@ -32,10 +34,12 @@ namespace QTP.Domain
         public abstract string PulseHintMessage();
         public abstract void OnPulse();
 
-        public abstract void Initialize();
+        public abstract void Prepare();
         public abstract void InitializeBufferData();
         public abstract void OnTick(Tick tick);
         public abstract void OnBar(Bar bar);
+
+        public virtual void Close() { }
 
         #endregion
 

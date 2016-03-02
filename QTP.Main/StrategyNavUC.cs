@@ -14,9 +14,12 @@ namespace QTP.Main
 {
     public partial class StrategyNavUC : UserControl
     {
-        public StrategyNavUC()
+        private Control parent;
+        public StrategyNavUC(Control parent)
         {
             InitializeComponent();
+
+            this.parent = parent;
         }
 
         public string Title
@@ -28,12 +31,12 @@ namespace QTP.Main
             }
         }
 
-        public void SetStrategies(List<StrategyQTP> strategies, StrategyQTP.BringRunUCDelegate bringRunUC)
+        public void SetStrategies(List<MyStrategy> strategies, MyStrategy.BringRunUCDelegate bringRunUC)
         {
-            foreach (StrategyQTP s in strategies)
+            foreach (MyStrategy ms in strategies)
             {
-                StrategyUC uc = new StrategyUC();
-                uc.SetStrategy(s, bringRunUC);
+                StrategyUC uc = new StrategyUC(parent);
+                uc.Subject = ms;
                 panelNav.Controls.Add(uc);
             }
         }
