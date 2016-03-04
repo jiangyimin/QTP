@@ -29,21 +29,14 @@ namespace QTP.DBAccess
             return MySqlHelper.ExecuteObjects<TInstrument>(ConnectionString, string.Format("SELECT * FROM Instrument WHERE StrategyId={0}", id));
         }
 
-        public static TStrategy GetTStrategy(string id, NLog log)
+        public static TStrategy GetTStrategy(string id)
         {
             TStrategy t = new TStrategy();
 
-            try
-            {
-                t = MySqlHelper.ExecuteObject<TStrategy>(ConnectionString, string.Format("SELECT * FROM Strategy WHERE Id={0}", id));
-
-                t.Instruments = MySqlHelper.ExecuteObjects<TInstrument>(ConnectionString, string.Format("SELECT * FROM Instrument WHERE StrategyId={0}", id));
-                t.Positions = MySqlHelper.ExecuteObjects<TPosition>(ConnectionString, string.Format("SELECT * FROM Position WHERE StrategyId={0}", id)); 
-            }
-            catch 
-            {
-                log.WriteError("Read TStrategies");
-            }
+            t = MySqlHelper.ExecuteObject<TStrategy>(ConnectionString, string.Format("SELECT * FROM Strategy WHERE Id={0}", id));
+            t.Parse();          // parse fields
+            t.Instruments = GetTStrategyInstruments(int.Parse(id));
+            //t.Positions = MySqlHelper.ExecuteObjects<TPosition>(ConnectionString, string.Format("SELECT * FROM Position WHERE StrategyId={0}", id)); 
 
             return t;
         }

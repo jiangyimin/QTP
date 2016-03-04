@@ -43,14 +43,14 @@
             this.panelTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTitle.Location = new System.Drawing.Point(0, 0);
             this.panelTitle.Name = "panelTitle";
-            this.panelTitle.Size = new System.Drawing.Size(572, 37);
+            this.panelTitle.Size = new System.Drawing.Size(355, 37);
             this.panelTitle.TabIndex = 0;
             // 
             // lblRightTitle
             // 
             this.lblRightTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRightTitle.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRightTitle.Location = new System.Drawing.Point(460, 19);
+            this.lblRightTitle.Location = new System.Drawing.Point(243, 19);
             this.lblRightTitle.Name = "lblRightTitle";
             this.lblRightTitle.Size = new System.Drawing.Size(100, 13);
             this.lblRightTitle.TabIndex = 1;
@@ -76,7 +76,7 @@
             this.panelNav.Location = new System.Drawing.Point(0, 37);
             this.panelNav.Name = "panelNav";
             this.panelNav.Padding = new System.Windows.Forms.Padding(6);
-            this.panelNav.Size = new System.Drawing.Size(572, 240);
+            this.panelNav.Size = new System.Drawing.Size(355, 167);
             this.panelNav.TabIndex = 1;
             // 
             // StrategyNavUC
@@ -87,7 +87,7 @@
             this.Controls.Add(this.panelNav);
             this.Controls.Add(this.panelTitle);
             this.Name = "StrategyNavUC";
-            this.Size = new System.Drawing.Size(572, 277);
+            this.Size = new System.Drawing.Size(355, 204);
             this.panelTitle.ResumeLayout(false);
             this.panelTitle.PerformLayout();
             this.ResumeLayout(false);

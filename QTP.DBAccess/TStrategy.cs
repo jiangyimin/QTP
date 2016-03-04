@@ -24,9 +24,11 @@ namespace QTP.DBAccess
 
         #region parsed properties
         public Type MonitorType { get; set; }
+        public string MonitorClassName { get; set; }
         public string MonitorParemeters { get; set; }
 
         public Type RiskMType { get; set; }
+        public string RiskMClassName { get; set; }
         public string RiskMParemeters { get; set; }
         public string TradeChannelName { get; set; }
         public string TradeChannelParameters { get; set; }
@@ -37,12 +39,14 @@ namespace QTP.DBAccess
             // Get Type of Monitor and RiskM
             Assembly assembly = Assembly.LoadFrom(DLLName + ".DLL");
             string[] ns = MonitorClass.Split('(', ')');
-            MonitorType = assembly.GetType(string.Format("{0}.{1}", DLLName, ns[0]));
+            MonitorClassName = ns[0];
             MonitorParemeters = ns[1];
+            MonitorType = assembly.GetType(string.Format("{0}.{1}", DLLName, ns[0]));
 
             ns = RiskMClass.Split('(', ')');
-            RiskMType = assembly.GetType(string.Format("{0}.{1}", DLLName, ns[0]));
+            RiskMClassName = ns[0];
             RiskMParemeters = ns[1];
+            RiskMType = assembly.GetType(string.Format("{0}.{1}", DLLName, ns[0]));
 
 
             ns = TradeChannel.Split('(', ')');

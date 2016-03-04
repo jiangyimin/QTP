@@ -12,17 +12,25 @@ using QTP.Domain;
 
 namespace QTP.Console
 {
-    public partial class RiskMUC : UserControl
+    public partial class RiskTradeUC : UserControl
     {
-        public RiskMUC()
+        private MyStrategy strategy;
+
+        public RiskTradeUC()
         {
             InitializeComponent();
         }
 
-        public void SetStrategy(MyStrategy qtp)
+        public MyStrategy Subject
         {
-            qtp.MessageHint += DispMessage;
+            set 
+            {
+                strategy = value;
+
+                strategy.MessageHint += DispMessage;
+            }
         }
+
         public void DispMessage(string msg)
         {
             if (this.label1.InvokeRequired == false)

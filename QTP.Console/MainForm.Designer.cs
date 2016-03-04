@@ -28,34 +28,79 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panlTitle = new System.Windows.Forms.Panel();
+            this.panelTitle = new System.Windows.Forms.Panel();
+            this.btnRiskTrade = new System.Windows.Forms.Button();
+            this.btnData = new System.Windows.Forms.Button();
+            this.btnOverView = new System.Windows.Forms.Button();
+            this.lblConnectStatus = new System.Windows.Forms.Label();
             this.lblRightTitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
-            this.tabRun = new System.Windows.Forms.TabControl();
-            this.pageMonitor = new System.Windows.Forms.TabPage();
-            this.pageRiskM = new System.Windows.Forms.TabPage();
-            this.monitorUC = new QTP.Console.MonitorUC();
-            this.panlTitle.SuspendLayout();
-            this.tabRun.SuspendLayout();
-            this.pageMonitor.SuspendLayout();
+            this.panelClient = new System.Windows.Forms.Panel();
+            this.panelTitle.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panlTitle
+            // panelTitle
             // 
-            this.panlTitle.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.panlTitle.Controls.Add(this.lblRightTitle);
-            this.panlTitle.Controls.Add(this.lblTitle);
-            this.panlTitle.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panlTitle.Location = new System.Drawing.Point(0, 0);
-            this.panlTitle.Name = "panlTitle";
-            this.panlTitle.Size = new System.Drawing.Size(778, 36);
-            this.panlTitle.TabIndex = 1;
+            this.panelTitle.BackColor = System.Drawing.SystemColors.Control;
+            this.panelTitle.Controls.Add(this.btnRiskTrade);
+            this.panelTitle.Controls.Add(this.btnData);
+            this.panelTitle.Controls.Add(this.btnOverView);
+            this.panelTitle.Controls.Add(this.lblConnectStatus);
+            this.panelTitle.Controls.Add(this.lblRightTitle);
+            this.panelTitle.Controls.Add(this.lblTitle);
+            this.panelTitle.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTitle.Location = new System.Drawing.Point(0, 0);
+            this.panelTitle.Name = "panelTitle";
+            this.panelTitle.Size = new System.Drawing.Size(923, 36);
+            this.panelTitle.TabIndex = 1;
+            // 
+            // btnRiskTrade
+            // 
+            this.btnRiskTrade.Location = new System.Drawing.Point(530, 0);
+            this.btnRiskTrade.Name = "btnRiskTrade";
+            this.btnRiskTrade.Size = new System.Drawing.Size(72, 36);
+            this.btnRiskTrade.TabIndex = 6;
+            this.btnRiskTrade.Text = "资金交易";
+            this.btnRiskTrade.UseVisualStyleBackColor = true;
+            this.btnRiskTrade.Click += new System.EventHandler(this.btnRiskTrade_Click);
+            // 
+            // btnData
+            // 
+            this.btnData.Location = new System.Drawing.Point(442, 0);
+            this.btnData.Name = "btnData";
+            this.btnData.Size = new System.Drawing.Size(72, 36);
+            this.btnData.TabIndex = 5;
+            this.btnData.Text = "指标数据";
+            this.btnData.UseVisualStyleBackColor = true;
+            this.btnData.Click += new System.EventHandler(this.btnData_Click);
+            // 
+            // btnOverView
+            // 
+            this.btnOverView.Location = new System.Drawing.Point(349, 0);
+            this.btnOverView.Name = "btnOverView";
+            this.btnOverView.Size = new System.Drawing.Size(75, 36);
+            this.btnOverView.TabIndex = 4;
+            this.btnOverView.Text = "监控概览";
+            this.btnOverView.UseVisualStyleBackColor = true;
+            this.btnOverView.Click += new System.EventHandler(this.btnOverView_Click);
+            // 
+            // lblConnectStatus
+            // 
+            this.lblConnectStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblConnectStatus.ForeColor = System.Drawing.Color.DarkRed;
+            this.lblConnectStatus.Location = new System.Drawing.Point(827, 16);
+            this.lblConnectStatus.Name = "lblConnectStatus";
+            this.lblConnectStatus.Size = new System.Drawing.Size(89, 13);
+            this.lblConnectStatus.TabIndex = 3;
+            this.lblConnectStatus.Text = "连接标志";
+            this.lblConnectStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblRightTitle
             // 
             this.lblRightTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblRightTitle.BackColor = System.Drawing.SystemColors.Control;
             this.lblRightTitle.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRightTitle.Location = new System.Drawing.Point(594, 14);
+            this.lblRightTitle.Location = new System.Drawing.Point(651, 16);
             this.lblRightTitle.Name = "lblRightTitle";
             this.lblRightTitle.Size = new System.Drawing.Size(179, 13);
             this.lblRightTitle.TabIndex = 2;
@@ -65,7 +110,7 @@
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
-            this.lblTitle.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.lblTitle.BackColor = System.Drawing.SystemColors.Control;
             this.lblTitle.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblTitle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lblTitle.Location = new System.Drawing.Point(6, 10);
@@ -74,72 +119,42 @@
             this.lblTitle.TabIndex = 1;
             this.lblTitle.Text = "标题";
             // 
-            // tabRun
+            // panelClient
             // 
-            this.tabRun.Controls.Add(this.pageMonitor);
-            this.tabRun.Controls.Add(this.pageRiskM);
-            this.tabRun.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabRun.Location = new System.Drawing.Point(0, 36);
-            this.tabRun.Name = "tabRun";
-            this.tabRun.SelectedIndex = 0;
-            this.tabRun.Size = new System.Drawing.Size(778, 398);
-            this.tabRun.TabIndex = 3;
-            // 
-            // pageMonitor
-            // 
-            this.pageMonitor.Controls.Add(this.monitorUC);
-            this.pageMonitor.Location = new System.Drawing.Point(4, 22);
-            this.pageMonitor.Name = "pageMonitor";
-            this.pageMonitor.Padding = new System.Windows.Forms.Padding(3);
-            this.pageMonitor.Size = new System.Drawing.Size(770, 372);
-            this.pageMonitor.TabIndex = 0;
-            this.pageMonitor.Text = "监控品种";
-            this.pageMonitor.UseVisualStyleBackColor = true;
-            // 
-            // pageRiskM
-            // 
-            this.pageRiskM.Location = new System.Drawing.Point(4, 22);
-            this.pageRiskM.Name = "pageRiskM";
-            this.pageRiskM.Padding = new System.Windows.Forms.Padding(3);
-            this.pageRiskM.Size = new System.Drawing.Size(599, 230);
-            this.pageRiskM.TabIndex = 1;
-            this.pageRiskM.Text = "资金交易";
-            this.pageRiskM.UseVisualStyleBackColor = true;
-            // 
-            // monitorUC
-            // 
-            this.monitorUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.monitorUC.Location = new System.Drawing.Point(3, 3);
-            this.monitorUC.Name = "monitorUC";
-            this.monitorUC.Size = new System.Drawing.Size(764, 366);
-            this.monitorUC.TabIndex = 0;
+            this.panelClient.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelClient.Location = new System.Drawing.Point(0, 36);
+            this.panelClient.Name = "panelClient";
+            this.panelClient.Size = new System.Drawing.Size(923, 398);
+            this.panelClient.TabIndex = 2;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(778, 434);
-            this.Controls.Add(this.tabRun);
-            this.Controls.Add(this.panlTitle);
+            this.ClientSize = new System.Drawing.Size(923, 434);
+            this.Controls.Add(this.panelClient);
+            this.Controls.Add(this.panelTitle);
             this.Name = "MainForm";
             this.Text = "策略运行窗口";
-            this.panlTitle.ResumeLayout(false);
-            this.panlTitle.PerformLayout();
-            this.tabRun.ResumeLayout(false);
-            this.pageMonitor.ResumeLayout(false);
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.panelTitle.ResumeLayout(false);
+            this.panelTitle.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panlTitle;
+        private System.Windows.Forms.Panel panelTitle;
         private System.Windows.Forms.Label lblRightTitle;
         private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.TabControl tabRun;
-        private System.Windows.Forms.TabPage pageMonitor;
-        private MonitorUC monitorUC;
-        private System.Windows.Forms.TabPage pageRiskM;
+        private System.Windows.Forms.Label lblConnectStatus;
+        private System.Windows.Forms.Button btnRiskTrade;
+        private System.Windows.Forms.Button btnData;
+        private System.Windows.Forms.Button btnOverView;
+        private System.Windows.Forms.Panel panelClient;
     }
 }
 

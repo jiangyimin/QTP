@@ -8,117 +8,101 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using QTP.Domain;
+using QTP.DBAccess;
 
 namespace QTP.Main
 {
     public partial class StrategyUC : UserControl
     {
         private Control parent;         // parent Container
+        private TStrategy strategy;
 
-        private MyStrategy subject;
+        private ExeRunUC exeUC;
 
 
-        public StrategyUC(Control parent)
+        public StrategyUC(TStrategy strategy, Control parent)
         {
             InitializeComponent();
 
             this.parent = parent;
+            this.strategy = strategy;
+
+            // Display information
+            lblName.Text = strategy.Name;
+
+            // groupMonitor
+            lblClassName1.Text = string.Format("监控: {0}", strategy.MonitorClassName);
+            lblParameter1.Text = string.Format("参数: {0}", strategy.MonitorParemeters);
+            lblNum.Text = string.Format("监控数量:{0}", strategy.Instruments.Count);
+
+            // groupRiskM
+            lblClassName2.Text = string.Format("资管: {0}", strategy.RiskMClassName);
+            lblParameter2.Text = string.Format("参数: {0}", strategy.MonitorParemeters);
+            lblTradeChannel.Text = string.Format("交易通道:{0}", strategy.TradeChannelName);
         }
 
-        public MyStrategy Subject
+        public void Close()
         {
-            get { return subject; }
-            set 
-            { 
-                subject = value; 
-                subject.MessageHint += MessageHintHandler;
-                Subject.StatusChanged += status_Changed;
+            if (exeUC != null)
+            {
+                exeUC.Close();
+                parent.Controls.Remove(exeUC);
+                exeUC = null;
             }
         }
 
-        private void StrategyUC_Load(object sender, EventArgs e)
+        private void Open()
         {
-            // panel Title
-            lblName.Text = subject.StrategyT.Name;
+            exeUC = new ExeRunUC();
+            exeUC.Dock = DockStyle.Fill;
 
-            // panel trade
-            lblMonitors.Text = string.Format("监控数量:{0}", subject.StrategyT.Instruments.Count);
-            lblTradeChannel.Text = string.Format("交易通道:{0}", subject.StrategyT.TradeChannelName);
+            string args = string.Format("{0} {1} {2}", strategy.Id, Global.Login.UserName, Global.Login.Password);
+            exeUC.Open(Global.ExePath, Global.ExeName, args);
 
+            parent.Controls.Add(exeUC);
+            exeUC.BringToFront();
         }
 
         #region Actions
 
         private void btnDetail_Click(object sender, EventArgs e)
         {
-            //if (runUC == null)
-            //{
-            //    runUC = new StrategyRunUC();                
-            //    runUC.SetStrategy(subject);
-            //    runUC.Dock = DockStyle.Fill;
-            //    parent.Controls.Add(runUC);
-            //}
-
-            //runUC.BringToFront();
+            exeUC.BringToFront();
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void btnOpen_Click(object sender, EventArgs e)
         {
-            btnConnect.Enabled = false;
-            if (btnConnect.Text == "连接")
-            {
-                try
-                {
-                    subject.Connect();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else
-            {
-                subject.Stop();
-            }
-            btnConnect.Enabled = true;
-        }
+            btnOpen.Enabled = false;
 
-        private void MessageHintHandler(string msg)
-        {
-            if (this.listException.InvokeRequired == false)
+            try
             {
-                this.listException.Items.Add(msg);
-                listException.SetSelected(listException.Items.Count - 1, true);     // set last line to visible
-            }
-            else
-            {
-                MyStrategy.MessageHintCallback handler = new MyStrategy.MessageHintCallback(MessageHintHandler);
-                this.listException.BeginInvoke(handler, msg);
-            }
-        }
-
-        private void status_Changed(bool running)
-        {
-            if (this.InvokeRequired == false)
-            {
-                if (running)
+                if (btnOpen.Text == "打开")
                 {
+                    Open();
+
+                    // if success, then enable detail.
+                    panel1.BackColor = Color.Orchid;
+                    btnOpen.Text = "关闭";
                     btnDetail.Enabled = true;
-                    btnConnect.Text = "断开";
                 }
-                else
+                else  // close this strategy
                 {
+                    Close();
+                    // then disable detail
+                    panel1.BackColor = SystemColors.GradientActiveCaption;
+                    btnOpen.Text = "打开";
                     btnDetail.Enabled = false;
-                    btnConnect.Text = "连接";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MyStrategy.StrategyStatusChangedCallback handler = new MyStrategy.StrategyStatusChangedCallback(status_Changed);
-                this.BeginInvoke(handler, running);
+                MessageBox.Show(ex.Message);
             }
+
+            btnOpen.Enabled = true;
         }
+
+
         #endregion
 
     }

@@ -36,6 +36,7 @@
       <HintPath>..\QTP.Domain\bin\Debug\libgmnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -59,6 +60,18 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonitorDataUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MonitorDataUC.Designer.cs">
+      <DependentUpon>MonitorDataUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonitorOverviewUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MonitorOverviewUC.Designer.cs">
+      <DependentUpon>MonitorOverviewUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonitorUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -67,11 +80,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RiskMUC.cs">
+    <Compile Include="RiskTradeUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="RiskMUC.Designer.cs">
-      <DependentUpon>RiskMUC.cs</DependentUpon>
+    <Compile Include="RiskTradeUC.Designer.cs">
+      <DependentUpon>RiskTradeUC.cs</DependentUpon>
     </Compile>
     <Compile Include="TickUC.cs">
       <SubType>UserControl</SubType>
@@ -85,6 +98,12 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonitorDataUC.resx">
+      <DependentUpon>MonitorDataUC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonitorOverviewUC.resx">
+      <DependentUpon>MonitorOverviewUC.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonitorUC.resx">
       <DependentUpon>MonitorUC.cs</DependentUpon>
     </EmbeddedResource>
@@ -97,8 +116,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="RiskMUC.resx">
-      <DependentUpon>RiskMUC.cs</DependentUpon>
+    <EmbeddedResource Include="RiskTradeUC.resx">
+      <DependentUpon>RiskTradeUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TickUC.resx">
       <DependentUpon>TickUC.cs</DependentUpon>

@@ -2,13 +2,14 @@
 using System.Data.SqlClient;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Reflection;
+using System.Configuration;
 
-using QTP.Domain;
 using QTP.DBAccess;
 
 namespace QTP.Main
@@ -19,23 +20,24 @@ namespace QTP.Main
 
         // Tlogin
         public static TLogin Login;
+        public static string ExePath, ExeName;
 
-        public static List<MyStrategy> RealStrategies = new List<MyStrategy>();
-        public static List<MyStrategy> SimuStrategies = new List<MyStrategy>();
-
-        // EventServer
-//        public EventServer ES;
-
-        
-        // Stocks
-        // public SecList SecNames; 
-        
+        public static List<TStrategy> RealStrategies = new List<TStrategy>();
+        public static List<TStrategy> SimuStrategies = new List<TStrategy>();
 
         #endregion
 
         #region tils
         public static void Load()
         {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            NameValueCollection nv = (NameValueCollection)ConfigurationManager.GetSection("GMStrategyRun");
+            Login.UserName = nv["UserName"];
+            Login.Password = nv["Password"];
+            ExePath = nv["ExePath"];
+            ExeName = nv["ExeName"];
+
+
             // Load TStatrategies
             List<TStrategy> lst = CRUD.GetTStrategies();
             foreach (TStrategy t in lst)
@@ -46,10 +48,9 @@ namespace QTP.Main
                 // get subTables.
                 t.Instruments = CRUD.GetTStrategyInstruments(t.Id);
 
-                // new StrategyQTP and Add to list.
-                MyStrategy qtp = new MyStrategy(t, Global.Login);
-                if (t.RunType == "实盘") RealStrategies.Add(qtp);
-                if (t.RunType == "模拟") SimuStrategies.Add(qtp);
+                // Add to list.
+                if (t.RunType == "实盘") RealStrategies.Add(t);
+                if (t.RunType == "模拟") SimuStrategies.Add(t);
             }
 
         }

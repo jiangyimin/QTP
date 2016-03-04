@@ -31,15 +31,20 @@
             this.panelTitle = new System.Windows.Forms.Panel();
             this.btnDetail = new System.Windows.Forms.Button();
             this.lblName = new System.Windows.Forms.Label();
-            this.panelTrade = new System.Windows.Forms.Panel();
             this.lblTradeChannel = new System.Windows.Forms.Label();
-            this.lblMonitors = new System.Windows.Forms.Label();
-            this.listException = new System.Windows.Forms.ListBox();
+            this.lblNum = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnConnect = new System.Windows.Forms.Button();
+            this.btnOpen = new System.Windows.Forms.Button();
+            this.groupMonitor = new System.Windows.Forms.GroupBox();
+            this.lblParameter1 = new System.Windows.Forms.Label();
+            this.lblClassName1 = new System.Windows.Forms.Label();
+            this.groupRiskM = new System.Windows.Forms.GroupBox();
+            this.lblParameter2 = new System.Windows.Forms.Label();
+            this.lblClassName2 = new System.Windows.Forms.Label();
             this.panelTitle.SuspendLayout();
-            this.panelTrade.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupMonitor.SuspendLayout();
+            this.groupRiskM.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTitle
@@ -57,11 +62,11 @@
             // btnDetail
             // 
             this.btnDetail.Enabled = false;
-            this.btnDetail.Location = new System.Drawing.Point(283, 3);
+            this.btnDetail.Location = new System.Drawing.Point(254, 0);
             this.btnDetail.Name = "btnDetail";
-            this.btnDetail.Size = new System.Drawing.Size(53, 29);
+            this.btnDetail.Size = new System.Drawing.Size(85, 35);
             this.btnDetail.TabIndex = 1;
-            this.btnDetail.Text = "详情";
+            this.btnDetail.Text = "运行详情";
             this.btnDetail.UseVisualStyleBackColor = true;
             this.btnDetail.Click += new System.EventHandler(this.btnDetail_Click);
             // 
@@ -74,83 +79,122 @@
             this.lblName.TabIndex = 0;
             this.lblName.Text = "名称";
             // 
-            // panelTrade
-            // 
-            this.panelTrade.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.panelTrade.Controls.Add(this.lblTradeChannel);
-            this.panelTrade.Controls.Add(this.lblMonitors);
-            this.panelTrade.Location = new System.Drawing.Point(198, 201);
-            this.panelTrade.Name = "panelTrade";
-            this.panelTrade.Size = new System.Drawing.Size(141, 55);
-            this.panelTrade.TabIndex = 2;
-            // 
             // lblTradeChannel
             // 
-            this.lblTradeChannel.AutoSize = true;
             this.lblTradeChannel.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblTradeChannel.ForeColor = System.Drawing.Color.OrangeRed;
-            this.lblTradeChannel.Location = new System.Drawing.Point(5, 32);
+            this.lblTradeChannel.Location = new System.Drawing.Point(181, 26);
             this.lblTradeChannel.Name = "lblTradeChannel";
-            this.lblTradeChannel.Size = new System.Drawing.Size(53, 12);
+            this.lblTradeChannel.Size = new System.Drawing.Size(149, 12);
             this.lblTradeChannel.TabIndex = 1;
             this.lblTradeChannel.Text = "交易通道";
+            this.lblTradeChannel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // lblMonitors
+            // lblNum
             // 
-            this.lblMonitors.AutoSize = true;
-            this.lblMonitors.Location = new System.Drawing.Point(5, 9);
-            this.lblMonitors.Name = "lblMonitors";
-            this.lblMonitors.Size = new System.Drawing.Size(53, 12);
-            this.lblMonitors.TabIndex = 0;
-            this.lblMonitors.Text = "监控数量";
-            // 
-            // listException
-            // 
-            this.listException.BackColor = System.Drawing.SystemColors.Window;
-            this.listException.FormattingEnabled = true;
-            this.listException.ItemHeight = 12;
-            this.listException.Location = new System.Drawing.Point(0, 37);
-            this.listException.Name = "listException";
-            this.listException.Size = new System.Drawing.Size(339, 160);
-            this.listException.TabIndex = 3;
+            this.lblNum.Location = new System.Drawing.Point(249, 26);
+            this.lblNum.Name = "lblNum";
+            this.lblNum.Size = new System.Drawing.Size(79, 12);
+            this.lblNum.TabIndex = 0;
+            this.lblNum.Text = "监控数量";
+            this.lblNum.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.panel1.Controls.Add(this.btnConnect);
+            this.panel1.Controls.Add(this.btnOpen);
             this.panel1.Location = new System.Drawing.Point(0, 201);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(192, 55);
+            this.panel1.Size = new System.Drawing.Size(339, 55);
             this.panel1.TabIndex = 4;
             // 
-            // btnConnect
+            // btnOpen
             // 
-            this.btnConnect.Location = new System.Drawing.Point(64, 9);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(69, 35);
-            this.btnConnect.TabIndex = 2;
-            this.btnConnect.Text = "连接";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            this.btnOpen.Location = new System.Drawing.Point(96, 11);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(130, 35);
+            this.btnOpen.TabIndex = 2;
+            this.btnOpen.Text = "打开";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            // 
+            // groupMonitor
+            // 
+            this.groupMonitor.Controls.Add(this.lblParameter1);
+            this.groupMonitor.Controls.Add(this.lblClassName1);
+            this.groupMonitor.Controls.Add(this.lblNum);
+            this.groupMonitor.Location = new System.Drawing.Point(0, 37);
+            this.groupMonitor.Name = "groupMonitor";
+            this.groupMonitor.Size = new System.Drawing.Size(339, 78);
+            this.groupMonitor.TabIndex = 5;
+            this.groupMonitor.TabStop = false;
+            // 
+            // lblParameter1
+            // 
+            this.lblParameter1.AutoSize = true;
+            this.lblParameter1.Location = new System.Drawing.Point(24, 49);
+            this.lblParameter1.Name = "lblParameter1";
+            this.lblParameter1.Size = new System.Drawing.Size(29, 12);
+            this.lblParameter1.TabIndex = 2;
+            this.lblParameter1.Text = "参数";
+            // 
+            // lblClassName1
+            // 
+            this.lblClassName1.AutoSize = true;
+            this.lblClassName1.Location = new System.Drawing.Point(24, 26);
+            this.lblClassName1.Name = "lblClassName1";
+            this.lblClassName1.Size = new System.Drawing.Size(29, 12);
+            this.lblClassName1.TabIndex = 1;
+            this.lblClassName1.Text = "类名";
+            // 
+            // groupRiskM
+            // 
+            this.groupRiskM.Controls.Add(this.lblTradeChannel);
+            this.groupRiskM.Controls.Add(this.lblParameter2);
+            this.groupRiskM.Controls.Add(this.lblClassName2);
+            this.groupRiskM.Location = new System.Drawing.Point(0, 117);
+            this.groupRiskM.Name = "groupRiskM";
+            this.groupRiskM.Size = new System.Drawing.Size(339, 78);
+            this.groupRiskM.TabIndex = 6;
+            this.groupRiskM.TabStop = false;
+            // 
+            // lblParameter2
+            // 
+            this.lblParameter2.AutoSize = true;
+            this.lblParameter2.Location = new System.Drawing.Point(24, 49);
+            this.lblParameter2.Name = "lblParameter2";
+            this.lblParameter2.Size = new System.Drawing.Size(29, 12);
+            this.lblParameter2.TabIndex = 2;
+            this.lblParameter2.Text = "参数";
+            // 
+            // lblClassName2
+            // 
+            this.lblClassName2.AutoSize = true;
+            this.lblClassName2.Location = new System.Drawing.Point(24, 26);
+            this.lblClassName2.Name = "lblClassName2";
+            this.lblClassName2.Size = new System.Drawing.Size(29, 12);
+            this.lblClassName2.TabIndex = 1;
+            this.lblClassName2.Text = "类名";
             // 
             // StrategyUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Controls.Add(this.groupRiskM);
+            this.Controls.Add(this.groupMonitor);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.listException);
-            this.Controls.Add(this.panelTrade);
             this.Controls.Add(this.panelTitle);
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "StrategyUC";
             this.Size = new System.Drawing.Size(339, 256);
-            this.Load += new System.EventHandler(this.StrategyUC_Load);
             this.panelTitle.ResumeLayout(false);
             this.panelTitle.PerformLayout();
-            this.panelTrade.ResumeLayout(false);
-            this.panelTrade.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.groupMonitor.ResumeLayout(false);
+            this.groupMonitor.PerformLayout();
+            this.groupRiskM.ResumeLayout(false);
+            this.groupRiskM.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -159,12 +203,16 @@
 
         private System.Windows.Forms.Panel panelTitle;
         private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.Panel panelTrade;
         private System.Windows.Forms.Label lblTradeChannel;
-        private System.Windows.Forms.Label lblMonitors;
+        private System.Windows.Forms.Label lblNum;
         private System.Windows.Forms.Button btnDetail;
-        private System.Windows.Forms.ListBox listException;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.GroupBox groupMonitor;
+        private System.Windows.Forms.Label lblClassName1;
+        private System.Windows.Forms.Label lblParameter1;
+        private System.Windows.Forms.GroupBox groupRiskM;
+        private System.Windows.Forms.Label lblParameter2;
+        private System.Windows.Forms.Label lblClassName2;
     }
 }

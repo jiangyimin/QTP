@@ -11,5 +11,12 @@ namespace QTP.DBAccess
         public string UserName { get; set; }
 
         public string Password { get; set; }
+
+        public TLogin() { }
+        public TLogin(string n, string p)
+        {
+            UserName = n;
+            Password = p;
+        }
     }
 }

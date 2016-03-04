@@ -8,18 +8,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using QTP.Domain;
+using QTP.DBAccess;
 
 namespace QTP.Main
 {
     public partial class StrategyNavUC : UserControl
     {
-        private Control parent;
-        public StrategyNavUC(Control parent)
+        public StrategyNavUC(List<TStrategy> strategies, Control parent)
         {
             InitializeComponent();
 
-            this.parent = parent;
+            foreach (TStrategy s in strategies)
+            {
+                StrategyUC uc = new StrategyUC(s, parent);
+                panelNav.Controls.Add(uc);
+            }
+
         }
 
         public string Title
@@ -31,15 +35,13 @@ namespace QTP.Main
             }
         }
 
-        public void SetStrategies(List<MyStrategy> strategies, MyStrategy.BringRunUCDelegate bringRunUC)
+        public void Close()
         {
-            foreach (MyStrategy ms in strategies)
+            foreach (Control c in panelNav.Controls)
             {
-                StrategyUC uc = new StrategyUC(parent);
-                uc.Subject = ms;
-                panelNav.Controls.Add(uc);
+                if (c is StrategyUC)
+                    ((StrategyUC)c).Close();
             }
         }
-
     }
 }

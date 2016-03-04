@@ -8,49 +8,31 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using GMSDK;
 using QTP.Domain;
-using QTP.DBAccess;
 
 namespace QTP.Console
 {
     public partial class MonitorUC : UserControl
     {
-        private MyStrategy qtp;
-        public MonitorUC()
+        private Monitor mon;
+        public MonitorUC(Monitor mon)
         {
             InitializeComponent();
+
+            this.mon = mon;
+            lblTarge.Text = mon.Target.InstrumentId + mon.GMInstrument.sec_name;
         }
 
-        public void SetStrategy(MyStrategy qtp)
+        public void Display()
         {
-            // hook with Strategy
-            this.qtp = qtp;
-            qtp.FocusTickHandler = tickUC.ShowTick;
+            Tick tick = mon.LatestTick;
 
+            if (tick != null) lblPrice.Text = string.Format("{0:.00}", tick.last_price);
 
-            // dgvPool
-            int i = 1;
-            foreach (TInstrument ins in qtp.StrategyT.Instruments)
-            {
-                int index = dgvPool.Rows.Add(i++, ins.Exchange, ins.InstrumentId, MyStrategy.DictInstruments[ins.Symbol].sec_name);
-                dgvPool.Rows[index].Tag = ins;
-            }
+            lblTick.Text = String.Format("T: {0}", mon.NumTicks);
+            lblBar1m.Text = String.Format("1B: {0}", mon.Num1mBars);
 
-            // ChartUC and TickUC is auto called dgvPool_RowEnter.
-        }
-
-        private void SetPagePool()
-        {
-        }
-
-        private void dgvPool_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgvPool.Rows.Count == 0) return;
-
-            // display ChartUC and TickUC of this instrument.
-            TInstrument ins = (TInstrument)dgvPool.Rows[e.RowIndex].Tag;
-
-            qtp.FocusInstrument = ins;
         }
     }
 }

@@ -16,13 +16,25 @@ namespace QTP.Domain
     public class MyStrategy : Strategy
     {
         #region Members
+
+        /// <summary>
+        /// Static 
+        /// </summary>
         public static Dictionary<string, Instrument> DictInstruments;
+
         private TLogin gmLogin;
+        private TStrategy strategyT;
 
         private Dictionary<string, Monitor> monitors;
-        protected RiskM riskM;
-        protected MDMode mdmode = MDMode.MD_MODE_SIMULATED;
+        private RiskM riskM;
+        private MDMode mdmode = MDMode.MD_MODE_SIMULATED;
 
+
+        // Strategy's connect status;
+        private int countConnected;
+        private bool connectSucceed;
+
+        private TInstrument focusInstrument;
 
         // pusle
         private System.Timers.Timer timer;
@@ -33,42 +45,41 @@ namespace QTP.Domain
 
         #region Properties
 
-        protected TStrategy strategyT;
-
-        // Table Strategy
-        public TStrategy StrategyT
+        // Name: strategyT internal field 
+        public string Name
         {
-            get { return strategyT; }
+            get { return strategyT.Name; }
         }
 
-        // Strategy's status;
-        private bool running = false;
-        public bool Running
+        public string GMID
         {
-            get { return running; }
+            get { return strategyT.GMID; }
         }
 
-        private TInstrument focusInstrument;
+        public string RunType
+        {
+            get { return strategyT.RunType; }
+        }
+
         public TInstrument FocusInstrument
         {
             get { return focusInstrument; }
             set { focusInstrument = value; }
         }
 
+
+
         #endregion
 
         #region delegates and events
 
-        // -------------- only define ---------------------//
-        public delegate void BringRunUCDelegate(MyStrategy qtp);  
-        // ------------------------------------------------//
+        public delegate void ConnectStatusChangedCallback(bool connectSucceed, int num);
+        public event ConnectStatusChangedCallback ConnectStatusChanged;
 
         public delegate void MessageHintCallback(string msg);
-        public delegate void StrategyStatusChangedCallback(bool running);
         public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
- 
 
-        public event StrategyStatusChangedCallback StatusChanged;
+
         public event MessageHintCallback MessageHint;
 
         public event KBTradeEventHandler OnKBOpenLong;
@@ -92,7 +103,7 @@ namespace QTP.Domain
             monitors = new Dictionary<string, Monitor>();
             foreach (TInstrument ins in strategyT.Instruments)
             {
-                Monitor monitor = (Monitor)Activator.CreateInstance(StrategyT.MonitorType);
+                Monitor monitor = (Monitor)Activator.CreateInstance(strategyT.MonitorType);
 
                 // get Instrumnt
                 monitor.SetTInstrument(this, ins);
@@ -106,24 +117,8 @@ namespace QTP.Domain
             timer.Elapsed += PusleTimerHandler;
         }
 
-        // Start
-        public void Connect()
-        {
-            // init GM and Prepare
-            Prepare();
-
-            // Subscrible Instruments
-            foreach (TInstrument ins in strategyT.Instruments)
-            {
-                base.Subscribe(ins.Symbol + ".tick");
-                base.Subscribe(ins.Symbol + ".bar.60");
-            }
-
-            // async run strategy
-            Task.Run(new Action(Run));
-        }
-
-        private void Prepare()
+        // init GM and prepare data
+        public void Prepare()
         {
             // Init GM
             int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, "", mdmode, "localhost:8001");
@@ -148,9 +143,10 @@ namespace QTP.Domain
             }
 
             // prepare monitors'data 
-            foreach (KeyValuePair<string, Monitor> pair in monitors)
+            foreach (Monitor m in this.GetMonitorEnumerator())
             {
-                Monitor m = pair.Value;
+                if (DictInstruments.ContainsKey(m.Target.Symbol))
+                    m.GMInstrument = DictInstruments[m.Target.Symbol];
                 m.Prepare();
             }
 
@@ -158,21 +154,33 @@ namespace QTP.Domain
             //riskM.Initialize();
         }
 
-        private new void Run()
+        // Start
+        public void Start()
         {
-            // start pulse timer
-            timer.Start();
-            int ret = base.Run();
+            // Subscrible Instruments
+            foreach (Monitor m in this.GetMonitorEnumerator())
+            {
+                base.Subscribe(m.Target.Symbol + ".tick");
+                base.Subscribe(m.Target.Symbol + ".bar.60");
+            }
 
-            // if exit to this line
-            running = false;
-            if (StatusChanged != null) StatusChanged(running);
+            // pusle timer of strategy
+            timer.Start();
+
+            // async run strategy
+            Task.Run<int>(new Func<int>(base.Run));
         }
 
-        public new void Stop()
+
+        /// <summary>
+        /// Enumerable of Monitor
+        /// </summary>
+        public IEnumerable<Monitor> GetMonitorEnumerator()
         {
-            timer.Enabled = false;
-            base.Stop();
+            foreach (KeyValuePair<string, Monitor> pair in monitors)
+            {
+                yield return pair.Value;
+            }
         }
 
         public Monitor GetMonitor(string symbol)
@@ -181,7 +189,7 @@ namespace QTP.Domain
                 return monitors[symbol];
             return null;
         }
-        public Monitor GetMonitor(string exchange, string sec_id)
+        private Monitor GetMonitor(string exchange, string sec_id)
         {
             string symbol = string.Format("{0}.{1}", exchange, sec_id);
             return GetMonitor(symbol);
@@ -204,11 +212,7 @@ namespace QTP.Domain
             //Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
             //log.WriteError(msg);
         }
-        public void WriteWarning(string msg)
-        {
-            //Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
-            //log.WriteWarning(msg);
-        }
+
         public void WriteInfo(string msg)
         {
             if (MessageHint != null)
@@ -262,9 +266,13 @@ namespace QTP.Domain
 
         public override void OnLogin()
         {
-            running = true;
-            if (StatusChanged != null) StatusChanged(running);
+            // used for connectstatus changed
+            connectSucceed = true;
+            countConnected++;
+            if (ConnectStatusChanged != null)
+                ConnectStatusChanged(true, countConnected);
         }
+
         public override void OnBar(Bar bar)
         {
             Monitor monitor = GetMonitor(string.Format("{0}.{1}", bar.exchange, bar.sec_id));
@@ -279,8 +287,12 @@ namespace QTP.Domain
         }
 
         public override void OnError(int error_code, string error_msg)
-        {
-            WriteInfo(string.Format("{0}({1}))", error_msg, error_code));
+        {            
+            if (error_code == 2000 || error_code == 3000)       // connect fail
+            {
+                connectSucceed = false;
+                if (ConnectStatusChanged != null) ConnectStatusChanged(false, countConnected);
+            }
         }
 
         #endregion
@@ -289,7 +301,7 @@ namespace QTP.Domain
 
         public void MyOpenLongSync(string exchange, string sec_id, double price, double volume)
         {
-            if (StrategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            if (strategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
             {
                 // trade
                 OpenLongSync(exchange, sec_id, price, volume);
@@ -302,13 +314,9 @@ namespace QTP.Domain
             }
         }
 
-        public void MyOpenShortSync(string exchange, string sec_id, double price, double volume)
-        {
-
-        }
         public void MyCloseLongSync(string exchange, string sec_id, double price, double volume)
         {
-            if (StrategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            if (strategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
             {
                 // trade
                 CloseLongSync(exchange, sec_id, price, volume);
@@ -319,11 +327,6 @@ namespace QTP.Domain
                 OnKBCloseLong(sec_id, price, volume);
 
             }
-
-        }
-
-        public void MyCloseShortSync(string exchange, string sec_id, double price, double volume)
-        {
 
         }
 

@@ -8,10 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using QTP.Domain;
-using System.Diagnostics;
-//using QTP.MDWrapper;
-
 namespace QTP.Main
 {
     public partial class MainForm : Form
@@ -55,12 +51,13 @@ namespace QTP.Main
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //关闭所有运行策略ToolStripMenuItem_Click(this, null);
-            //strategyForm.Stop();
-            //this.Close();
+            //关闭所有运行策略
+            if (realStrategiesNavUC != null)
+                realStrategiesNavUC.Close();
+            if (simuStrategiesNavUC != null)
+                simuStrategiesNavUC.Close();
 
-            Process.GetCurrentProcess().Kill();  //
-
+            System.Diagnostics.Process.GetCurrentProcess().Kill(); 
         }
 
         #region menus
@@ -71,11 +68,9 @@ namespace QTP.Main
             // create first
             if (realStrategiesNavUC == null)
             {
-                realStrategiesNavUC = new StrategyNavUC(this.splitMain.Panel2);
+                realStrategiesNavUC = new StrategyNavUC(Global.RealStrategies, this.splitMain.Panel2);
                 realStrategiesNavUC.Dock = DockStyle.Fill;
-
                 realStrategiesNavUC.Title = "实盘交易";
-                realStrategiesNavUC.SetStrategies(Global.RealStrategies, null);
 
                 splitMain.Panel2.Controls.Add(realStrategiesNavUC);
             }
@@ -90,11 +85,9 @@ namespace QTP.Main
             // create first
             if (simuStrategiesNavUC == null)
             {
-                simuStrategiesNavUC = new StrategyNavUC(this.splitMain.Panel2);
+                simuStrategiesNavUC = new StrategyNavUC(Global.SimuStrategies, this.splitMain.Panel2);
                 simuStrategiesNavUC.Dock = DockStyle.Fill;
-
                 simuStrategiesNavUC.Title = "模拟交易";
-                simuStrategiesNavUC.SetStrategies(Global.SimuStrategies, null);
 
                 splitMain.Panel2.Controls.Add(simuStrategiesNavUC);
             }

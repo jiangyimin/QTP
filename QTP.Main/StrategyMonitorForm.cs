@@ -32,7 +32,7 @@ namespace QTP.Main
             qtp.MessageHint += OnMessage;
             qtp.OnKBOpenLong += KBBuy;
             qtp.OnKBCloseLong += KBSell;
-            Task t = new Task(s.Connect);
+            Task t = new Task(s.Start);
             t.Start();
         }
 

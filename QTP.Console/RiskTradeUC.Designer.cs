@@ -1,6 +1,6 @@
 ﻿namespace QTP.Console
 {
-    partial class RiskMUC
+    partial class RiskTradeUC
     {
         /// <summary> 
         /// 必需的设计器变量。
@@ -34,18 +34,18 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(314, 173);
+            this.label1.Location = new System.Drawing.Point(273, 150);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 12);
             this.label1.TabIndex = 0;
             this.label1.Text = "To DO";
             // 
-            // RiskMUC
+            // RiskTradeUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.label1);
-            this.Name = "RiskMUC";
+            this.Name = "RiskTradeUC";
             this.Size = new System.Drawing.Size(659, 361);
             this.ResumeLayout(false);
             this.PerformLayout();

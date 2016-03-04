@@ -50,6 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExeRunUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExeRunUC.Designer.cs">
+      <DependentUpon>ExeRunUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,10 +71,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="StrategyMonitorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StrategyMonitorForm.Designer.cs" />
     <Compile Include="StrategyNavUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -81,6 +83,9 @@
     <Compile Include="StrategyUC.Designer.cs">
       <DependentUpon>StrategyUC.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ExeRunUC.resx">
+      <DependentUpon>ExeRunUC.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -96,7 +101,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="StrategyMonitorForm.resx" />
     <EmbeddedResource Include="StrategyNavUC.resx">
       <DependentUpon>StrategyNavUC.cs</DependentUpon>
     </EmbeddedResource>
