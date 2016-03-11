@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panelTitle = new System.Windows.Forms.Panel();
+            this.nucInterval = new System.Windows.Forms.NumericUpDown();
             this.btnRiskTrade = new System.Windows.Forms.Button();
             this.btnData = new System.Windows.Forms.Button();
             this.btnOverView = new System.Windows.Forms.Button();
@@ -37,11 +38,13 @@
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelClient = new System.Windows.Forms.Panel();
             this.panelTitle.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nucInterval)).BeginInit();
             this.SuspendLayout();
             // 
             // panelTitle
             // 
             this.panelTitle.BackColor = System.Drawing.SystemColors.Control;
+            this.panelTitle.Controls.Add(this.nucInterval);
             this.panelTitle.Controls.Add(this.btnRiskTrade);
             this.panelTitle.Controls.Add(this.btnData);
             this.panelTitle.Controls.Add(this.btnOverView);
@@ -54,11 +57,35 @@
             this.panelTitle.Size = new System.Drawing.Size(923, 36);
             this.panelTitle.TabIndex = 1;
             // 
+            // nucInterval
+            // 
+            this.nucInterval.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.nucInterval.Location = new System.Drawing.Point(873, 10);
+            this.nucInterval.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nucInterval.Minimum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.nucInterval.Name = "nucInterval";
+            this.nucInterval.Size = new System.Drawing.Size(38, 21);
+            this.nucInterval.TabIndex = 7;
+            this.nucInterval.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nucInterval.ValueChanged += new System.EventHandler(this.nucInterval_ValueChanged);
+            // 
             // btnRiskTrade
             // 
-            this.btnRiskTrade.Location = new System.Drawing.Point(530, 0);
+            this.btnRiskTrade.Location = new System.Drawing.Point(573, 3);
             this.btnRiskTrade.Name = "btnRiskTrade";
-            this.btnRiskTrade.Size = new System.Drawing.Size(72, 36);
+            this.btnRiskTrade.Size = new System.Drawing.Size(72, 30);
             this.btnRiskTrade.TabIndex = 6;
             this.btnRiskTrade.Text = "资金交易";
             this.btnRiskTrade.UseVisualStyleBackColor = true;
@@ -66,9 +93,9 @@
             // 
             // btnData
             // 
-            this.btnData.Location = new System.Drawing.Point(442, 0);
+            this.btnData.Location = new System.Drawing.Point(486, 3);
             this.btnData.Name = "btnData";
-            this.btnData.Size = new System.Drawing.Size(72, 36);
+            this.btnData.Size = new System.Drawing.Size(72, 30);
             this.btnData.TabIndex = 5;
             this.btnData.Text = "指标数据";
             this.btnData.UseVisualStyleBackColor = true;
@@ -76,9 +103,9 @@
             // 
             // btnOverView
             // 
-            this.btnOverView.Location = new System.Drawing.Point(349, 0);
+            this.btnOverView.Location = new System.Drawing.Point(395, 3);
             this.btnOverView.Name = "btnOverView";
-            this.btnOverView.Size = new System.Drawing.Size(75, 36);
+            this.btnOverView.Size = new System.Drawing.Size(75, 30);
             this.btnOverView.TabIndex = 4;
             this.btnOverView.Text = "监控概览";
             this.btnOverView.UseVisualStyleBackColor = true;
@@ -88,9 +115,9 @@
             // 
             this.lblConnectStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblConnectStatus.ForeColor = System.Drawing.Color.DarkRed;
-            this.lblConnectStatus.Location = new System.Drawing.Point(827, 16);
+            this.lblConnectStatus.Location = new System.Drawing.Point(797, 15);
             this.lblConnectStatus.Name = "lblConnectStatus";
-            this.lblConnectStatus.Size = new System.Drawing.Size(89, 13);
+            this.lblConnectStatus.Size = new System.Drawing.Size(70, 13);
             this.lblConnectStatus.TabIndex = 3;
             this.lblConnectStatus.Text = "连接标志";
             this.lblConnectStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -100,9 +127,9 @@
             this.lblRightTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRightTitle.BackColor = System.Drawing.SystemColors.Control;
             this.lblRightTitle.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblRightTitle.Location = new System.Drawing.Point(651, 16);
+            this.lblRightTitle.Location = new System.Drawing.Point(685, 15);
             this.lblRightTitle.Name = "lblRightTitle";
-            this.lblRightTitle.Size = new System.Drawing.Size(179, 13);
+            this.lblRightTitle.Size = new System.Drawing.Size(106, 13);
             this.lblRightTitle.TabIndex = 2;
             this.lblRightTitle.Text = "右标题";
             this.lblRightTitle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -113,7 +140,7 @@
             this.lblTitle.BackColor = System.Drawing.SystemColors.Control;
             this.lblTitle.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblTitle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lblTitle.Location = new System.Drawing.Point(6, 10);
+            this.lblTitle.Location = new System.Drawing.Point(12, 9);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(49, 19);
             this.lblTitle.TabIndex = 1;
@@ -136,11 +163,12 @@
             this.Controls.Add(this.panelTitle);
             this.Name = "MainForm";
             this.Text = "策略运行窗口";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.panelTitle.ResumeLayout(false);
             this.panelTitle.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nucInterval)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -155,6 +183,7 @@
         private System.Windows.Forms.Button btnData;
         private System.Windows.Forms.Button btnOverView;
         private System.Windows.Forms.Panel panelClient;
+        private System.Windows.Forms.NumericUpDown nucInterval;
     }
 }
 

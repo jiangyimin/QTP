@@ -25,7 +25,25 @@ namespace QTP.Domain
         {
             get { return num; }
         }
+    }
+    public class TickEventArgs : EventArgs
+    {
+        private int num;
+        private bool connectSucceed;
 
-        
+        public TickEventArgs(bool connectSucceed, int num)
+        {
+            this.connectSucceed = connectSucceed;
+            this.num = num;
+        }
+
+        public bool ConnectSucceed
+        {
+            get { return connectSucceed; }
+        }
+        public int Num
+        {
+            get { return num; }
+        }
     }
 }

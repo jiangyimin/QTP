@@ -12,7 +12,7 @@ using QTP.Domain;
 
 namespace QTP.Console
 {
-    public partial class RiskTradeUC : UserControl
+    public partial class RiskTradeUC : UserControl, IStrategyUC
     {
         private MyStrategy strategy;
 
@@ -21,28 +21,58 @@ namespace QTP.Console
             InitializeComponent();
         }
 
+        #region IStrategyUI
         public MyStrategy Subject
         {
             set 
             {
                 strategy = value;
 
-                strategy.MessageHint += DispMessage;
+                strategy.MDLog += MDLogHandler;
+                strategy.TDLog += TDLogHandler;
             }
         }
 
-        public void DispMessage(string msg)
+        public void ShowData()
         {
-            if (this.label1.InvokeRequired == false)
+
+        }
+
+        public void TimerRefresh()
+        { }
+
+        #endregion
+
+        #region event handers
+        public void MDLogHandler(string msg)
+        {
+            if (boxMDLog.InvokeRequired == false)
             {
-                label1.Text = msg;
+                boxMDLog.Items.Add(msg);
+                boxMDLog.SetSelected(boxMDLog.Items.Count - 1, true);
+
             }
             else
             {
-                MyStrategy.MessageHintCallback handle = new MyStrategy.MessageHintCallback(DispMessage);
-                this.label1.BeginInvoke(handle, msg);
-
+                MyStrategy.LogCallback handle = new MyStrategy.LogCallback(MDLogHandler);
+                boxMDLog.BeginInvoke(handle, msg);
             }
         }
+        public void TDLogHandler(string msg)
+        {
+            if (boxTDLog.InvokeRequired == false)
+            {
+                boxTDLog.Items.Add(msg);
+                boxTDLog.SetSelected(boxTDLog.Items.Count - 1, true);
+
+            }
+            else
+            {
+                MyStrategy.LogCallback handle = new MyStrategy.LogCallback(TDLogHandler);
+                boxTDLog.BeginInvoke(handle, msg);
+            }
+        }
+
+        #endregion
     }
 }

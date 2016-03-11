@@ -11,6 +11,7 @@ namespace QTP.Domain
 {
     public abstract class Monitor
     {
+
         #region public properties
 
         /// <summary>
@@ -24,32 +25,41 @@ namespace QTP.Domain
         /// </summary>
         public int Category { get; set; }
 
-
-        public Tick LatestTick { get; set; }
-
-        public int NumTicks { get { return ticksBuffer.Count; } }
-        public int Num1mBars { get { return barsBuffer.Count; } }
+        public TickTA TickTA { get; set; }
 
         #endregion
 
         #region protected members
 
-        protected MyStrategy strategy;
+        // static quota and scalar Names
+        protected static List<string> quotaNames;
+        protected static Dictionary<string, List<string>> scalarNames;
 
-        protected List<Bar> barsBuffer;
-        protected List<Tick> ticksBuffer;
+        // strategy
+        protected MyStrategy strategy;
 
         #endregion
 
-        #region Methods
+        #region Public Methods
+
+        // Static Quota Names
+        public static List<string> GetQuotaNames()
+        {
+            return quotaNames;
+        }
+
+        public static List<string> GetScalarNames(string name)
+        {
+            return scalarNames[name];
+        }
+
+
         public void SetTInstrument(MyStrategy strategy, TInstrument target)
         {
             this.strategy = strategy;
             this.Target = target;
-            //this.instrument = StrategyQTP.DictInstruments[target.Symbol];
 
-            barsBuffer = new List<Bar>();
-            ticksBuffer = new List<Tick>();
+            this.TickTA = new TickTA();
         }
 
         public void SetFocus()
@@ -59,23 +69,25 @@ namespace QTP.Domain
 
         #endregion
         
-        #region Event Process
-        public abstract string PulseHintMessage();
-        public abstract void OnPulse();
+        #region abstract or virtual 
 
+        // Data Prepare
         public abstract void Prepare();
-        public abstract void InitializeBufferData();
+        public abstract void PrepareBarsToday();
+        public abstract void PrepareTicksToday();
+
+        public abstract double GetQuotaScalarValue(string name);
+
+        // On Events
         public virtual void OnTick(Tick tick)
         {
-            LatestTick = tick;
-            ticksBuffer.Add(tick);
-        }
-        public virtual void OnBar(Bar bar)
-        {
-            barsBuffer.Add(bar);
-        }
+            if (strategy.MDMode == MDMode.MD_MODE_LIVE)
+                TickTA.Push(tick, true);
+            else
+                TickTA.Push(tick, false);
 
-        public virtual void Close() { }
+        }
+        public abstract void OnBar(Bar bar);
 
         #endregion
 

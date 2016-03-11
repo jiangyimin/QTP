@@ -21,17 +21,18 @@ namespace QTP.Console
             InitializeComponent();
 
             this.mon = mon;
-            lblTarge.Text = mon.Target.InstrumentId + mon.GMInstrument.sec_name;
         }
 
         public void Display()
         {
-            Tick tick = mon.LatestTick;
+            lblTarge.Text = mon.Target.InstrumentId + mon.GMInstrument.sec_name;
 
-            if (tick != null) lblPrice.Text = string.Format("{0:.00}", tick.last_price);
+            TickTA tickTA = mon.TickTA;
+            if (tickTA.LastestTickQuota != null)
+                lblPrice.Text = string.Format("{0:.00}", tickTA.LastestTickQuota.Tick.last_price);
 
-            lblTick.Text = String.Format("T: {0}", mon.NumTicks);
-            lblBar1m.Text = String.Format("1B: {0}", mon.Num1mBars);
+            lblTick.Text = String.Format("T: {0}", tickTA.Count);
+            // lblBar1m.Text = String.Format("B1M: {0}", mon.Bar1MsCount);
 
         }
     }

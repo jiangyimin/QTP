@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,12 +17,24 @@ namespace QTP.Main
         private StrategyNavUC realStrategiesNavUC;
         private StrategyNavUC simuStrategiesNavUC;
 
+        // show second timer
+        private Timer secondTimer;
         #endregion
 
 
         public MainForm()
         {
             InitializeComponent();
+
+            secondTimer = new Timer();
+            secondTimer.Interval = 1000;
+            secondTimer.Tick += secondTimer_Tick;
+        }
+
+        void secondTimer_Tick(object sender, EventArgs e)
+        {
+            DateTime dt = DateTime.Now;
+            lblSecond.Text = string.Format("{0:00}:{1:00}", dt.Minute, dt.Second);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -33,6 +46,9 @@ namespace QTP.Main
                 this.Close();
                 return;
             }
+
+            // timer
+            secondTimer.Start();
 
             try
             {
@@ -96,6 +112,60 @@ namespace QTP.Main
             simuStrategiesNavUC.BringToFront();
         }
 
+        private void btnSetTime_Click(object sender, EventArgs e)
+        {
+            DateTime dt = GetBeijingTime();
+
+            QTP.Infra.Utils.SetDate(dt);
+        }
+
+        private DateTime GetBeijingTime()  
+        {  
+            DateTime dt;  
+            WebRequest wrt = null;  
+            WebResponse wrp = null;
+            StreamReader sr = null;
+            try  
+            {  
+                wrt = WebRequest.Create("http://www.time.ac.cn/stime.asp");
+                wrt.Credentials = CredentialCache.DefaultCredentials;
+                wrp = wrt.GetResponse();
+                sr = new StreamReader(wrp.GetResponseStream(),Encoding.UTF8);
+                string html = sr.ReadToEnd();
+                int yearIndex = html.IndexOf("<year>") + 6;
+                int monthIndex = html.IndexOf("<month>") + 7;
+                int dayIndex = html.IndexOf("<day>") + 5;
+                int hourIndex = html.IndexOf("<hour>") + 6;
+                int miniteIndex = html.IndexOf("<minite>") + 8;
+                int secondIndex = html.IndexOf("<second>") + 8;
+                string year = html.Substring(yearIndex, html.IndexOf("</year>") - yearIndex);
+                string month = html.Substring(monthIndex, html.IndexOf("</month>") - monthIndex);  
+                string day = html.Substring(dayIndex, html.IndexOf("</day>") - dayIndex);  
+                string hour = html.Substring(hourIndex, html.IndexOf("</hour>") - hourIndex);  
+                string minite = html.Substring(miniteIndex, html.IndexOf("</minite>") - miniteIndex);  
+                string second = html.Substring(secondIndex, html.IndexOf("</second>") - secondIndex);  
+                dt = DateTime.Parse(year + "-" + month + "-" + day + " " + hour + ":" + minite + ":" + second);
+            }  
+            catch (WebException)  
+            {  
+                MessageBox.Show("同步出错");
+                dt = DateTime.Now;
+            }  
+            catch (Exception)  
+            {  
+                MessageBox.Show("同步出错");
+                dt = DateTime.Now;
+            }  
+            finally  
+            { 
+                if (sr != null) sr.Close();
+                if (wrp != null) wrp.Close();  
+                if (wrt != null) wrt.Abort();  
+            }
+
+            return dt;
+
+        }
         #endregion
 
     }

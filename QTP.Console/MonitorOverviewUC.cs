@@ -13,7 +13,7 @@ using QTP.Domain;
 
 namespace QTP.Console
 {
-    public partial class MonitorOverviewUC : UserControl
+    public partial class MonitorOverviewUC : UserControl, IStrategyUC
     {
         /// <summary>
         ///  three FlowLayoutPanel
@@ -21,10 +21,6 @@ namespace QTP.Console
         private FlowLayoutPanel[] monitorNavs = new FlowLayoutPanel[3];
         private FlowLayoutPanel panelFocus;
 
-        /// <summary>
-        /// timier for show information
-        /// </summary>
-        private Timer timer;
 
         private MyStrategy strategy;
 
@@ -42,14 +38,12 @@ namespace QTP.Console
             }
         }
 
+        #region IStrategyUC
         public MyStrategy Subject
         {
             set 
             {
                 strategy = value;
-                timer = new Timer();
-                timer.Interval = 5000;
-                timer.Tick += timer_Tick;
 
                 // now only process Normal
                 foreach (Monitor monitor in strategy.GetMonitorEnumerator())
@@ -58,14 +52,16 @@ namespace QTP.Console
                     monitorNavs[monitor.Category].Controls.Add(uc);
                     
                 }
-
-                // default is Observe Nav
-                btnObserve_Click(this, null);
-                timer.Enabled = true;
             }
         }
 
-        void timer_Tick(object sender, EventArgs e)
+        public void ShowData()
+        {
+            // default is Observe Nav
+            btnObserve_Click(this, null);
+        }
+
+        public void TimerRefresh()
         {
             foreach (Control uc in panelFocus.Controls)
             {
@@ -76,9 +72,10 @@ namespace QTP.Console
             }
         }
 
+        #endregion
+
         #region events handlers
 
-        #endregion
 
         private void btnObserve_Click(object sender, EventArgs e)
         {
@@ -109,5 +106,7 @@ namespace QTP.Console
 
             panelFocus.BringToFront();
         }
+
+        #endregion
     }
 }

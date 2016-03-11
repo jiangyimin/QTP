@@ -25,6 +25,10 @@ namespace QTP.Console
         private MonitorDataUC monitorDataUC;
         private RiskTradeUC riskTradeUC;
 
+        // Timer
+        private Timer timerRefresh;
+        private IStrategyUC refreshUC;
+
         public MainForm()
         {
             InitializeComponent();
@@ -46,6 +50,11 @@ namespace QTP.Console
             panelClient.Controls.Add(monitorOverviewUC);
             panelClient.Controls.Add(monitorDataUC);
             panelClient.Controls.Add(riskTradeUC);
+
+            // timer
+            timerRefresh = new Timer();
+            timerRefresh.Interval = (int)nucInterval.Value * 1000;
+            timerRefresh.Tick += timerRefresh_Tick;
 
         }
 
@@ -71,9 +80,14 @@ namespace QTP.Console
                 TLogin gmLogin = new TLogin(args[1], args[2]);
                 strategy = new MyStrategy(strategyT, gmLogin);
 
-                // InitGUI and start it
+                // hook strategy to GUI
+                HookStrategyToGUI();
+
+                // DataPrepare and ShowData
                 strategy.Prepare();
-                InitStrategyGUI();
+                ShowStrategyData();
+
+                // Run (listening hq data)
                 strategy.Start();
             }
             catch (Exception ex)
@@ -83,20 +97,28 @@ namespace QTP.Console
 
             // default UI.
             btnOverView_Click(this, null);
+
+            timerRefresh.Start();
         }
 
-        private void InitStrategyGUI()
+        private void HookStrategyToGUI()
         {
-            // set title
-            lblTitle.Text = strategy.Name;
-            lblRightTitle.Text = string.Format("{0} {1}", strategy.GMID, strategy.RunType);
-
             // lblConnecStatus hook
             strategy.ConnectStatusChanged += strategy_ConnectStatusChanged;
 
             monitorOverviewUC.Subject = strategy;   // pageMonitorOverView
             monitorDataUC.Subject = strategy;       // pageMonitorData
             riskTradeUC.Subject = strategy;         // pageRiskTrade
+        }
+        private void ShowStrategyData()
+        {
+            // set title
+            lblTitle.Text = strategy.Name;
+            lblRightTitle.Text = string.Format("{0} {1}", strategy.GMID, strategy.RunType);
+
+            monitorOverviewUC.ShowData();   // pageMonitorOverView
+            monitorDataUC.ShowData();       // pageMonitorData
+            riskTradeUC.ShowData();         // pageRiskTrade
         }
 
         void strategy_ConnectStatusChanged(bool connectSucceed, int num)
@@ -118,18 +140,29 @@ namespace QTP.Console
         private void btnOverView_Click(object sender, EventArgs e)
         {
             monitorOverviewUC.BringToFront();
+            refreshUC = monitorOverviewUC;
         }
 
         private void btnData_Click(object sender, EventArgs e)
         {
             monitorDataUC.BringToFront();
-
+            refreshUC = monitorDataUC;
         }
 
         private void btnRiskTrade_Click(object sender, EventArgs e)
         {
             riskTradeUC.BringToFront();
+            refreshUC = riskTradeUC;
         }
 
+        private void timerRefresh_Tick(object sender, EventArgs e)
+        {
+            refreshUC.TimerRefresh();
+        }
+
+        private void nucInterval_ValueChanged(object sender, EventArgs e)
+        {
+            timerRefresh.Interval = (int)nucInterval.Value * 1000;
+        }
     }
 }

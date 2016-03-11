@@ -20,7 +20,7 @@ namespace QTP.Domain
             }
 
             // itself init
-            strategy.WriteInfo(string.Format("{0} 初始化完成", this.ToString()));
+            strategy.WriteTDLog(string.Format("{0} 初始化完成", this.ToString()));
             return true;
         }
 

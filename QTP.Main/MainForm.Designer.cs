@@ -29,8 +29,10 @@
         private void InitializeComponent()
         {
             this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.lblSecond = new System.Windows.Forms.Label();
             this.btnSimulate = new System.Windows.Forms.Button();
             this.btnReal = new System.Windows.Forms.Button();
+            this.btnSetTime = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.SuspendLayout();
@@ -46,6 +48,8 @@
             // splitMain.Panel1
             // 
             this.splitMain.Panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.splitMain.Panel1.Controls.Add(this.btnSetTime);
+            this.splitMain.Panel1.Controls.Add(this.lblSecond);
             this.splitMain.Panel1.Controls.Add(this.btnSimulate);
             this.splitMain.Panel1.Controls.Add(this.btnReal);
             // 
@@ -55,6 +59,17 @@
             this.splitMain.Size = new System.Drawing.Size(933, 334);
             this.splitMain.SplitterDistance = 65;
             this.splitMain.TabIndex = 2;
+            // 
+            // lblSecond
+            // 
+            this.lblSecond.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblSecond.AutoSize = true;
+            this.lblSecond.ForeColor = System.Drawing.SystemColors.Window;
+            this.lblSecond.Location = new System.Drawing.Point(13, 304);
+            this.lblSecond.Name = "lblSecond";
+            this.lblSecond.Size = new System.Drawing.Size(35, 12);
+            this.lblSecond.TabIndex = 0;
+            this.lblSecond.Text = "09:01";
             // 
             // btnSimulate
             // 
@@ -76,6 +91,17 @@
             this.btnReal.UseVisualStyleBackColor = true;
             this.btnReal.Click += new System.EventHandler(this.btnReal_Click);
             // 
+            // btnSetTime
+            // 
+            this.btnSetTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnSetTime.Location = new System.Drawing.Point(7, 268);
+            this.btnSetTime.Name = "btnSetTime";
+            this.btnSetTime.Size = new System.Drawing.Size(51, 23);
+            this.btnSetTime.TabIndex = 0;
+            this.btnSetTime.Text = "同步";
+            this.btnSetTime.UseVisualStyleBackColor = true;
+            this.btnSetTime.Click += new System.EventHandler(this.btnSetTime_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -88,6 +114,7 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitMain.Panel1.ResumeLayout(false);
+            this.splitMain.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
             this.splitMain.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -99,6 +126,8 @@
         private System.Windows.Forms.SplitContainer splitMain;
         private System.Windows.Forms.Button btnSimulate;
         private System.Windows.Forms.Button btnReal;
+        private System.Windows.Forms.Label lblSecond;
+        private System.Windows.Forms.Button btnSetTime;
     }
 }
 

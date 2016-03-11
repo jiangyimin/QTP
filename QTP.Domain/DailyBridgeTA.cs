@@ -11,6 +11,10 @@ using QTP.TAlib;
 namespace QTP.Domain
 {
     public class DailyTA
+    {
+
+    }
+    public class DailyBridgeTA : DailyBar
     {       
         private RList<KLineDaily> xs;
 
@@ -23,7 +27,7 @@ namespace QTP.Domain
 
         private RList<Quota> ys;
 
-        public DailyTA()
+        public DailyBridgeTA()
         {
             xs = new RList<KLineDaily>();
             ys = new RList<Quota>();

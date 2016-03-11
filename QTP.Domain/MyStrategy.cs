@@ -4,43 +4,43 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-//using System.Data.SqlClient;
 
 using QTP.Infra;
 using QTP.DBAccess;
 using GMSDK;
-using System.Threading;
 
 namespace QTP.Domain
 {
     public class MyStrategy : Strategy
     {
-        #region Members
-
+        #region static members
         /// <summary>
         /// Static 
         /// </summary>
         public static Dictionary<string, Instrument> DictInstruments;
+
+        #endregion
+
+        #region Members
 
         private TLogin gmLogin;
         private TStrategy strategyT;
 
         private Dictionary<string, Monitor> monitors;
         private RiskM riskM;
-        private MDMode mdmode = MDMode.MD_MODE_SIMULATED;
+        private MDMode mdmode = MDMode.MD_MODE_NULL;
 
 
         // Strategy's connect status;
-        private int countConnected;
+        private int countConnect;
         private bool connectSucceed;
+
+        private bool flagMDOnline;
 
         private TInstrument focusInstrument;
 
-        // pusle
-        private System.Timers.Timer timer;
-        private int countPusle;
-        private int messageInterval = 30;           // 30s
-
+        // StopWatch
+        private Stopwatch watch = new Stopwatch();
         #endregion
 
         #region Properties
@@ -67,7 +67,10 @@ namespace QTP.Domain
             set { focusInstrument = value; }
         }
 
-
+        public MDMode MDMode 
+        {
+            get { return mdmode; }
+        }
 
         #endregion
 
@@ -76,18 +79,23 @@ namespace QTP.Domain
         public delegate void ConnectStatusChangedCallback(bool connectSucceed, int num);
         public event ConnectStatusChangedCallback ConnectStatusChanged;
 
-        public delegate void MessageHintCallback(string msg);
+        public delegate void LogCallback(string msg);
+        public event LogCallback MDLog;
+        public event LogCallback TDLog;
+
         public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
 
 
-        public event MessageHintCallback MessageHint;
 
         public event KBTradeEventHandler OnKBOpenLong;
         public event KBTradeEventHandler OnKBCloseLong;
 
-        // FocusInstrument
-        public delegate void FocusTickHandlerDelegate(Tick tick);
-        public FocusTickHandlerDelegate FocusTickHandler;
+        // FocusInstrument's realtime data
+        public delegate void FocusTickArrivedCallback(TickTA tickTA);
+        public FocusTickArrivedCallback FocusTickArrived;
+
+        public delegate void FocusBarArrivedCallback(Bar bar, Bar tickBar1M);
+        public FocusBarArrivedCallback FocusBarArrived;
 
         #endregion
 
@@ -113,14 +121,23 @@ namespace QTP.Domain
             riskM = (RiskM)Activator.CreateInstance(s.RiskMType);
             riskM.SetStrategy(this);
 
-            timer = new System.Timers.Timer(1000);          // set 1s pusle timer 
-            timer.Elapsed += PusleTimerHandler;
         }
 
         // init GM and prepare data
         public void Prepare()
         {
             // Init GM
+            // set mdmode
+            if (RunType == "实盘") 
+            {
+                mdmode = MDMode.MD_MODE_LIVE;
+            }
+            else if (RunType == "模拟")
+            {
+                if (Utils.IsInStockMarkerOpenPeriod(DateTime.Now)) mdmode = MDMode.MD_MODE_LIVE;
+                else mdmode = MDMode.MD_MODE_SIMULATED;
+            }
+
             int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, "", mdmode, "localhost:8001");
             if (ret != 0)
             {
@@ -142,13 +159,17 @@ namespace QTP.Domain
                 }
             }
 
+
             // prepare monitors'data 
+            watch.Start();
             foreach (Monitor m in this.GetMonitorEnumerator())
             {
                 if (DictInstruments.ContainsKey(m.Target.Symbol))
                     m.GMInstrument = DictInstruments[m.Target.Symbol];
                 m.Prepare();
             }
+            watch.Stop();
+            WriteMDLog(string.Format("监控器数据准备完成，用时({0})", watch.ElapsedMilliseconds));
 
             // Trader 资管 
             //riskM.Initialize();
@@ -160,12 +181,12 @@ namespace QTP.Domain
             // Subscrible Instruments
             foreach (Monitor m in this.GetMonitorEnumerator())
             {
-                base.Subscribe(m.Target.Symbol + ".tick");
-                base.Subscribe(m.Target.Symbol + ".bar.60");
-            }
+                if (mdmode == MDMode.MD_MODE_LIVE || mdmode == MDMode.MD_MODE_SIMULATED)
+                    base.Subscribe(m.Target.Symbol + ".tick");
 
-            // pusle timer of strategy
-            timer.Start();
+                base.Subscribe(m.Target.Symbol + ".bar.60");            // 1M
+                base.Subscribe(m.Target.Symbol + ".bar.900");           // 15M
+            }
 
             // async run strategy
             Task.Run<int>(new Func<int>(base.Run));
@@ -203,47 +224,20 @@ namespace QTP.Domain
 
         #region utils
 
-        public void WriteDebug(string msg)
+        public void WriteTDLog(string msg)
         {
-            //log.WriteDebug(msg);
-        }
-        public void WriteError(string msg)
-        {
-            //Console.WriteLine("[{0}.{1}] {2}", DateTime.Now.ToLongTimeString(), DateTime.Now.Millisecond, msg);
-            //log.WriteError(msg);
+            DateTime dt = DateTime.Now;
+            if (TDLog != null)
+                TDLog(string.Format("{0} {1}", dt.ToLongTimeString(), msg));
         }
 
-        public void WriteInfo(string msg)
+        public void WriteMDLog(string msg)
         {
-            if (MessageHint != null)
-                MessageHint(msg);
-            //log.WriteInfo(msg);
+            DateTime dt = DateTime.Now;
+            if (MDLog != null)
+                MDLog(string.Format("{0} {1}", dt.ToLongTimeString(), msg));
         }
 
-
-        private void PusleTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            // message Pusle
-            countPusle++;
-            if (countPusle % messageInterval == 0)
-            {
-                string msg = null;
-                foreach (KeyValuePair<string, Monitor> pair in monitors)
-                {
-                    Monitor m = pair.Value;
-                    msg += m.PulseHintMessage();
-                }
-
-                WriteInfo(msg);
-            }
-
-            // process OnPusle per monitor
-            foreach (KeyValuePair<string, Monitor> pair in monitors)
-            {
-                Monitor m = pair.Value;
-                m.OnPulse();
-            }
-        }
 
         #endregion
 
@@ -252,38 +246,72 @@ namespace QTP.Domain
         public override void OnTick(Tick tick)
         {
             string symbol = string.Format("{0}.{1}", tick.exchange, tick.sec_id);
-            //if (symbol == focusInstrument.Symbol)
-            //{
-            //    FocusTickHandler(tick);
-            //}
-
             Monitor monitor = GetMonitor(symbol);
             if (monitor != null)
             {
                 monitor.OnTick(tick);
             }
+
+            // Process focusInstument
+            if (focusInstrument != null && symbol == focusInstrument.Symbol && FocusTickArrived != null)
+            {
+                FocusTickArrived(monitor.TickTA);
+            }
         }
+
+        public override void OnBar(Bar bar)
+        {
+            string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
+            Monitor monitor = GetMonitor(symbol);
+            if (monitor != null)
+            {
+                monitor.OnBar(bar);
+            }
+
+            // Process focusInstument
+            if (focusInstrument != null && symbol == focusInstrument.Symbol && FocusBarArrived != null)
+            {
+                FocusBarArrived(bar, monitor.TickTA.Bar1M);
+            }
+
+        }
+
 
         public override void OnLogin()
         {
             // used for connectstatus changed
             connectSucceed = true;
-            countConnected++;
+            countConnect++;
             if (ConnectStatusChanged != null)
-                ConnectStatusChanged(true, countConnected);
+                ConnectStatusChanged(connectSucceed, countConnect);
+
+            // 数据服务连上（包括重连后）的处理（当天数据的重建等）
+
+            if (flagMDOnline == false)
+            {
+                // PrepareBarsToday
+                watch.Start();
+                foreach (Monitor m in GetMonitorEnumerator())
+                    m.PrepareBarsToday();
+                watch.Stop();
+                WriteMDLog(string.Format("准备当天Bars完成，用时({0})", watch.ElapsedMilliseconds));
+
+                // Prepare Ticks
+                watch.Start();
+                foreach (Monitor m in GetMonitorEnumerator())
+                    m.PrepareTicksToday();
+                watch.Stop();
+                WriteMDLog(string.Format("准备当天Ticks完成，用时({0})", watch.ElapsedMilliseconds));
+
+                flagMDOnline = true;
+            }
+
+
         }
 
-        public override void OnBar(Bar bar)
-        {
-            Monitor monitor = GetMonitor(string.Format("{0}.{1}", bar.exchange, bar.sec_id));
-            if (monitor != null)
-            {
-                monitor.OnBar(bar);
-            }
-        }
         public override void OnMdEvent(MDEvent md_event)
         {
-            WriteInfo(string.Format("重要行情事件({0})", md_event.event_type == 1 ? "开市":"收市"));
+            WriteMDLog(string.Format("重要行情事件({0})", md_event.event_type == 1 ? "开市":"收市"));
         }
 
         public override void OnError(int error_code, string error_msg)
@@ -291,8 +319,15 @@ namespace QTP.Domain
             if (error_code == 2000 || error_code == 3000)       // connect fail
             {
                 connectSucceed = false;
-                if (ConnectStatusChanged != null) ConnectStatusChanged(false, countConnected);
+                if (ConnectStatusChanged != null) ConnectStatusChanged(connectSucceed, countConnect);
+
+                // 数据服务器断了标志
+                if (error_code == 3000)
+                    flagMDOnline = false;
+                    
             }
+
+            WriteMDLog(error_msg);
         }
 
         #endregion
@@ -328,87 +363,6 @@ namespace QTP.Domain
 
             }
 
-        }
-
-        /// <summary>
-        /// 委托执行回报，订单的任何执行回报都会触发本事件，通过rpt可访问回报信息。
-        /// </summary>
-        /// <param name="rpt"></param>
-        public override void OnExecRpt(ExecRpt rpt)
-        {
-            //Console.WriteLine(
-            //    "rpt: cl_ord_id={0} price={1} amount={2} exec_type={3}",
-            //    rpt.cl_ord_id,
-            //    rpt.price,
-            //    rpt.amount,
-            //    rpt.exec_type);
-        }
-
-        /// <summary>
-        /// 订单被拒绝时，触发本事件。order参数包含最新的order状态。
-        /// </summary>
-        /// <param name="order"></param>
-        public override void OnOrderRejected(Order order)
-        {
-            WriteError(string.Format("{0} {1} 订单被拒绝[原因:{2}]", order.exchange, order.sec_id, order.ord_rej_reason));
-        }
-
-        /// <summary>
-        /// 当订单已被交易所接受时，触发本事件。order参数包含最新的order状态。
-        /// </summary>
-        /// <param name="order"></param>
-        public override void OnOrderNew(Order order)
-        {
-            WriteDebug(string.Format("{0}.{1} 新订单({2}]", order.exchange, order.sec_id, order.cl_ord_id));
-        }
-
-        /// <summary>
-        /// 订单全部成交时，触发本事件。order参数包含最新的order状态。
-        /// </summary>
-        /// <param name="order"></param>
-        public override void OnOrderFilled(Order order)
-        {
-            WriteInfo(string.Format("{0}.{1} 订单完成", order.exchange, order.sec_id));
-
-            Monitor monitor = GetMonitor(order.exchange, order.sec_id);
-            if (monitor != null)
-                monitor.OnOrderFilled();
-        }
-
-        /// <summary>
-        /// 订单部分成交时，触发本事件。order参数包含最新的order状态。
-        /// </summary>
-        /// <param name="order"></param>
-        public override void OnOrderPartiallyFilled(Order order)
-        {
-            WriteInfo(string.Format("{0}.{1} 订单部分完成", order.exchange, order.sec_id));
-        }
-
-        /// <summary>
-        /// 订单被停止执行时，触发本事件, 比如限价单到收市仍未成交，作订单过期处理。order参数包含最新的order状态。
-        /// </summary>
-        /// <param name="order"></param>
-        public override void OnOrderStopExecuted(Order order)
-        {
-            Console.WriteLine("order stop executed: {0}", order.cl_ord_id);
-        }
-
-        /// <summary>
-        /// 撤单成功时，触发本事件。order参数包含最新的order状态。
-        /// </summary>
-        /// <param name="order"></param>
-        public override void OnOrderCancelled(Order order)
-        {
-            Console.WriteLine("order cancelled: {0}", order.cl_ord_id);
-        }
-
-        /// <summary>
-        /// 撤单请求被拒绝时，触发本事件
-        /// </summary>
-        /// <param name="rpt"></param>
-        public override void OnOrderCancelRejected(ExecRpt rpt)
-        {
-            Console.WriteLine("order cancel failed: {0}", rpt.cl_ord_id);
         }
 
         #endregion
