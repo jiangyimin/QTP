@@ -46,14 +46,15 @@ namespace QTP.Main
                 t.Parse();
 
                 // get subTables.
-                t.Instruments = CRUD.GetTStrategyInstruments(t.Id);
+                t.Pool = CRUD.GetTStrategyPool(t.PoolId);
+                t.Instruments = CRUD.GetTStrategyInstruments(t.PoolId);
 
                 // Add to list.
                 if (t.RunType == "实盘") RealStrategies.Add(t);
-                if (t.RunType == "模拟") SimuStrategies.Add(t);
+                if (t.RunType == "虚拟") SimuStrategies.Add(t);
             }
-
         }
+
         #endregion
     }
 

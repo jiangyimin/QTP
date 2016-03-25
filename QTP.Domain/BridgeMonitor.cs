@@ -19,140 +19,121 @@ namespace QTP.Domain
         /// Parameters
         /// </summary>
         private int NDailyBars = 200;
-        private int NBars = 500;
+        private int NBars = 800;
         private int NTicks = 100;
-        
-        // Quota Name
-        private class Quota
-        {
-            public double EMA20 { get; set; }
-            public double EMA5 { get; set; }
-        }
 
         // TAs
-        protected MBarBridgeTA barsTA;      // for bars
-        protected DailyBridgeTA dailyTA;    // for Daily
-
-        
-        private RList<Tick> xsTick;
-        private RList<KLineBar> xs;
-        private RList<Quota> ys;
-
-        private double maxprice;
-
-        #endregion
-
-        #region Prepare Data Methods
+        private BridgeTA bridgeTA;      // for Daily
 
         public BridgeMonitor()
         {
-            // process static, only once
-            if (quotaNames == null)
+            bridgeTA = new BridgeTA();
+
+            // Init Monitor's Quota Names
+            if (quotaType == null)
             {
-                quotaNames = new List<string>();
-                quotaNames.Add("均线");
+                quotaType = BridgeTA.QuotaType;
 
-                // 均线
-                List<string> maScalars = new List<string>();
-                maScalars.Add("EMA5"); maScalars.Add("EMA20");
-
-                // dict
-                scalarNames = new Dictionary<string, List<string>>();
-                scalarNames.Add("均线", maScalars);
+                quotaNames = new Dictionary<string, List<string>>() 
+                {
+                    {"均线", new List<string>() { "EMA5", "EMA20" }},
+                    {"真实波幅", new List<string>() { "MTR", "ATR" }}
+                };
             }
         }
+       
+        #endregion
+
+
+        #region override methods
+
+        // Prepare Data
         public override void Prepare()
         {
-            // Get Upperlevel Data
+            // DailyBars
             List<DailyBar> barsDaily = strategy.GetLastNDailyBars(Target.Symbol, NDailyBars);
-            dailyTA = new DailyBridgeTA();
 
-            for (int i = barsDaily.Count - 1; i >= 0; i--)
-            {
-                DailyBar bar = barsDaily[i];
-                if (bar.flag == 1)
-                {
-                    KLineDaily kx = new KLineDaily(bar);
-                    dailyTA.Push(kx);
-                }
-                else
-                {
-
-                }
-            }
-
-            xsTick = new RList<Tick>();
-            xs = new RList<KLineBar>();
-            ys = new RList<Quota>();
-
-
+            bridgeTA.Push(barsDaily);
         }
 
-        public override void PrepareBarsToday()
+        public override void PrepareMDLogin()
         {
             lock (this)
             {
-                List<Bar> bars = strategy.GetLastNBars(Target.Symbol, 60, NBars);
+                // bridgeTA
+                bridgeTA.ClearBars();       // clear minute bars first
 
-            }
-        }
+                bridgeTA.Push(strategy.GetLastNBars(Target.Symbol, 60, NBars));
+                bridgeTA.Push(strategy.GetLastNBars(Target.Symbol, 900, NBars));
 
-        public override void PrepareTicksToday()
-        {
-            lock (this)
-            {
-                TickTA.Clear();
-                // 获取前NTicks的Ticks
-                List<Tick> lst = strategy.GetLastNTicks(Target.Symbol, NTicks);
-                for (int i = lst.Count - 1; i >= 0; i--)
+                // push buffered bars
+                foreach (Bar bar in barBuffer)
+                {
+                    bridgeTA.Push(bar);
+                }
+                barBuffer.Clear();
+
+                // tickTA
+                TickTA.Clear();     // clear first
+                List<Tick> ticks = strategy.GetLastNTicks(Target.Symbol, NTicks);
+                for (int i = ticks.Count - 1; i >= 0; i--)
                 {
                     // if tick is not Today, ignore
-                    if (Utils.IsToday(lst[i].utc_time))
-                        TickTA.Push(lst[i], false);
+                    if (Utils.IsToday(ticks[i].utc_time))
+                        TickTA.Push(ticks[i]);
                 }
+
+                // push buffeded ticks
+                foreach (Tick tick in tickBuffer)
+                {
+                    TickTA.Push(tick);
+                }
+
+                tickBuffer.Clear();
+
+                needBuffer = false;
             }
+        }
+
+        public override int GetCounBarsPrepared()
+        {
+            return bridgeTA.CountBars;
+        }
+
+        // Quotas
+        public override object GetLatestQuota(int ktype)
+        {
+            return bridgeTA.GetLatestQuota(ktype);
+        }
+
+        public override RList<object> GetQuotas(int ktype)
+        {
+            return bridgeTA.GetQuotas(ktype);
+        }
+
+        // KLines
+        public override RList<KLine> GetKLines(int ktype)
+        {
+            return bridgeTA.GetKLines(ktype);
         }
 
         #endregion
 
         #region RealTime Analyst
 
-        private void Push(Tick tick)
-        {
-            xsTick.Add(tick);
-
-            // set maxprice
-            if (tick.last_price > maxprice) maxprice = tick.last_price;
-
-            // set stopLosssPrice;
-            if (posTrace != null && maxprice > posTrace.price * 1.05)
-            {
-                stopLossPrice = posTrace.price * 0.95;
-            }
-        }
-        
-        private void Push(Bar bar)
-        {
-            xs.Add(new KLineBar(bar));
-            ys.Add(new Quota());
-
-            // caculate quotas
-            Formula.MA<KLineBar, Quota>(xs, "CLOSE", 5, ys, "EMA5");
-            Formula.MA<KLineBar, Quota>(xs, "CLOSE", 20, ys, "EMA20");
-        }
 
         private bool StopLossTrigger(int side)
         {
-            // caculate average price of last 5 ticks
-            double sum = 0.0;
-            for (int i = 0; i < 5; i++)
-                sum += xsTick[i].last_price;
-            double a = sum / 5;
+            //// caculate average price of last 5 ticks
+            //double sum = 0.0;
+            //for (int i = 0; i < 5; i++)
+            //    sum += xsTick[i].last_price;
+            //double a = sum / 5;
 
-            if (side == 1 && a <= stopLossPrice)            // Long side
-                return true;
-            if (side == 2 && a >= stopLossPrice)            // short side
-                return true;
+            //if (side == 1 && a <= stopLossPrice)            // Long side
+            //    return true;
+            //if (side == 2 && a >= stopLossPrice)            // short side
+            //    return true;
 
             return false;
         }
@@ -194,15 +175,8 @@ namespace QTP.Domain
 
         #endregion
 
-        #region override methods
+        #region override On Methods
 
-
-        public override double GetQuotaScalarValue(string name)
-        {
-            Random r = new Random();
-           
-            return r.NextDouble();
-        }
 
         // On events
         public override void OnPosition(Position pos)
@@ -213,50 +187,47 @@ namespace QTP.Domain
 
         public override void OnTick(Tick tick)
         {
-            // first call base
-            base.OnTick(tick);
+            lock (this)
+            {
+                // first call base
+                base.OnTick(tick);
 
-                //// 触发平单
-                //if (posTrace != null)
-                //{
-                //    if (posTrace.side == 1 && StopLossTrigger(posTrace.side))     // Long
-                //    {
-                //        strategy.WriteTDLog(Target.Symbol + " 触发平多信号");
-                //        strategy.MyCloseLongSync(Target.Exchange, Target.Symbol, xsTick[0].bid_p1, posTrace.volume);
-                //    }
-
-                //}
-
+            }
         }
 
         public override void OnBar(Bar bar)
         {
-            Push(bar);
+            if (needBuffer)
+            {
+                barBuffer.Add(bar);
+                return;
+            }
 
+            bridgeTA.Push(bar);
 
             // strategy.MyOpenLongSync(Target.Exchange, Target.Symbol, xsTick[0].ask_p1 * 0.92, 100);
  
-            if (OpenTrigger(1))     // Long
-            {
-                // skip trigger
-                if (posTrace != null || orderLast != null)
-                {
-                    strategy.WriteTDLog(Target.Symbol + " 触发开多信号但有仓位或有订单");
-                    return;
-                }
+            //if (OpenTrigger(1))     // Long
+            //{
+            //    // skip trigger
+            //    if (posTrace != null || orderLast != null)
+            //    {
+            //        strategy.WriteTDLog(Target.Symbol + " 触发开多信号但有仓位或有订单");
+            //        return;
+            //    }
 
-                double vol = strategy.GetVolumn(Target.Exchange, Target.Symbol);
+            //    double vol = strategy.GetVolumn(Target.Exchange, Target.Symbol);
 
-                if (vol == 0.0)
-                {
-                    strategy.WriteTDLog(Target.Symbol + " 触发开多信号但未通过风控");
-                }
-                else
-                {
-                    //strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, vol);
-                    strategy.WriteTDLog(string.Format("{0} 触发开多信号（订单{1})", Target.Symbol, 1));
-                }
-            }
+            //    if (vol == 0.0)
+            //    {
+            //        strategy.WriteTDLog(Target.Symbol + " 触发开多信号但未通过风控");
+            //    }
+            //    else
+            //    {
+            //        //strategy.MyOpenLongSync(target.Exchange, target.InstrumentId, xsTick[0].ask_p1, vol);
+            //        strategy.WriteTDLog(string.Format("{0} 触发开多信号（订单{1})", Target.Symbol, 1));
+            //    }
+            //}
 
         }
         #endregion

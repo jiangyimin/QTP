@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.Name = "ChartUC";
-            this.Size = new System.Drawing.Size(395, 230);
+            this.Size = new System.Drawing.Size(395, 290);
             this.ResumeLayout(false);
 
         }

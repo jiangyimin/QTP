@@ -69,6 +69,7 @@
     <Compile Include="SqlHelper.cs" />
     <Compile Include="SqlHelperExtension.cs" />
     <Compile Include="TLogin.cs" />
+    <Compile Include="TPool.cs" />
     <Compile Include="TPosition.cs" />
     <Compile Include="TInstrument.cs" />
     <Compile Include="TStrategy.cs" />

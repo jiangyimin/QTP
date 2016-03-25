@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using QTP.DBAccess;
+using QTP.TAlib;
 using GMSDK;
 
 namespace QTP.Domain
@@ -14,8 +15,19 @@ namespace QTP.Domain
 
         #region public properties
 
+        // static for quotas
+        public static Type QuotaType
+        {
+            get { return quotaType; }
+        }
+
+        public static Dictionary<string, List<string>> QuotaNames
+        {
+            get { return quotaNames; }
+        }
+
         /// <summary>
-        /// TInstrument(Target) and GM's Instrument
+        /// GM's Instrument and TInstrument(Target)
         /// </summary>
         public Instrument GMInstrument { get; set; }
         public TInstrument Target { get; set; }
@@ -25,41 +37,40 @@ namespace QTP.Domain
         /// </summary>
         public int Category { get; set; }
 
+        // tick process class
         public TickTA TickTA { get; set; }
+
 
         #endregion
 
         #region protected members
 
-        // static quota and scalar Names
-        protected static List<string> quotaNames;
-        protected static Dictionary<string, List<string>> scalarNames;
+        // static quota names
+        protected static Type quotaType;
+        protected static Dictionary<string, List<string>> quotaNames;
+
 
         // strategy
         protected MyStrategy strategy;
+
+        // Buffered
+        protected bool needBuffer;
+        protected List<Bar> barBuffer;
+        protected List<Tick> tickBuffer;
 
         #endregion
 
         #region Public Methods
 
-        // Static Quota Names
-        public static List<string> GetQuotaNames()
-        {
-            return quotaNames;
-        }
-
-        public static List<string> GetScalarNames(string name)
-        {
-            return scalarNames[name];
-        }
-
-
         public void SetTInstrument(MyStrategy strategy, TInstrument target)
         {
             this.strategy = strategy;
             this.Target = target;
-
             this.TickTA = new TickTA();
+
+            this.needBuffer = true;
+            this.barBuffer = new List<Bar>();
+            this.tickBuffer = new List<Tick>();
         }
 
         public void SetFocus()
@@ -73,19 +84,28 @@ namespace QTP.Domain
 
         // Data Prepare
         public abstract void Prepare();
-        public abstract void PrepareBarsToday();
-        public abstract void PrepareTicksToday();
+        public abstract void PrepareMDLogin();
+        public abstract int GetCounBarsPrepared();
 
-        public abstract double GetQuotaScalarValue(string name);
+        // Quotas
+        public abstract object GetLatestQuota(int ktype);
+        public abstract RList<object> GetQuotas(int ktype);
+
+        public abstract RList<KLine> GetKLines(int ktype);
 
         // On Events
         public virtual void OnTick(Tick tick)
         {
+            if (needBuffer)
+            {
+                tickBuffer.Add(tick);
+                return;
+            }
+
             if (strategy.MDMode == MDMode.MD_MODE_LIVE)
                 TickTA.Push(tick, true);
             else
                 TickTA.Push(tick, false);
-
         }
         public abstract void OnBar(Bar bar);
 

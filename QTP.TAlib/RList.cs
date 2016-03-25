@@ -15,5 +15,17 @@ namespace QTP.TAlib
                 return base[this.Count - index - 1];
             }
         }
+
+        public RList<object> GetObjectList()
+        {
+            RList<object> list = new RList<object>();
+
+            foreach (T t in this)
+            {
+                list.Add(t);
+            }
+
+            return list;
+        }
     }
 }

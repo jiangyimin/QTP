@@ -103,7 +103,7 @@ namespace QTP.Main
             {
                 simuStrategiesNavUC = new StrategyNavUC(Global.SimuStrategies, this.splitMain.Panel2);
                 simuStrategiesNavUC.Dock = DockStyle.Fill;
-                simuStrategiesNavUC.Title = "模拟交易";
+                simuStrategiesNavUC.Title = "虚拟交易";
 
                 splitMain.Panel2.Controls.Add(simuStrategiesNavUC);
             }

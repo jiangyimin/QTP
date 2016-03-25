@@ -70,12 +70,12 @@ namespace QTP.TAlib
             }
         }
 
-        public static void ATR<S, T>(RList<S> s, int n, RList<T> t) where S : IKLine
+        public static void ATR<S, T>(RList<S> s, int n, RList<T> t) where S : KLine
         {
             ATR<S, T>(s, n, t, new string[] {"MTR", "ATR"});
         }
 
-        public static void ATR<S, T>(RList<S> s, int n, RList<T> t, string[] tnames) where S : IKLine
+        public static void ATR<S, T>(RList<S> s, int n, RList<T> t, string[] tnames) where S : KLine
         {
             int length = s.Count;
             if (length <= 1)
@@ -97,7 +97,7 @@ namespace QTP.TAlib
             propMTR.SetValue(t[0], mtr);
 
             // Caculate ATR
-            MA(t, 1, "MTR", n, t, "ATR");
+            MA(t, tnames[0], n, t, tnames[1]);
         }
     }
 

@@ -18,7 +18,9 @@ namespace QTP.DBAccess
         public string GMID { get; set; }
         public string TradeChannel { get; set; }
         public string DLLName { get; set; }
+        public int PoolId { get; set; }
 
+        public TPool Pool { get; set; }
         public List<TInstrument> Instruments { get; set; }
         public List<TPosition> Positions { get; set; }
 

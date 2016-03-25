@@ -16,6 +16,7 @@ namespace QTP.Console
 {
     public partial class MainForm : Form
     {
+        #region member
         private string[] args;
         private MyStrategy strategy;
 
@@ -29,6 +30,7 @@ namespace QTP.Console
         private Timer timerRefresh;
         private IStrategyUC refreshUC;
 
+        #endregion
         public MainForm()
         {
             InitializeComponent();
@@ -40,16 +42,16 @@ namespace QTP.Console
 
             this.args = args;
 
+            riskTradeUC = new RiskTradeUC();
+            riskTradeUC.Dock = DockStyle.Fill;
             monitorOverviewUC = new MonitorOverviewUC();
             monitorOverviewUC.Dock = DockStyle.Fill;
             monitorDataUC = new MonitorDataUC();
             monitorDataUC.Dock = DockStyle.Fill;
-            riskTradeUC = new RiskTradeUC();
-            riskTradeUC.Dock = DockStyle.Fill; 
 
+            panelClient.Controls.Add(riskTradeUC);
             panelClient.Controls.Add(monitorOverviewUC);
             panelClient.Controls.Add(monitorDataUC);
-            panelClient.Controls.Add(riskTradeUC);
 
             // timer
             timerRefresh = new Timer();
@@ -60,6 +62,9 @@ namespace QTP.Console
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            if (strategy != null)
+                strategy.MyStrategyStop();
+
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
 
@@ -67,38 +72,79 @@ namespace QTP.Console
         private void MainForm_Load(object sender, EventArgs e)
         {
             // alert args length
-            if (args.Length < 3) return;
+            if (args.Length < 1) return;
 
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             CRUD.ConnectionString =
                 config.ConnectionStrings.ConnectionStrings["QTP_DB"].ConnectionString.ToString();
+
+            PopupForm popup = new PopupForm();
+
+            // async create and initialize strategy 
+            Task task = new Task(Initialize, popup);
+            task.Start();
+            // and using popupWindow to wait for finished 
             
+            if (popup.ShowDialog() != DialogResult.OK)
+            {
+                this.Close();
+                return;
+            }
+
+            // start strategy
+            strategy.Start();
+
+            // set title
+            lblTitle.Text = string.Format("{0} ({1})", strategy.Name, strategy.PoolName);
+            lblRightTitle.Text = string.Format("{0} {1}", strategy.GMID, strategy.RunType);
+
+            btnRiskTrade_Click(this, null);
+            timerRefresh.Start();
+        }
+
+        private void Initialize(object pop)
+        {
             try
             {
-                // MyStrategy
+                // DataBase Operation
                 TStrategy strategyT = CRUD.GetTStrategy(args[0]);
-                TLogin gmLogin = new TLogin(args[1], args[2]);
+
+                // TLogin
+                TLogin gmLogin = null;
+                if (args.Length == 3)
+                    gmLogin = new TLogin(args[1], args[2]);
+                else
+                    gmLogin = CRUD.GetTLogin();
+
                 strategy = new MyStrategy(strategyT, gmLogin);
-
-                // hook strategy to GUI
-                HookStrategyToGUI();
-
-                // DataPrepare and ShowData
-                strategy.Prepare();
-                ShowStrategyData();
-
-                // Run (listening hq data)
-                strategy.Start();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                ProcessInitializeExecption(ex.Message);
             }
 
-            // default UI.
-            btnOverView_Click(this, null);
+            // new MyStrategy and Prepare preStart Data.
+            strategy.InitializeExceptionOccur += new MyStrategy.InitializeExceptionCallback(ProcessInitializeExecption);
 
-            timerRefresh.Start();
+            HookStrategyToGUI();
+            strategy.Initialize();
+
+            ((PopupForm)pop).TaskFinished();
+        }
+
+        // Handler for exception when Initializing
+        private void ProcessInitializeExecption(string message)
+        {
+            if (this.InvokeRequired == false)
+            {
+                MessageBox.Show(message);
+                this.Close();
+            }
+            else
+            {
+                MyStrategy.InitializeExceptionCallback cb = new MyStrategy.InitializeExceptionCallback(ProcessInitializeExecption);
+                lblTDStatus.BeginInvoke(cb, message);
+            }
         }
 
         private void HookStrategyToGUI()
@@ -106,34 +152,24 @@ namespace QTP.Console
             // lblConnecStatus hook
             strategy.ConnectStatusChanged += strategy_ConnectStatusChanged;
 
+            riskTradeUC.Subject = strategy;         // pageRiskTrade
             monitorOverviewUC.Subject = strategy;   // pageMonitorOverView
             monitorDataUC.Subject = strategy;       // pageMonitorData
-            riskTradeUC.Subject = strategy;         // pageRiskTrade
-        }
-        private void ShowStrategyData()
-        {
-            // set title
-            lblTitle.Text = strategy.Name;
-            lblRightTitle.Text = string.Format("{0} {1}", strategy.GMID, strategy.RunType);
-
-            monitorOverviewUC.ShowData();   // pageMonitorOverView
-            monitorDataUC.ShowData();       // pageMonitorData
-            riskTradeUC.ShowData();         // pageRiskTrade
         }
 
-        void strategy_ConnectStatusChanged(bool connectSucceed, int num)
+        void strategy_ConnectStatusChanged(bool md, string status)
         {
-            if (lblConnectStatus.InvokeRequired == false)
+            if (lblTDStatus.InvokeRequired == false)
             {
-                if (connectSucceed)
-                    lblConnectStatus.Text = string.Format("已连接({0})", num);
+                if (md)
+                    lblMDStatus.Text = status;
                 else
-                    lblConnectStatus.Text = string.Format("已断开({0})", num);
+                    lblTDStatus.Text = status;
             }
             else
             {
                 MyStrategy.ConnectStatusChangedCallback cb = new MyStrategy.ConnectStatusChangedCallback(strategy_ConnectStatusChanged);
-                lblConnectStatus.BeginInvoke(cb, connectSucceed, num);
+                lblTDStatus.BeginInvoke(cb, md, status);
             }
         }
 
@@ -141,18 +177,21 @@ namespace QTP.Console
         {
             monitorOverviewUC.BringToFront();
             refreshUC = monitorOverviewUC;
+            refreshUC.ShowData();
         }
 
         private void btnData_Click(object sender, EventArgs e)
         {
             monitorDataUC.BringToFront();
             refreshUC = monitorDataUC;
+            refreshUC.ShowData();
         }
 
         private void btnRiskTrade_Click(object sender, EventArgs e)
         {
             riskTradeUC.BringToFront();
             refreshUC = riskTradeUC;
+            refreshUC.ShowData();
         }
 
         private void timerRefresh_Tick(object sender, EventArgs e)

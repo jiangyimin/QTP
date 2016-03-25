@@ -12,16 +12,9 @@ namespace QTP.Domain
     public class BridgeRiskM : RiskM
     {
 
-        public override bool Initialize()
+        public override void Initialize()
         {
-            if (base.Initialize() == false)
-            {
-                return false;
-            }
-
-            // itself init
-            strategy.WriteTDLog(string.Format("{0} 初始化完成", this.ToString()));
-            return true;
+            base.Initialize();
         }
 
         public override double GetVolume(string exchange, string sec_id)

@@ -54,7 +54,6 @@ namespace QTP.Main
             wndStyle &= ~WinAPI.WS_THICKFRAME;
             WinAPI.SetWindowLong(process.MainWindowHandle, WinAPI.GWL_STYLE, wndStyle);
 
-            //WinAPI.SetWindowPos(process.MainWindowHandle, IntPtr.Zero, 0, 0, this.Width, this.Height, WinAPI.SWP_NOMOVE | WinAPI.SWP_NOSIZE | WinAPI.SWP_NOZORDER | WinAPI.SWP_FRAMECHANGED);
         }
 
         protected override void OnResize(EventArgs e)
@@ -63,5 +62,6 @@ namespace QTP.Main
                 WinAPI.MoveWindow(process.MainWindowHandle, 0, 0, this.Width, this.Height, true);
             base.OnResize(e);
         }
+
     }
 }

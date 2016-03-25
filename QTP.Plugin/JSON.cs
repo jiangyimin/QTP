@@ -8,7 +8,7 @@ using System.IO;
 using System.Runtime.Serialization;
 
 
-namespace QTP.Infra
+namespace QTP.Plugin
 {
     [DataContract]
     public class SecList

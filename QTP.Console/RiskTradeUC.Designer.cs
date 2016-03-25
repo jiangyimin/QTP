@@ -32,7 +32,9 @@
             this.splitLog = new System.Windows.Forms.SplitContainer();
             this.boxMDLog = new System.Windows.Forms.ListBox();
             this.boxTDLog = new System.Windows.Forms.ListBox();
+            this.accountUC = new QTP.Console.AccountUC();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitLog)).BeginInit();
@@ -48,11 +50,15 @@
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.accountUC);
+            // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitLog);
-            this.splitContainer1.Size = new System.Drawing.Size(659, 361);
-            this.splitContainer1.SplitterDistance = 385;
+            this.splitContainer1.Size = new System.Drawing.Size(869, 431);
+            this.splitContainer1.SplitterDistance = 553;
             this.splitContainer1.TabIndex = 0;
             // 
             // splitLog
@@ -70,8 +76,8 @@
             // splitLog.Panel2
             // 
             this.splitLog.Panel2.Controls.Add(this.boxTDLog);
-            this.splitLog.Size = new System.Drawing.Size(270, 361);
-            this.splitLog.SplitterDistance = 271;
+            this.splitLog.Size = new System.Drawing.Size(312, 431);
+            this.splitLog.SplitterDistance = 330;
             this.splitLog.TabIndex = 0;
             // 
             // boxMDLog
@@ -81,7 +87,7 @@
             this.boxMDLog.ItemHeight = 12;
             this.boxMDLog.Location = new System.Drawing.Point(0, 0);
             this.boxMDLog.Name = "boxMDLog";
-            this.boxMDLog.Size = new System.Drawing.Size(270, 271);
+            this.boxMDLog.Size = new System.Drawing.Size(312, 330);
             this.boxMDLog.TabIndex = 0;
             // 
             // boxTDLog
@@ -91,8 +97,16 @@
             this.boxTDLog.ItemHeight = 12;
             this.boxTDLog.Location = new System.Drawing.Point(0, 0);
             this.boxTDLog.Name = "boxTDLog";
-            this.boxTDLog.Size = new System.Drawing.Size(270, 86);
+            this.boxTDLog.Size = new System.Drawing.Size(312, 97);
             this.boxTDLog.TabIndex = 1;
+            // 
+            // accountUC
+            // 
+            this.accountUC.Dock = System.Windows.Forms.DockStyle.Top;
+            this.accountUC.Location = new System.Drawing.Point(0, 0);
+            this.accountUC.Name = "accountUC";
+            this.accountUC.Size = new System.Drawing.Size(553, 362);
+            this.accountUC.TabIndex = 0;
             // 
             // RiskTradeUC
             // 
@@ -100,7 +114,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
             this.Name = "RiskTradeUC";
-            this.Size = new System.Drawing.Size(659, 361);
+            this.Size = new System.Drawing.Size(869, 431);
+            this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
@@ -118,6 +133,7 @@
         private System.Windows.Forms.SplitContainer splitLog;
         private System.Windows.Forms.ListBox boxMDLog;
         private System.Windows.Forms.ListBox boxTDLog;
+        private AccountUC accountUC;
 
     }
 }

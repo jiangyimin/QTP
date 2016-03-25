@@ -24,16 +24,15 @@ namespace QTP.Domain
             strategy = s;
         }
 
-        public virtual bool Initialize()
+        public virtual void Initialize()
         {
-            // get remote cash and positions
+            // get cash and positions
             cash = strategy.GetCash();
-            
+
             if (cash == null)
             {
-                //strategy.WriteError("不能打开账户");
-                strategy.Stop();
-                return false;
+                strategy.WriteTDLog("不能打开账户");
+                return;
             }
 
             //strategy.WriteInfo(string.Format("账户总资产({0:N2}), 可用资金({1:N2})", cash.nav, cash.available));
@@ -50,9 +49,6 @@ namespace QTP.Domain
                     monitor.OnPosition(pos);
                 }
             }
-            //strategy.WriteInfo(info);
-
-            return true;
         }
 
 

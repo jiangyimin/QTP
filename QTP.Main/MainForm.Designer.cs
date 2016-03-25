@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.btnSetTime = new System.Windows.Forms.Button();
             this.lblSecond = new System.Windows.Forms.Label();
             this.btnSimulate = new System.Windows.Forms.Button();
             this.btnReal = new System.Windows.Forms.Button();
-            this.btnSetTime = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.SuspendLayout();
@@ -60,6 +60,17 @@
             this.splitMain.SplitterDistance = 65;
             this.splitMain.TabIndex = 2;
             // 
+            // btnSetTime
+            // 
+            this.btnSetTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnSetTime.Location = new System.Drawing.Point(7, 268);
+            this.btnSetTime.Name = "btnSetTime";
+            this.btnSetTime.Size = new System.Drawing.Size(51, 23);
+            this.btnSetTime.TabIndex = 0;
+            this.btnSetTime.Text = "同步";
+            this.btnSetTime.UseVisualStyleBackColor = true;
+            this.btnSetTime.Click += new System.EventHandler(this.btnSetTime_Click);
+            // 
             // lblSecond
             // 
             this.lblSecond.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -77,7 +88,7 @@
             this.btnSimulate.Name = "btnSimulate";
             this.btnSimulate.Size = new System.Drawing.Size(45, 39);
             this.btnSimulate.TabIndex = 1;
-            this.btnSimulate.Text = "模拟";
+            this.btnSimulate.Text = "虚拟";
             this.btnSimulate.UseVisualStyleBackColor = true;
             this.btnSimulate.Click += new System.EventHandler(this.btnSimulate_Click);
             // 
@@ -90,17 +101,6 @@
             this.btnReal.Text = "实盘";
             this.btnReal.UseVisualStyleBackColor = true;
             this.btnReal.Click += new System.EventHandler(this.btnReal_Click);
-            // 
-            // btnSetTime
-            // 
-            this.btnSetTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSetTime.Location = new System.Drawing.Point(7, 268);
-            this.btnSetTime.Name = "btnSetTime";
-            this.btnSetTime.Size = new System.Drawing.Size(51, 23);
-            this.btnSetTime.TabIndex = 0;
-            this.btnSetTime.Text = "同步";
-            this.btnSetTime.UseVisualStyleBackColor = true;
-            this.btnSetTime.Click += new System.EventHandler(this.btnSetTime_Click);
             // 
             // MainForm
             // 

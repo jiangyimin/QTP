@@ -24,9 +24,14 @@ namespace QTP.DBAccess
             return MySqlHelper.ExecuteObjects<TStrategy>(ConnectionString, "SELECT * FROM Strategy");
         }
 
-        public static List<TInstrument> GetTStrategyInstruments(int id)
+        public static TPool GetTStrategyPool(int id)
         {
-            return MySqlHelper.ExecuteObjects<TInstrument>(ConnectionString, string.Format("SELECT * FROM Instrument WHERE StrategyId={0}", id));
+            return MySqlHelper.ExecuteObject<TPool>(ConnectionString, string.Format("SELECT * FROM Pool WHERE Id={0}", id));
+        }
+
+        public static List<TInstrument> GetTStrategyInstruments(int poolId)
+        {
+            return MySqlHelper.ExecuteObjects<TInstrument>(ConnectionString, string.Format("SELECT * FROM Instrument WHERE PoolId={0}", poolId));
         }
 
         public static TStrategy GetTStrategy(string id)
@@ -35,7 +40,11 @@ namespace QTP.DBAccess
 
             t = MySqlHelper.ExecuteObject<TStrategy>(ConnectionString, string.Format("SELECT * FROM Strategy WHERE Id={0}", id));
             t.Parse();          // parse fields
-            t.Instruments = GetTStrategyInstruments(int.Parse(id));
+
+            t.Pool = GetTStrategyPool(t.PoolId);
+
+            t.Instruments = GetTStrategyInstruments(t.PoolId);
+
             //t.Positions = MySqlHelper.ExecuteObjects<TPosition>(ConnectionString, string.Format("SELECT * FROM Position WHERE StrategyId={0}", id)); 
 
             return t;

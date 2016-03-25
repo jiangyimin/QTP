@@ -14,6 +14,9 @@ namespace QTP.Infra
 
         public static bool IsInStockMarkerOpenPeriod(DateTime dtNow)
         {
+            if (dtNow.DayOfWeek == DayOfWeek.Saturday || dtNow.DayOfWeek == DayOfWeek.Sunday)
+                return false;
+                
             DateTime dt = new DateTime(2000, 1, 1, dtNow.Hour, dtNow.Minute, 0);
             return  dt.CompareTo(StockMarketBeginTime) > 0 && dt.CompareTo(StockMarketEndTime) < 0;
         }

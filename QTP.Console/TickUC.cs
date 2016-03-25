@@ -25,28 +25,25 @@ namespace QTP.Console
             InitializeComponent();
         }
 
-        public void OnBarArrived(Bar bar, Bar tickBar1M)
-        {
-
-        }
-
         public void OnTickArrived(TickTA tickTA)
         {
             if (this.InvokeRequired == false)
             {
                 // Tick Time
                 DateTime dt = DateTime.Now;
+
+                TickQuota lastestTQ = tickTA.LastestTickQuota;
+                if (lastestTQ == null) return;
+                Tick tick = lastestTQ.Tick;
+                dt = Utils.UtcToDateTime(tick.utc_time);
+                lblTickTime.Text = string.Format("{0:00}:{1:00}:{2:00}(时延={3:0.000} 波幅={4:0.00})", dt.Hour, dt.Minute, dt.Second, lastestTQ.Delay, lastestTQ.Range);
+
                 TickQuota prevTQ = tickTA.PrevTickQuota;
                 if (prevTQ != null)
                 {
                     dt = Utils.UtcToDateTime(prevTQ.Tick.utc_time);
-                    lblPrevTickTime.Text = string.Format("{0:00}:{1:00}:{2:00}(延时={3:0.000} 波幅={4:0.00})", dt.Hour, dt.Minute, dt.Second, prevTQ.Delay, prevTQ.Range);
+                    lblPrevTickTime.Text = string.Format("{0:00}:{1:00}:{2:00}(处理={3}ms 间隔={4})", dt.Hour, dt.Minute, dt.Second, tickTA.TickProcessElapsed, lastestTQ.Interval);
                 }
-
-                TickQuota lastestTQ = tickTA.LastestTickQuota;
-                Tick tick = lastestTQ.Tick;
-                dt = Utils.UtcToDateTime(tick.utc_time);
-                lblTickTime.Text = string.Format("{0:00}:{1:00}:{2:00}(时延={3:0.000} 波幅={4:0.00})", dt.Hour, dt.Minute, dt.Second, lastestTQ.Delay, lastestTQ.Range);
 
                 // ask5-ask1
                 lblAsk5Price.ForeColor = GetColor(tick.ask_p5, tick.pre_close); lblAsk5Price.Text = tick.ask_p5.ToString(".00");

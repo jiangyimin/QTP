@@ -36,8 +36,11 @@
             this.lblRightTitle = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelClient = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel1.SuspendLayout();
             this.panelTitle.SuspendLayout();
+            this.panelClient.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -118,11 +121,30 @@
             // 
             // panelClient
             // 
+            this.panelClient.Controls.Add(this.flowLayoutPanel1);
+            this.panelClient.Controls.Add(this.label1);
             this.panelClient.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelClient.Location = new System.Drawing.Point(55, 37);
             this.panelClient.Name = "panelClient";
             this.panelClient.Size = new System.Drawing.Size(538, 280);
             this.panelClient.TabIndex = 2;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(291, 143);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(41, 12);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "label1";
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(538, 280);
+            this.flowLayoutPanel1.TabIndex = 1;
             // 
             // MonitorOverviewUC
             // 
@@ -137,6 +159,8 @@
             this.panel1.ResumeLayout(false);
             this.panelTitle.ResumeLayout(false);
             this.panelTitle.PerformLayout();
+            this.panelClient.ResumeLayout(false);
+            this.panelClient.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -151,5 +175,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnCandidate;
         private System.Windows.Forms.Button btnObserve;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }

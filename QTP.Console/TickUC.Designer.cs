@@ -31,6 +31,23 @@
             this.lblPrevTickTime = new System.Windows.Forms.Label();
             this.lblTickTime = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblLastAmount = new System.Windows.Forms.Label();
+            this.lblCumAmount = new System.Windows.Forms.Label();
+            this.lblLastVolumn = new System.Windows.Forms.Label();
+            this.lblLastA = new System.Windows.Forms.Label();
+            this.lblLastV = new System.Windows.Forms.Label();
+            this.lblCumVolumn = new System.Windows.Forms.Label();
+            this.lblLowPrice = new System.Windows.Forms.Label();
+            this.lblHighPrice = new System.Windows.Forms.Label();
+            this.lblOpenPrice = new System.Windows.Forms.Label();
+            this.lblLastPrice = new System.Windows.Forms.Label();
+            this.lblCumA = new System.Windows.Forms.Label();
+            this.lblCumV = new System.Windows.Forms.Label();
+            this.lblLow = new System.Windows.Forms.Label();
+            this.lblHigh = new System.Windows.Forms.Label();
+            this.lblOpen = new System.Windows.Forms.Label();
+            this.lblLast = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblBid5Volumn = new System.Windows.Forms.Label();
             this.lblBid4Volumn = new System.Windows.Forms.Label();
@@ -62,29 +79,9 @@
             this.lblAsk5 = new System.Windows.Forms.Label();
             this.lblAsk3 = new System.Windows.Forms.Label();
             this.lblAsk4 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lblLastAmount = new System.Windows.Forms.Label();
-            this.lblCumAmount = new System.Windows.Forms.Label();
-            this.lblLastVolumn = new System.Windows.Forms.Label();
-            this.lblLastA = new System.Windows.Forms.Label();
-            this.lblLastV = new System.Windows.Forms.Label();
-            this.lblCumVolumn = new System.Windows.Forms.Label();
-            this.lblLowPrice = new System.Windows.Forms.Label();
-            this.lblHighPrice = new System.Windows.Forms.Label();
-            this.lblOpenPrice = new System.Windows.Forms.Label();
-            this.lblLastPrice = new System.Windows.Forms.Label();
-            this.lblCumA = new System.Windows.Forms.Label();
-            this.lblCumV = new System.Windows.Forms.Label();
-            this.lblLow = new System.Windows.Forms.Label();
-            this.lblHigh = new System.Windows.Forms.Label();
-            this.lblOpen = new System.Windows.Forms.Label();
-            this.lblLast = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.boxBars = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblPrevTickTime
@@ -107,15 +104,214 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.lblPrevTickTime);
             this.panel1.Controls.Add(this.lblTickTime);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(205, 391);
+            this.panel1.Size = new System.Drawing.Size(205, 283);
             this.panel1.TabIndex = 8;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.lblLastAmount);
+            this.groupBox2.Controls.Add(this.lblCumAmount);
+            this.groupBox2.Controls.Add(this.lblLastVolumn);
+            this.groupBox2.Controls.Add(this.lblLastA);
+            this.groupBox2.Controls.Add(this.lblLastV);
+            this.groupBox2.Controls.Add(this.lblCumVolumn);
+            this.groupBox2.Controls.Add(this.lblLowPrice);
+            this.groupBox2.Controls.Add(this.lblHighPrice);
+            this.groupBox2.Controls.Add(this.lblOpenPrice);
+            this.groupBox2.Controls.Add(this.lblLastPrice);
+            this.groupBox2.Controls.Add(this.lblCumA);
+            this.groupBox2.Controls.Add(this.lblCumV);
+            this.groupBox2.Controls.Add(this.lblLow);
+            this.groupBox2.Controls.Add(this.lblHigh);
+            this.groupBox2.Controls.Add(this.lblOpen);
+            this.groupBox2.Controls.Add(this.lblLast);
+            this.groupBox2.Location = new System.Drawing.Point(2, 287);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 106);
+            this.groupBox2.TabIndex = 9;
+            this.groupBox2.TabStop = false;
+            // 
+            // lblLastAmount
+            // 
+            this.lblLastAmount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLastAmount.BackColor = System.Drawing.SystemColors.Control;
+            this.lblLastAmount.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblLastAmount.ForeColor = System.Drawing.Color.Olive;
+            this.lblLastAmount.Location = new System.Drawing.Point(137, 80);
+            this.lblLastAmount.Name = "lblLastAmount";
+            this.lblLastAmount.Size = new System.Drawing.Size(57, 12);
+            this.lblLastAmount.TabIndex = 35;
+            this.lblLastAmount.Text = "0.0";
+            this.lblLastAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblCumAmount
+            // 
+            this.lblCumAmount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCumAmount.BackColor = System.Drawing.SystemColors.Control;
+            this.lblCumAmount.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblCumAmount.ForeColor = System.Drawing.Color.Olive;
+            this.lblCumAmount.Location = new System.Drawing.Point(139, 59);
+            this.lblCumAmount.Name = "lblCumAmount";
+            this.lblCumAmount.Size = new System.Drawing.Size(55, 12);
+            this.lblCumAmount.TabIndex = 34;
+            this.lblCumAmount.Text = "0";
+            this.lblCumAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblLastVolumn
+            // 
+            this.lblLastVolumn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLastVolumn.BackColor = System.Drawing.SystemColors.Control;
+            this.lblLastVolumn.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblLastVolumn.ForeColor = System.Drawing.Color.Olive;
+            this.lblLastVolumn.Location = new System.Drawing.Point(44, 80);
+            this.lblLastVolumn.Name = "lblLastVolumn";
+            this.lblLastVolumn.Size = new System.Drawing.Size(51, 12);
+            this.lblLastVolumn.TabIndex = 33;
+            this.lblLastVolumn.Text = "0";
+            this.lblLastVolumn.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblLastA
+            // 
+            this.lblLastA.AutoSize = true;
+            this.lblLastA.Location = new System.Drawing.Point(102, 80);
+            this.lblLastA.Name = "lblLastA";
+            this.lblLastA.Size = new System.Drawing.Size(29, 12);
+            this.lblLastA.TabIndex = 32;
+            this.lblLastA.Text = "现额";
+            // 
+            // lblLastV
+            // 
+            this.lblLastV.AutoSize = true;
+            this.lblLastV.Location = new System.Drawing.Point(6, 80);
+            this.lblLastV.Name = "lblLastV";
+            this.lblLastV.Size = new System.Drawing.Size(29, 12);
+            this.lblLastV.TabIndex = 31;
+            this.lblLastV.Text = "现量";
+            // 
+            // lblCumVolumn
+            // 
+            this.lblCumVolumn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCumVolumn.BackColor = System.Drawing.SystemColors.Control;
+            this.lblCumVolumn.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblCumVolumn.ForeColor = System.Drawing.Color.Olive;
+            this.lblCumVolumn.Location = new System.Drawing.Point(44, 59);
+            this.lblCumVolumn.Name = "lblCumVolumn";
+            this.lblCumVolumn.Size = new System.Drawing.Size(51, 12);
+            this.lblCumVolumn.TabIndex = 30;
+            this.lblCumVolumn.Text = "0";
+            this.lblCumVolumn.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblLowPrice
+            // 
+            this.lblLowPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLowPrice.BackColor = System.Drawing.SystemColors.Control;
+            this.lblLowPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblLowPrice.ForeColor = System.Drawing.Color.ForestGreen;
+            this.lblLowPrice.Location = new System.Drawing.Point(143, 36);
+            this.lblLowPrice.Name = "lblLowPrice";
+            this.lblLowPrice.Size = new System.Drawing.Size(51, 12);
+            this.lblLowPrice.TabIndex = 18;
+            this.lblLowPrice.Text = "0.00";
+            this.lblLowPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblHighPrice
+            // 
+            this.lblHighPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblHighPrice.BackColor = System.Drawing.SystemColors.Control;
+            this.lblHighPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblHighPrice.ForeColor = System.Drawing.Color.ForestGreen;
+            this.lblHighPrice.Location = new System.Drawing.Point(44, 36);
+            this.lblHighPrice.Name = "lblHighPrice";
+            this.lblHighPrice.Size = new System.Drawing.Size(51, 12);
+            this.lblHighPrice.TabIndex = 17;
+            this.lblHighPrice.Text = "0.00";
+            this.lblHighPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblOpenPrice
+            // 
+            this.lblOpenPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblOpenPrice.BackColor = System.Drawing.SystemColors.Control;
+            this.lblOpenPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblOpenPrice.ForeColor = System.Drawing.Color.ForestGreen;
+            this.lblOpenPrice.Location = new System.Drawing.Point(143, 17);
+            this.lblOpenPrice.Name = "lblOpenPrice";
+            this.lblOpenPrice.Size = new System.Drawing.Size(51, 12);
+            this.lblOpenPrice.TabIndex = 16;
+            this.lblOpenPrice.Text = "0.00";
+            this.lblOpenPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblLastPrice
+            // 
+            this.lblLastPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLastPrice.BackColor = System.Drawing.SystemColors.Control;
+            this.lblLastPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblLastPrice.ForeColor = System.Drawing.Color.ForestGreen;
+            this.lblLastPrice.Location = new System.Drawing.Point(44, 17);
+            this.lblLastPrice.Name = "lblLastPrice";
+            this.lblLastPrice.Size = new System.Drawing.Size(51, 12);
+            this.lblLastPrice.TabIndex = 13;
+            this.lblLastPrice.Text = "0.00";
+            this.lblLastPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblCumA
+            // 
+            this.lblCumA.AutoSize = true;
+            this.lblCumA.Location = new System.Drawing.Point(102, 59);
+            this.lblCumA.Name = "lblCumA";
+            this.lblCumA.Size = new System.Drawing.Size(29, 12);
+            this.lblCumA.TabIndex = 15;
+            this.lblCumA.Text = "总额";
+            // 
+            // lblCumV
+            // 
+            this.lblCumV.AutoSize = true;
+            this.lblCumV.Location = new System.Drawing.Point(6, 59);
+            this.lblCumV.Name = "lblCumV";
+            this.lblCumV.Size = new System.Drawing.Size(29, 12);
+            this.lblCumV.TabIndex = 14;
+            this.lblCumV.Text = "总量";
+            // 
+            // lblLow
+            // 
+            this.lblLow.AutoSize = true;
+            this.lblLow.Location = new System.Drawing.Point(102, 36);
+            this.lblLow.Name = "lblLow";
+            this.lblLow.Size = new System.Drawing.Size(29, 12);
+            this.lblLow.TabIndex = 13;
+            this.lblLow.Text = "最低";
+            // 
+            // lblHigh
+            // 
+            this.lblHigh.AutoSize = true;
+            this.lblHigh.Location = new System.Drawing.Point(6, 36);
+            this.lblHigh.Name = "lblHigh";
+            this.lblHigh.Size = new System.Drawing.Size(29, 12);
+            this.lblHigh.TabIndex = 12;
+            this.lblHigh.Text = "最高";
+            // 
+            // lblOpen
+            // 
+            this.lblOpen.AutoSize = true;
+            this.lblOpen.Location = new System.Drawing.Point(102, 17);
+            this.lblOpen.Name = "lblOpen";
+            this.lblOpen.Size = new System.Drawing.Size(29, 12);
+            this.lblOpen.TabIndex = 11;
+            this.lblOpen.Text = "今开";
+            // 
+            // lblLast
+            // 
+            this.lblLast.AutoSize = true;
+            this.lblLast.Location = new System.Drawing.Point(6, 17);
+            this.lblLast.Name = "lblLast";
+            this.lblLast.Size = new System.Drawing.Size(29, 12);
+            this.lblLast.TabIndex = 10;
+            this.lblLast.Text = "现价";
             // 
             // groupBox1
             // 
@@ -506,240 +702,20 @@
             this.lblAsk4.TabIndex = 1;
             this.lblAsk4.Text = "卖四";
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.lblLastAmount);
-            this.groupBox2.Controls.Add(this.lblCumAmount);
-            this.groupBox2.Controls.Add(this.lblLastVolumn);
-            this.groupBox2.Controls.Add(this.lblLastA);
-            this.groupBox2.Controls.Add(this.lblLastV);
-            this.groupBox2.Controls.Add(this.lblCumVolumn);
-            this.groupBox2.Controls.Add(this.lblLowPrice);
-            this.groupBox2.Controls.Add(this.lblHighPrice);
-            this.groupBox2.Controls.Add(this.lblOpenPrice);
-            this.groupBox2.Controls.Add(this.lblLastPrice);
-            this.groupBox2.Controls.Add(this.lblCumA);
-            this.groupBox2.Controls.Add(this.lblCumV);
-            this.groupBox2.Controls.Add(this.lblLow);
-            this.groupBox2.Controls.Add(this.lblHigh);
-            this.groupBox2.Controls.Add(this.lblOpen);
-            this.groupBox2.Controls.Add(this.lblLast);
-            this.groupBox2.Location = new System.Drawing.Point(3, 281);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 106);
-            this.groupBox2.TabIndex = 9;
-            this.groupBox2.TabStop = false;
-            // 
-            // lblLastAmount
-            // 
-            this.lblLastAmount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblLastAmount.BackColor = System.Drawing.SystemColors.Control;
-            this.lblLastAmount.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblLastAmount.ForeColor = System.Drawing.Color.Olive;
-            this.lblLastAmount.Location = new System.Drawing.Point(137, 80);
-            this.lblLastAmount.Name = "lblLastAmount";
-            this.lblLastAmount.Size = new System.Drawing.Size(57, 12);
-            this.lblLastAmount.TabIndex = 35;
-            this.lblLastAmount.Text = "0.0";
-            this.lblLastAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblCumAmount
-            // 
-            this.lblCumAmount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblCumAmount.BackColor = System.Drawing.SystemColors.Control;
-            this.lblCumAmount.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblCumAmount.ForeColor = System.Drawing.Color.Olive;
-            this.lblCumAmount.Location = new System.Drawing.Point(139, 59);
-            this.lblCumAmount.Name = "lblCumAmount";
-            this.lblCumAmount.Size = new System.Drawing.Size(55, 12);
-            this.lblCumAmount.TabIndex = 34;
-            this.lblCumAmount.Text = "0";
-            this.lblCumAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblLastVolumn
-            // 
-            this.lblLastVolumn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblLastVolumn.BackColor = System.Drawing.SystemColors.Control;
-            this.lblLastVolumn.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblLastVolumn.ForeColor = System.Drawing.Color.Olive;
-            this.lblLastVolumn.Location = new System.Drawing.Point(44, 80);
-            this.lblLastVolumn.Name = "lblLastVolumn";
-            this.lblLastVolumn.Size = new System.Drawing.Size(51, 12);
-            this.lblLastVolumn.TabIndex = 33;
-            this.lblLastVolumn.Text = "0";
-            this.lblLastVolumn.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblLastA
-            // 
-            this.lblLastA.AutoSize = true;
-            this.lblLastA.Location = new System.Drawing.Point(102, 80);
-            this.lblLastA.Name = "lblLastA";
-            this.lblLastA.Size = new System.Drawing.Size(29, 12);
-            this.lblLastA.TabIndex = 32;
-            this.lblLastA.Text = "现额";
-            // 
-            // lblLastV
-            // 
-            this.lblLastV.AutoSize = true;
-            this.lblLastV.Location = new System.Drawing.Point(6, 80);
-            this.lblLastV.Name = "lblLastV";
-            this.lblLastV.Size = new System.Drawing.Size(29, 12);
-            this.lblLastV.TabIndex = 31;
-            this.lblLastV.Text = "现量";
-            // 
-            // lblCumVolumn
-            // 
-            this.lblCumVolumn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblCumVolumn.BackColor = System.Drawing.SystemColors.Control;
-            this.lblCumVolumn.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblCumVolumn.ForeColor = System.Drawing.Color.Olive;
-            this.lblCumVolumn.Location = new System.Drawing.Point(44, 59);
-            this.lblCumVolumn.Name = "lblCumVolumn";
-            this.lblCumVolumn.Size = new System.Drawing.Size(51, 12);
-            this.lblCumVolumn.TabIndex = 30;
-            this.lblCumVolumn.Text = "0";
-            this.lblCumVolumn.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblLowPrice
-            // 
-            this.lblLowPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblLowPrice.BackColor = System.Drawing.SystemColors.Control;
-            this.lblLowPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblLowPrice.ForeColor = System.Drawing.Color.ForestGreen;
-            this.lblLowPrice.Location = new System.Drawing.Point(143, 36);
-            this.lblLowPrice.Name = "lblLowPrice";
-            this.lblLowPrice.Size = new System.Drawing.Size(51, 12);
-            this.lblLowPrice.TabIndex = 18;
-            this.lblLowPrice.Text = "0.00";
-            this.lblLowPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblHighPrice
-            // 
-            this.lblHighPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblHighPrice.BackColor = System.Drawing.SystemColors.Control;
-            this.lblHighPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblHighPrice.ForeColor = System.Drawing.Color.ForestGreen;
-            this.lblHighPrice.Location = new System.Drawing.Point(44, 36);
-            this.lblHighPrice.Name = "lblHighPrice";
-            this.lblHighPrice.Size = new System.Drawing.Size(51, 12);
-            this.lblHighPrice.TabIndex = 17;
-            this.lblHighPrice.Text = "0.00";
-            this.lblHighPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblOpenPrice
-            // 
-            this.lblOpenPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblOpenPrice.BackColor = System.Drawing.SystemColors.Control;
-            this.lblOpenPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblOpenPrice.ForeColor = System.Drawing.Color.ForestGreen;
-            this.lblOpenPrice.Location = new System.Drawing.Point(143, 17);
-            this.lblOpenPrice.Name = "lblOpenPrice";
-            this.lblOpenPrice.Size = new System.Drawing.Size(51, 12);
-            this.lblOpenPrice.TabIndex = 16;
-            this.lblOpenPrice.Text = "0.00";
-            this.lblOpenPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblLastPrice
-            // 
-            this.lblLastPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblLastPrice.BackColor = System.Drawing.SystemColors.Control;
-            this.lblLastPrice.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblLastPrice.ForeColor = System.Drawing.Color.ForestGreen;
-            this.lblLastPrice.Location = new System.Drawing.Point(44, 17);
-            this.lblLastPrice.Name = "lblLastPrice";
-            this.lblLastPrice.Size = new System.Drawing.Size(51, 12);
-            this.lblLastPrice.TabIndex = 13;
-            this.lblLastPrice.Text = "0.00";
-            this.lblLastPrice.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // lblCumA
-            // 
-            this.lblCumA.AutoSize = true;
-            this.lblCumA.Location = new System.Drawing.Point(102, 59);
-            this.lblCumA.Name = "lblCumA";
-            this.lblCumA.Size = new System.Drawing.Size(29, 12);
-            this.lblCumA.TabIndex = 15;
-            this.lblCumA.Text = "总额";
-            // 
-            // lblCumV
-            // 
-            this.lblCumV.AutoSize = true;
-            this.lblCumV.Location = new System.Drawing.Point(6, 59);
-            this.lblCumV.Name = "lblCumV";
-            this.lblCumV.Size = new System.Drawing.Size(29, 12);
-            this.lblCumV.TabIndex = 14;
-            this.lblCumV.Text = "总量";
-            // 
-            // lblLow
-            // 
-            this.lblLow.AutoSize = true;
-            this.lblLow.Location = new System.Drawing.Point(102, 36);
-            this.lblLow.Name = "lblLow";
-            this.lblLow.Size = new System.Drawing.Size(29, 12);
-            this.lblLow.TabIndex = 13;
-            this.lblLow.Text = "最低";
-            // 
-            // lblHigh
-            // 
-            this.lblHigh.AutoSize = true;
-            this.lblHigh.Location = new System.Drawing.Point(6, 36);
-            this.lblHigh.Name = "lblHigh";
-            this.lblHigh.Size = new System.Drawing.Size(29, 12);
-            this.lblHigh.TabIndex = 12;
-            this.lblHigh.Text = "最高";
-            // 
-            // lblOpen
-            // 
-            this.lblOpen.AutoSize = true;
-            this.lblOpen.Location = new System.Drawing.Point(102, 17);
-            this.lblOpen.Name = "lblOpen";
-            this.lblOpen.Size = new System.Drawing.Size(29, 12);
-            this.lblOpen.TabIndex = 11;
-            this.lblOpen.Text = "今开";
-            // 
-            // lblLast
-            // 
-            this.lblLast.AutoSize = true;
-            this.lblLast.Location = new System.Drawing.Point(6, 17);
-            this.lblLast.Name = "lblLast";
-            this.lblLast.Size = new System.Drawing.Size(29, 12);
-            this.lblLast.TabIndex = 10;
-            this.lblLast.Text = "现价";
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.boxBars);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 391);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(205, 104);
-            this.panel2.TabIndex = 9;
-            // 
-            // boxBars
-            // 
-            this.boxBars.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxBars.FormattingEnabled = true;
-            this.boxBars.ItemHeight = 12;
-            this.boxBars.Location = new System.Drawing.Point(0, 0);
-            this.boxBars.Name = "boxBars";
-            this.boxBars.Size = new System.Drawing.Size(205, 104);
-            this.boxBars.TabIndex = 0;
-            // 
             // TickUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.panel1);
             this.Name = "TickUC";
-            this.Size = new System.Drawing.Size(205, 495);
+            this.Size = new System.Drawing.Size(205, 397);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.panel2.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -797,7 +773,5 @@
         private System.Windows.Forms.Label lblAsk5;
         private System.Windows.Forms.Label lblAsk3;
         private System.Windows.Forms.Label lblAsk4;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.ListBox boxBars;
     }
 }

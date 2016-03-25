@@ -15,6 +15,7 @@ namespace QTP.Console
     public partial class RiskTradeUC : UserControl, IStrategyUC
     {
         private MyStrategy strategy;
+        private bool dataShowed = false;
 
         public RiskTradeUC()
         {
@@ -35,7 +36,10 @@ namespace QTP.Console
 
         public void ShowData()
         {
+            if (dataShowed) return;
+            dataShowed = true;
 
+            accountUC.GMAccount(strategy);
         }
 
         public void TimerRefresh()

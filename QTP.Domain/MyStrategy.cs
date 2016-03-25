@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using QTP.Plugin;
 using QTP.Infra;
 using QTP.DBAccess;
 using GMSDK;
@@ -30,13 +31,13 @@ namespace QTP.Domain
         private RiskM riskM;
         private MDMode mdmode = MDMode.MD_MODE_NULL;
 
+        // WebTrade and HeartPusle
+        private WebTrade webTD;
+        private System.Timers.Timer heartTimer;         // 1s 
 
         // Strategy's connect status;
-        private int countConnect;
-        private bool connectSucceed;
-
-        private bool flagMDOnline;
-
+        private int countMDConnect;
+        private int countTDConnect;
         private TInstrument focusInstrument;
 
         // StopWatch
@@ -45,7 +46,7 @@ namespace QTP.Domain
 
         #region Properties
 
-        // Name: strategyT internal field 
+        // strategyT internal fields
         public string Name
         {
             get { return strategyT.Name; }
@@ -61,6 +62,12 @@ namespace QTP.Domain
             get { return strategyT.RunType; }
         }
 
+        public string PoolName
+        {
+            get { return strategyT.Pool.Name; }
+        }
+
+        // used for classes in strategy
         public TInstrument FocusInstrument
         {
             get { return focusInstrument; }
@@ -72,16 +79,34 @@ namespace QTP.Domain
             get { return mdmode; }
         }
 
+        public System.Timers.Timer HeartTimer
+        {
+            get { return heartTimer; }
+        }
         #endregion
 
         #region delegates and events
 
-        public delegate void ConnectStatusChangedCallback(bool connectSucceed, int num);
+        // exception when prepare
+        public delegate void InitializeExceptionCallback(string message);
+        public event InitializeExceptionCallback InitializeExceptionOccur; 
+
+
+        // service connection
+        public delegate void ConnectStatusChangedCallback(bool md, string status);
         public event ConnectStatusChangedCallback ConnectStatusChanged;
 
         public delegate void LogCallback(string msg);
         public event LogCallback MDLog;
         public event LogCallback TDLog;
+
+        // FocusInstrument's realtime data
+        public delegate void FocusTickArrivedCallback(TickTA tickTA);
+        public event FocusTickArrivedCallback FocusTickArrived;
+
+        public delegate void FocusBarArrivedCallback(Bar bar, Bar tickBar1M);
+        public event FocusBarArrivedCallback FocusBarArrived;
+
 
         public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
 
@@ -89,13 +114,6 @@ namespace QTP.Domain
 
         public event KBTradeEventHandler OnKBOpenLong;
         public event KBTradeEventHandler OnKBCloseLong;
-
-        // FocusInstrument's realtime data
-        public delegate void FocusTickArrivedCallback(TickTA tickTA);
-        public FocusTickArrivedCallback FocusTickArrived;
-
-        public delegate void FocusBarArrivedCallback(Bar bar, Bar tickBar1M);
-        public FocusBarArrivedCallback FocusBarArrived;
 
         #endregion
 
@@ -118,80 +136,42 @@ namespace QTP.Domain
                 monitors.Add(ins.Symbol, monitor);
             }
 
+            // RiskM
             riskM = (RiskM)Activator.CreateInstance(s.RiskMType);
             riskM.SetStrategy(this);
 
+            // heartTimer
+            heartTimer = new System.Timers.Timer();
+            heartTimer.Interval = 1000;     // 1s
         }
 
-        // init GM and prepare data
-        public void Prepare()
+        // initialize
+        public void Initialize()
         {
-            // Init GM
-            // set mdmode
-            if (RunType == "实盘") 
-            {
-                mdmode = MDMode.MD_MODE_LIVE;
-            }
-            else if (RunType == "模拟")
-            {
-                if (Utils.IsInStockMarkerOpenPeriod(DateTime.Now)) mdmode = MDMode.MD_MODE_LIVE;
-                else mdmode = MDMode.MD_MODE_SIMULATED;
-            }
+            // InitWebTrade
+            if (strategyT.TradeChannelName != "掘金" && RunType != "实盘")
+                InitWebTrade();
 
-            int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, "", mdmode, "localhost:8001");
-            if (ret != 0)
-            {
-                throw new Exception(string.Format("初始化掘金错误{0}", ret));
-            }
+            // start HeartTimer, becuse WebTrade will hook it.
+            heartTimer.Start();
 
-            // Once Get DictInstruments
-            if (DictInstruments == null)
-            {
-                DictInstruments = new Dictionary<string, Instrument>();
-
-                List<Instrument> lst = new List<Instrument>();
-                lst = base.GetInstruments("SZSE", 1, 0);
-                lst.AddRange(base.GetInstruments("SHSE", 1, 0));
-
-                foreach (Instrument ins in lst)
-                {
-                    DictInstruments.Add(ins.symbol, ins);
-                }
-            }
-
-
-            // prepare monitors'data 
-            watch.Start();
-            foreach (Monitor m in this.GetMonitorEnumerator())
-            {
-                if (DictInstruments.ContainsKey(m.Target.Symbol))
-                    m.GMInstrument = DictInstruments[m.Target.Symbol];
-                m.Prepare();
-            }
-            watch.Stop();
-            WriteMDLog(string.Format("监控器数据准备完成，用时({0})", watch.ElapsedMilliseconds));
-
-            // Trader 资管 
-            //riskM.Initialize();
+            // InitGM and prepare preStart data
+            InitGM();          
+            Prepare();
         }
 
-        // Start
+        // Start strategy
         public void Start()
         {
-            // Subscrible Instruments
-            foreach (Monitor m in this.GetMonitorEnumerator())
-            {
-                if (mdmode == MDMode.MD_MODE_LIVE || mdmode == MDMode.MD_MODE_SIMULATED)
-                    base.Subscribe(m.Target.Symbol + ".tick");
-
-                base.Subscribe(m.Target.Symbol + ".bar.60");            // 1M
-                base.Subscribe(m.Target.Symbol + ".bar.900");           // 15M
-            }
-
             // async run strategy
             Task.Run<int>(new Func<int>(base.Run));
         }
 
+        public void MyStrategyStop()
+        {
+            heartTimer.Stop();
+            base.Stop();
+        }
 
         /// <summary>
         /// Enumerable of Monitor
@@ -222,24 +202,6 @@ namespace QTP.Domain
         }
         #endregion
 
-        #region utils
-
-        public void WriteTDLog(string msg)
-        {
-            DateTime dt = DateTime.Now;
-            if (TDLog != null)
-                TDLog(string.Format("{0} {1}", dt.ToLongTimeString(), msg));
-        }
-
-        public void WriteMDLog(string msg)
-        {
-            DateTime dt = DateTime.Now;
-            if (MDLog != null)
-                MDLog(string.Format("{0} {1}", dt.ToLongTimeString(), msg));
-        }
-
-
-        #endregion
 
         #region MD events and Error override
 
@@ -277,36 +239,29 @@ namespace QTP.Domain
         }
 
 
-        public override void OnLogin()
+        public override void OnMDLogin()
         {
             // used for connectstatus changed
-            connectSucceed = true;
-            countConnect++;
-            if (ConnectStatusChanged != null)
-                ConnectStatusChanged(connectSucceed, countConnect);
+            countMDConnect++;
+            if (ConnectStatusChanged != null) ConnectStatusChanged(true, string.Format("数据已连接({0})", countMDConnect));
 
-            // 数据服务连上（包括重连后）的处理（当天数据的重建等）
+            // async run: 当天数据的重建
+            Task.Run(new Action(PrepareMDLogin));
+        }
 
-            if (flagMDOnline == false)
-            {
-                // PrepareBarsToday
-                watch.Start();
-                foreach (Monitor m in GetMonitorEnumerator())
-                    m.PrepareBarsToday();
-                watch.Stop();
-                WriteMDLog(string.Format("准备当天Bars完成，用时({0})", watch.ElapsedMilliseconds));
+        public override void OnTDLogin()
+        {
+            // used for connectstatus changed
+            countTDConnect++;
+            if (ConnectStatusChanged != null) ConnectStatusChanged(false, string.Format("交易已连接({0})", countTDConnect));
 
-                // Prepare Ticks
-                watch.Start();
-                foreach (Monitor m in GetMonitorEnumerator())
-                    m.PrepareTicksToday();
-                watch.Stop();
-                WriteMDLog(string.Format("准备当天Ticks完成，用时({0})", watch.ElapsedMilliseconds));
-
-                flagMDOnline = true;
-            }
-
-
+            // Trader 资管 
+            System.Threading.Thread.Sleep(100);
+            watch.Reset();
+            watch.Start();
+            riskM.Initialize();
+            watch.Stop();
+            WriteTDLog(string.Format("资管初始化完成, 用时({0})", watch.ElapsedMilliseconds));
         }
 
         public override void OnMdEvent(MDEvent md_event)
@@ -315,19 +270,19 @@ namespace QTP.Domain
         }
 
         public override void OnError(int error_code, string error_msg)
-        {            
-            if (error_code == 2000 || error_code == 3000)       // connect fail
+        {
+            if (error_code == 2000)     // TD
             {
-                connectSucceed = false;
-                if (ConnectStatusChanged != null) ConnectStatusChanged(connectSucceed, countConnect);
+                if (ConnectStatusChanged != null) ConnectStatusChanged(false, string.Format("交易已断({0})", countTDConnect));
 
-                // 数据服务器断了标志
-                if (error_code == 3000)
-                    flagMDOnline = false;
-                    
+                WriteMDLog(error_msg);
             }
-
-            WriteMDLog(error_msg);
+            // 数据服务器断了标志
+            if (error_code == 3000)
+            {
+                if (ConnectStatusChanged != null) ConnectStatusChanged(true, string.Format("数据已断({0})", countMDConnect));
+                WriteMDLog(error_msg);
+            }                  
         }
 
         #endregion
@@ -367,5 +322,124 @@ namespace QTP.Domain
 
         #endregion
 
+        #region public and private utils
+
+        public void WriteTDLog(string msg)
+        {
+            DateTime dt = DateTime.Now;
+            if (TDLog != null)
+                TDLog(string.Format("{0} {1}", dt.ToLongTimeString(), msg));
+        }
+
+        public void WriteMDLog(string msg)
+        {
+            DateTime dt = DateTime.Now;
+            if (MDLog != null)
+                MDLog(string.Format("{0} {1}", dt.ToLongTimeString(), msg));
+        }
+
+        private void InitWebTrade()
+        {
+            webTD = WebTrade.CreatWebTD(strategyT.TradeChannelName);
+            if (webTD != null)
+            {
+                watch.Reset();
+                watch.Start();
+
+                webTD.Init(strategyT.TradeChannelParameters);
+                HeartTimer.Elapsed += new System.Timers.ElapsedEventHandler(webTD.HeartTimer_Elapsed);
+                webTD.ConnectStatusChanged += new WebTrade.ConnectStatusChangedCallback(WebTrade_ConnectStatusChanged);
+
+                watch.Stop();
+                WriteTDLog(string.Format("外挂交易服务初始化用时({0}),结果({1})", watch.ElapsedMilliseconds, webTD.IsLoginOK));
+            }
+        }
+
+        private void WebTrade_ConnectStatusChanged(bool status)
+        {
+            WriteTDLog(string.Format("外挂交易服务连接状态改变为{0},", status));
+        }
+        private void PrepareMDLogin()
+        {
+            try
+            {
+                foreach (Monitor m in GetMonitorEnumerator())
+                {
+                    watch.Reset();
+                    watch.Start();
+                    m.PrepareMDLogin();
+                    watch.Stop();
+                    WriteMDLog(string.Format("{0}处理({1}Bs和{2}Ts,用时({3})", m.Target.InstrumentId, m.GetCounBarsPrepared(), m.TickTA.Count, watch.ElapsedMilliseconds));
+                }
+            }
+            catch
+            {
+                WriteMDLog("PrepareMDLogin出错!");
+            }
+        }
+
+        private void InitGM()
+        {
+            // MDMode
+            if (RunType == "实盘")
+            {
+                mdmode = MDMode.MD_MODE_LIVE;
+            }
+            else if (RunType == "虚拟")
+            {
+                if (Utils.IsInStockMarkerOpenPeriod(DateTime.Now)) mdmode = MDMode.MD_MODE_LIVE;
+                else mdmode = MDMode.MD_MODE_LIVE;  //MDMode.MD_MODE_SIMULATED;
+            }
+
+            // Subscrible Instruments
+            StringBuilder sb = new StringBuilder();
+            foreach (Monitor m in this.GetMonitorEnumerator())
+            {
+                if (mdmode == MDMode.MD_MODE_LIVE || mdmode == MDMode.MD_MODE_SIMULATED)
+                    sb.Append(m.Target.Symbol + ".tick,");
+                //base.Subscribe(m.Target.Symbol + ".tick");
+
+                sb.Append(m.Target.Symbol + ".bar.60," + m.Target.Symbol + ".bar.900,");
+                //base.Subscribe(m.Target.Symbol + ".bar.60");            // 1M
+                //base.Subscribe(m.Target.Symbol + ".bar.900");           // 15M
+            }
+
+            int ret = base.Init(gmLogin.UserName, gmLogin.Password, strategyT.GMID, sb.ToString(), mdmode, "localhost:8001");
+            if (ret != 0)
+            {
+                InitializeExceptionOccur(string.Format("初始化掘金错误{0}", ret));
+            }
+        }
+
+        private void Prepare()
+        {
+            // Prepare Get DictInstruments
+            if (DictInstruments == null)
+            {
+                DictInstruments = new Dictionary<string, Instrument>();
+
+                List<Instrument> lst = new List<Instrument>();
+                lst = base.GetInstruments("SZSE", 1, 0);
+                lst.AddRange(base.GetInstruments("SHSE", 1, 0));
+
+                foreach (Instrument ins in lst)
+                {
+                    DictInstruments.Add(ins.symbol, ins);
+                }
+            }
+
+            // prepare monitors'data 
+            watch.Reset();
+            watch.Start();
+            foreach (Monitor m in this.GetMonitorEnumerator())
+            {
+                if (DictInstruments.ContainsKey(m.Target.Symbol))
+                    m.GMInstrument = DictInstruments[m.Target.Symbol];
+                m.Prepare();
+            }
+            watch.Stop();
+            WriteMDLog(string.Format("启动前准备完成, 用时({0})", watch.ElapsedMilliseconds));
+        }
+        #endregion
     }
 }

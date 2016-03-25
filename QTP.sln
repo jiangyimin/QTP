@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTP.Main", "QTP.Main\QTP.Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTP.Console", "QTP.Console\QTP.Console.csproj", "{C4547F40-9F25-43AF-8CB0-FB32FE09824A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTP.Plugin", "QTP.Plugin\QTP.Plugin.csproj", "{FEA8A018-67D1-4776-831D-1B6AB80DA508}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,16 @@ Global
 		{C4547F40-9F25-43AF-8CB0-FB32FE09824A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C4547F40-9F25-43AF-8CB0-FB32FE09824A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C4547F40-9F25-43AF-8CB0-FB32FE09824A}.Release|Win32.ActiveCfg = Release|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FEA8A018-67D1-4776-831D-1B6AB80DA508}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
