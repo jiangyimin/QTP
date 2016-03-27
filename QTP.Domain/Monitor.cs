@@ -107,6 +107,7 @@ namespace QTP.Domain
             else
                 TickTA.Push(tick, false);
         }
+
         public abstract void OnBar(Bar bar);
 
         #endregion

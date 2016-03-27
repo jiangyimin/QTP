@@ -39,7 +39,16 @@ namespace QTP.Console
             if (dataShowed) return;
             dataShowed = true;
 
-            accountUC.GMAccount(strategy);
+            if (strategy.WebTD == null)
+            {
+                web持仓ToolStripMenuItem.Enabled = false;
+            }
+
+            // AccountUC
+            accountUC.ShowData(strategy);
+
+            // TradeUC
+            tradeUC.ShowData(strategy);
         }
 
         public void TimerRefresh()
@@ -78,5 +87,30 @@ namespace QTP.Console
         }
 
         #endregion
+
+
+        #region contextMenu
+        private void 清理TDLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            boxTDLog.Items.Clear();
+        }
+
+        private void 清理MDLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            boxMDLog.Items.Clear();
+        }
+
+        #endregion
+
+        private void 掘金持仓ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            accountUC.ShowGMAccount();
+        }
+
+        private void web持仓ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            accountUC.ShowWebAccount();
+        }
+
     }
 }

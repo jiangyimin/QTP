@@ -48,14 +48,14 @@ namespace QTP.Console
             if (dataShowed) return;
             dataShowed = true;
 
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    FlowLayoutPanel panel = new FlowLayoutPanel();
+            for (int i = 0; i < 3; i++)
+            {
+                FlowLayoutPanel panel = new FlowLayoutPanel();
 
-            //    panel.Dock = DockStyle.Fill;
-            //    this.panelClient.Controls.Add(panel);
-            //    monitorNavs[i] = panel;
-            //}
+                panel.Dock = DockStyle.Fill;
+                this.panelClient.Controls.Add(panel);
+                monitorNavs[i] = panel;
+            }
 
             // now only process Normal
             foreach (Monitor monitor in strategy.GetMonitorEnumerator())
@@ -64,7 +64,7 @@ namespace QTP.Console
                 uc.Parent = this;
 
                 flowLayoutPanel1.Controls.Add(uc);
-                //monitorNavs[monitor.Category].Controls.Add(uc);
+                monitorNavs[monitor.Category].Controls.Add(uc);
 
             }
 
@@ -74,13 +74,13 @@ namespace QTP.Console
 
         public void TimerRefresh()
         {
-            //foreach (Control uc in panelFocus.Controls)
-            //{
-            //    if (uc is MonitorUC)
-            //    {
-            //        ((MonitorUC)uc).Display();
-            //    }
-            //}
+            foreach (Control uc in panelFocus.Controls)
+            {
+                if (uc is MonitorUC)
+                {
+                    ((MonitorUC)uc).Display();
+                }
+            }
         }
 
         #endregion
@@ -90,32 +90,32 @@ namespace QTP.Console
 
         private void btnObserve_Click(object sender, EventArgs e)
         {
-            //panelFocus = monitorNavs[0];
+            panelFocus = monitorNavs[0];
 
             lblTitle.Text = "观察期监控器";
-            //lblRightTitle.Text = string.Format("数量：{0}", panelFocus.Controls.Count);
+            lblRightTitle.Text = string.Format("数量：{0}", panelFocus.Controls.Count);
 
-            //panelFocus.BringToFront();
+            panelFocus.BringToFront();
         }
 
         private void btnCandidate_Click(object sender, EventArgs e)
         {
-            //panelFocus = monitorNavs[1];
+            panelFocus = monitorNavs[1];
 
             lblTitle.Text = "候选期监控器";
-            //lblRightTitle.Text = string.Format("数量：{0}", panelFocus.Controls.Count);
+            lblRightTitle.Text = string.Format("数量：{0}", panelFocus.Controls.Count);
 
-            //panelFocus.BringToFront();
+            panelFocus.BringToFront();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //panelFocus = monitorNavs[2];
+            panelFocus = monitorNavs[2];
 
             lblTitle.Text = "持仓期监控器";
-            //lblRightTitle.Text = string.Format("数量：{0}", panelFocus.Controls.Count);
+            lblRightTitle.Text = string.Format("数量：{0}", panelFocus.Controls.Count);
 
-            //panelFocus.BringToFront();
+            panelFocus.BringToFront();
         }
 
         #endregion

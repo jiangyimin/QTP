@@ -83,6 +83,7 @@
     <Compile Include="StrategyUC.Designer.cs">
       <DependentUpon>StrategyUC.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinAPI.cs" />
     <EmbeddedResource Include="ExeRunUC.resx">
       <DependentUpon>ExeRunUC.cs</DependentUpon>
     </EmbeddedResource>
@@ -130,10 +131,6 @@
     <ProjectReference Include="..\QTP.Domain\QTP.Domain.csproj">
       <Project>{30a8f72d-479f-4bbc-9379-2cb3649b9c57}</Project>
       <Name>QTP.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QTP.Infra\QTP.Infra.csproj">
-      <Project>{b7976781-3a40-475a-a205-f996a78ec79d}</Project>
-      <Name>QTP.Infra</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

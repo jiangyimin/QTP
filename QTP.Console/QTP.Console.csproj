@@ -112,6 +112,12 @@
     <Compile Include="TickUC.Designer.cs">
       <DependentUpon>TickUC.cs</DependentUpon>
     </Compile>
+    <Compile Include="TradeUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TradeUC.Designer.cs">
+      <DependentUpon>TradeUC.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AccountUC.resx">
       <DependentUpon>AccountUC.cs</DependentUpon>
     </EmbeddedResource>
@@ -151,6 +157,9 @@
     <EmbeddedResource Include="TickUC.resx">
       <DependentUpon>TickUC.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TradeUC.resx">
+      <DependentUpon>TradeUC.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -173,9 +182,9 @@
       <Project>{30a8f72d-479f-4bbc-9379-2cb3649b9c57}</Project>
       <Name>QTP.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QTP.Infra\QTP.Infra.csproj">
-      <Project>{b7976781-3a40-475a-a205-f996a78ec79d}</Project>
-      <Name>QTP.Infra</Name>
+    <ProjectReference Include="..\QTP.Plugin\QTP.Plugin.csproj">
+      <Project>{fea8a018-67d1-4776-831d-1b6ab80da508}</Project>
+      <Name>QTP.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\QTP.TAlib\QTP.TAlib.csproj">
       <Project>{2954cc30-e4e5-4ac6-9eee-ec0b82804979}</Project>

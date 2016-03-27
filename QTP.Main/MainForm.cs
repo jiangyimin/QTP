@@ -116,7 +116,7 @@ namespace QTP.Main
         {
             DateTime dt = GetBeijingTime();
 
-            QTP.Infra.Utils.SetDate(dt);
+            //QTP.Infra.Utils.SetDate(dt);
         }
 
         private DateTime GetBeijingTime()  

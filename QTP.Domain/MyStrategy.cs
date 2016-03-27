@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using QTP.Plugin;
-using QTP.Infra;
 using QTP.DBAccess;
 using GMSDK;
 
@@ -34,8 +33,11 @@ namespace QTP.Domain
         // WebTrade and HeartPusle
         private WebTrade webTD;
         private System.Timers.Timer heartTimer;         // 1s 
+        private int countHeartPusle;
+        private const int IntervalTDCashHeart = 20;
 
-        // Strategy's connect status;
+        // Strategy's status;
+        private bool isRuning;
         private int countMDConnect;
         private int countTDConnect;
         private TInstrument focusInstrument;
@@ -79,9 +81,9 @@ namespace QTP.Domain
             get { return mdmode; }
         }
 
-        public System.Timers.Timer HeartTimer
+        public WebTrade WebTD
         {
-            get { return heartTimer; }
+            get { return webTD; }
         }
         #endregion
 
@@ -107,13 +109,9 @@ namespace QTP.Domain
         public delegate void FocusBarArrivedCallback(Bar bar, Bar tickBar1M);
         public event FocusBarArrivedCallback FocusBarArrived;
 
-
-        public delegate void KBTradeEventHandler(string sec_id, double price, double volume);
-
-
-
-        public event KBTradeEventHandler OnKBOpenLong;
-        public event KBTradeEventHandler OnKBCloseLong;
+        // webTD heart
+        public delegate void TradeCashHeartPusleCallback(Cash cash, long elapsed, bool isWeb=true);
+        public event TradeCashHeartPusleCallback TradeCashHeartPusle;
 
         #endregion
 
@@ -149,10 +147,11 @@ namespace QTP.Domain
         public void Initialize()
         {
             // InitWebTrade
-            if (strategyT.TradeChannelName != "掘金" && RunType != "实盘")
+            if (strategyT.TradeChannelName != "掘金" && RunType == "实盘")
                 InitWebTrade();
 
             // start HeartTimer, becuse WebTrade will hook it.
+            heartTimer.Elapsed += new System.Timers.ElapsedEventHandler(heartTimer_Elapsed);
             heartTimer.Start();
 
             // InitGM and prepare preStart data
@@ -165,12 +164,17 @@ namespace QTP.Domain
         {
             // async run strategy
             Task.Run<int>(new Func<int>(base.Run));
+
+            isRuning = true;
         }
 
         public void MyStrategyStop()
         {
+            if (webTD != null) webTD.Close();
             heartTimer.Stop();
-            base.Stop();
+
+            if (isRuning)
+                base.Stop();
         }
 
         /// <summary>
@@ -246,6 +250,8 @@ namespace QTP.Domain
             if (ConnectStatusChanged != null) ConnectStatusChanged(true, string.Format("数据已连接({0})", countMDConnect));
 
             // async run: 当天数据的重建
+            //PrepareMDLogin();
+
             Task.Run(new Action(PrepareMDLogin));
         }
 
@@ -287,35 +293,27 @@ namespace QTP.Domain
 
         #endregion
 
-        #region Trader events overide
+        #region TD Methods
 
-        public void MyOpenLongSync(string exchange, string sec_id, double price, double volume)
+        public MyOrder MyOpenLong(string exchange, string sec_id, double price, double volume)
         {
-            if (strategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
+            Order order = OpenLong(exchange, sec_id, price, volume);
+            
+            if (webTD != null && webTD.IsLoginOK)
             {
-                // trade
-                OpenLongSync(exchange, sec_id, price, volume);
+                webTD.Buy(exchange, sec_id, price, volume);
             }
-            else
-            {
-                // KBTrade
-                OnKBOpenLong(sec_id, price, volume);
 
-            }
+            return null;
         }
 
-        public void MyCloseLongSync(string exchange, string sec_id, double price, double volume)
+        public void MyCloseLong(string exchange, string sec_id, double price, double volume)
         {
-            if (strategyT.TradeChannelName == "掘金" || mdmode != MDMode.MD_MODE_LIVE)
-            {
-                // trade
-                CloseLongSync(exchange, sec_id, price, volume);
-            }
-            else
-            {
-                // KBTrade
-                OnKBCloseLong(sec_id, price, volume);
+            Order order = CloseLong(exchange, sec_id, price, volume);
 
+            if (webTD != null && webTD.IsLoginOK)
+            {
+                webTD.Sell(exchange, sec_id, price, volume);
             }
 
         }
@@ -347,7 +345,6 @@ namespace QTP.Domain
                 watch.Start();
 
                 webTD.Init(strategyT.TradeChannelParameters);
-                HeartTimer.Elapsed += new System.Timers.ElapsedEventHandler(webTD.HeartTimer_Elapsed);
                 webTD.ConnectStatusChanged += new WebTrade.ConnectStatusChangedCallback(WebTrade_ConnectStatusChanged);
 
                 watch.Stop();
@@ -363,13 +360,14 @@ namespace QTP.Domain
         {
             try
             {
+                int i = 1;
                 foreach (Monitor m in GetMonitorEnumerator())
                 {
                     watch.Reset();
                     watch.Start();
                     m.PrepareMDLogin();
                     watch.Stop();
-                    WriteMDLog(string.Format("{0}处理({1}Bs和{2}Ts,用时({3})", m.Target.InstrumentId, m.GetCounBarsPrepared(), m.TickTA.Count, watch.ElapsedMilliseconds));
+                    WriteMDLog(string.Format("({0}) {1}已处理[{2}Bs和{3}Ts],用时({4})", i++, m.Target.InstrumentId, m.GetCounBarsPrepared(), m.TickTA.Count, watch.ElapsedMilliseconds));
                 }
             }
             catch
@@ -440,6 +438,41 @@ namespace QTP.Domain
             watch.Stop();
             WriteMDLog(string.Format("启动前准备完成, 用时({0})", watch.ElapsedMilliseconds));
         }
+
+        private void heartTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            countHeartPusle++;
+
+            // TDCashHeart
+            if (countHeartPusle == IntervalTDCashHeart)
+            {
+                // for GM Trade
+                watch.Reset();
+                watch.Start();
+                Cash cash = this.GetCash();
+                if (TradeCashHeartPusle != null)
+                    TradeCashHeartPusle(cash, watch.ElapsedMilliseconds, false);
+
+                // for Web Trade, let web alive.
+                watch.Stop();
+                if (TradeCashHeartPusle != null)
+                    TradeCashHeartPusle(cash, watch.ElapsedMilliseconds, true);
+                if (webTD != null)
+                {
+                    watch.Reset();
+                    watch.Start();
+                    cash = webTD.GetCash();
+                    if (cash == null) Task.Run(new Action(webTD.Login));
+                    watch.Stop();
+                    if (TradeCashHeartPusle != null)
+                        TradeCashHeartPusle(cash, watch.ElapsedMilliseconds, true);
+                }
+                
+                // reset count
+                countHeartPusle = 0;
+            }
+        }
+
         #endregion
     }
 }

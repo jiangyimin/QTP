@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-using QTP.Infra;
-
 namespace QTP.Main
 {
     public partial class ExeRunUC : UserControl

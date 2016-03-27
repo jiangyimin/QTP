@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace QTP.Infra
+namespace QTP.Main
 {
     public class WinAPI
     {

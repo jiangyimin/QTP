@@ -47,21 +47,19 @@
     <Compile Include="BridgeRiskM.cs" />
     <Compile Include="BridgeTA.cs" />
     <Compile Include="MonitorEvent.cs" />
+    <Compile Include="MyOrder.cs" />
     <Compile Include="RiskM.cs" />
     <Compile Include="Monitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MyStrategy.cs" />
     <Compile Include="StrategyEventArgs.cs" />
     <Compile Include="TickTA.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QTP.DBAccess\QTP.DBAccess.csproj">
       <Project>{6f6e25c8-86ac-4f64-9bd7-94bed5ed6e7c}</Project>
       <Name>QTP.DBAccess</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QTP.Infra\QTP.Infra.csproj">
-      <Project>{b7976781-3a40-475a-a205-f996a78ec79d}</Project>
-      <Name>QTP.Infra</Name>
     </ProjectReference>
     <ProjectReference Include="..\QTP.Plugin\QTP.Plugin.csproj">
       <Project>{fea8a018-67d1-4776-831d-1b6ab80da508}</Project>

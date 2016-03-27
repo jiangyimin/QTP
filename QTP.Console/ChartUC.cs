@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
 
+using QTP.Domain;
 using QTP.TAlib;
-using QTP.Infra;
 
 namespace QTP.Console
 {

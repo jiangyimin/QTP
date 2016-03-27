@@ -5,7 +5,6 @@ using System.Text;
 using System.Data.SqlClient;
 using MySql.Data.MySqlClient;
 
-using QTP.Infra;
 
 namespace QTP.DBAccess
 {

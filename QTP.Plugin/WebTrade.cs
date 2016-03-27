@@ -20,9 +20,7 @@ namespace QTP.Plugin
 
         #region member
 
-        // HeartTimer member
-        protected int countHeartPusle;
-        protected int intervalHeartPusle;
+        // status
         private bool isLoginOK;
 
         // helper
@@ -31,6 +29,9 @@ namespace QTP.Plugin
         // Parameters Dictionary
         protected Dictionary<string, string> loginParameters;
         protected Dictionary<string, string> cashParameters;
+        protected Dictionary<string, string> posParameters;
+        protected Dictionary<string, string> buyParameters;
+        protected Dictionary<string, string> sellParameters;
 
         #endregion
 
@@ -47,9 +48,9 @@ namespace QTP.Plugin
         }
 
         #endregion
+
         public WebTrade()
         {
-            intervalHeartPusle = 10;
             httpHelper = new HttpHelper("Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko");
         }
 
@@ -59,24 +60,9 @@ namespace QTP.Plugin
             Login();
         }
 
-        public void HeartTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        public void Close()
         {
-            countHeartPusle++;
-            if (countHeartPusle == intervalHeartPusle)
-            {
-                // Test connection token
-                try
-                {
-                    GetCash();
-                }
-                catch
-                {
-                    Task.Run(new Action(Login));
-                }
-
-                // reset count
-                countHeartPusle = 0;
-            }
+            Logout();
         }
 
         public void FireConnectStatusChanged()
@@ -86,9 +72,16 @@ namespace QTP.Plugin
         }
 
         #region abstract define
-        public abstract void Login();
 
-        public abstract void GetCash();
+        public abstract void Login();
+        public abstract void Logout();
+
+        public abstract GMSDK.Cash GetCash();
+        public abstract List<GMSDK.Position> GetPositions();
+
+        public abstract int Buy(string exchange, string sec_id, double price, double volume);
+        public abstract int Sell(string exchange, string sec_id, double price, double volume);
+
 
         #endregion
 

@@ -8,7 +8,6 @@ using System.Reflection;
 
 using GMSDK;
 using QTP.TAlib;
-using QTP.Infra;
 
 namespace QTP.Domain
 {

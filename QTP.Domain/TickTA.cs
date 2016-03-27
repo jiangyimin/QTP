@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using GMSDK;
 using QTP.TAlib;
-using QTP.Infra;
 
 namespace QTP.Domain
 {

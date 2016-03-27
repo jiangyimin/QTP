@@ -10,7 +10,6 @@ using System.Windows.Forms;
 
 using GMSDK;
 using QTP.Domain;
-using QTP.Infra;
 
 namespace QTP.Console
 {

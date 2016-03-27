@@ -25,7 +25,10 @@ namespace QTP.Console
 
         public void Display()
         {
-            lblTarge.Text = mon.Target.InstrumentId + mon.GMInstrument.sec_name;
+            if (mon.GMInstrument != null)
+                lblTarge.Text = mon.Target.InstrumentId + mon.GMInstrument.sec_name;
+            else
+                lblTarge.Text = mon.Target.InstrumentId;
 
             TickTA tickTA = mon.TickTA;
             if (tickTA.LastestTickQuota != null)

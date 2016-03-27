@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using QTP.Infra;
 using QTP.DBAccess;
 using QTP.TAlib;
 using GMSDK;
@@ -52,13 +51,13 @@ namespace QTP.Domain
         {
             // DailyBars
             List<DailyBar> barsDaily = strategy.GetLastNDailyBars(Target.Symbol, NDailyBars);
-
-            bridgeTA.Push(barsDaily);
+            if (barsDaily.Count > 0)
+                bridgeTA.Push(barsDaily);
         }
 
         public override void PrepareMDLogin()
         {
-            lock (this)
+//            lock (this)
             {
                 // bridgeTA
                 bridgeTA.ClearBars();       // clear minute bars first
@@ -197,14 +196,16 @@ namespace QTP.Domain
 
         public override void OnBar(Bar bar)
         {
-            if (needBuffer)
+            lock (this)
             {
-                barBuffer.Add(bar);
-                return;
+                if (needBuffer)
+                {
+                    barBuffer.Add(bar);
+                    return;
+                }
+
+                bridgeTA.Push(bar);
             }
-
-            bridgeTA.Push(bar);
-
             // strategy.MyOpenLongSync(Target.Exchange, Target.Symbol, xsTick[0].ask_p1 * 0.92, 100);
  
             //if (OpenTrigger(1))     // Long

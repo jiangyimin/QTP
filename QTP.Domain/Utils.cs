@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace QTP.Infra
+namespace QTP.Domain
 {
     public class Utils
     {
