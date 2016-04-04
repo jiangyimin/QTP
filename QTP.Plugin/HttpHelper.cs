@@ -43,19 +43,16 @@ namespace QTP.Plugin
         /// <summary>  
         /// 创建GET方式的HTTP请求  
         /// </summary>  
-        public HttpWebResponse CreateGetHttpResponse(string url, bool setCookie = false)
+        public HttpWebResponse CreateGetHttpResponse(string url, bool clearCookie = false)
         {
+            if (clearCookie)
+                m_Cookie = new CookieContainer();
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.CookieContainer = m_Cookie;
 
             request.UserAgent = userAgent;
             request.Method = "GET";
-
-            if (setCookie)
-            {
-                string cookieheader = request.CookieContainer.GetCookieHeader(new Uri(url));
-                m_Cookie.SetCookies(new Uri(url), cookieheader);
-            }
 
             return request.GetResponse() as HttpWebResponse;
         }

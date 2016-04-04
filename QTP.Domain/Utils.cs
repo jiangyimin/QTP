@@ -9,17 +9,16 @@ namespace QTP.Domain
 {
     public class Utils
     {
-        private static DateTime StockMarketBeginTime = new DateTime(2000, 1, 1, 9, 10, 0);    // 上午9点
-        private static DateTime StockMarketEndTime = new DateTime(2000, 1, 1, 15, 10, 0);     // 下午3点
-
-        public static bool IsInStockMarkerOpenPeriod(DateTime dtNow)
+        public static string DTString(DateTime dt)
         {
-            if (dtNow.DayOfWeek == DayOfWeek.Saturday || dtNow.DayOfWeek == DayOfWeek.Sunday)
-                return false;
-                
-            DateTime dt = new DateTime(2000, 1, 1, dtNow.Hour, dtNow.Minute, 0);
-            return  dt.CompareTo(StockMarketBeginTime) > 0 && dt.CompareTo(StockMarketEndTime) < 0;
+            return dt.ToString("yyyy-MM-dd");
         }
+
+        public static string DTLongString(DateTime dt)
+        {
+            return dt.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
 
         public static bool IsToday(double utc)
         {
@@ -33,7 +32,68 @@ namespace QTP.Domain
             return dt;
         }
 
-        
+        public static string GetStartTimeString(int bar_type, int num, DateTime from)
+        {
+            DateTime start = new DateTime(from.Year, from.Month, from.Day, 15, 0, 0);
+
+            // 日线
+            if (bar_type == 0)
+            {
+                start = from.Subtract(new TimeSpan(num, 0, 0, 0, 0));
+                return start.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                int numMinutes = bar_type * num;
+                int days = numMinutes / 240;
+                start = from.Subtract(new TimeSpan(days, 0, 0, 0, 0));
+
+                return GetStartTimeString(numMinutes % 240, start);
+            }
+        }
+
+        private static string GetStartTimeString(int minutes, DateTime from)
+        {
+            DateTime openM = new DateTime(from.Year, from.Month, from.Day, 9, 30, 0);
+            DateTime openP = new DateTime(from.Year, from.Month, from.Day, 13, 0, 0);
+
+            int lastingMinutes = GetLastingMinutes(from);
+            if (lastingMinutes > minutes)
+            {
+                if (lastingMinutes - minutes >= 120)
+                    return DTLongString(openP.Add(new TimeSpan(0, lastingMinutes - minutes - 120, 0)));
+                else
+                    return DTLongString(openM.Add(new TimeSpan(0, lastingMinutes - minutes, 0)));
+            }
+            else
+            {
+                openM = openM.Subtract(new TimeSpan(1, 0, 0, 0));
+                openP = openP.Subtract(new TimeSpan(1, 0, 0, 0));
+                if (240 - minutes + lastingMinutes >= 120)
+                    return DTLongString(openP.Add(new TimeSpan(0, 120 - minutes + lastingMinutes, 0)));
+                else
+                    return DTLongString(openM.Add(new TimeSpan(0, 240 - minutes + lastingMinutes, 0)));
+            }
+        }
+
+        private static int GetLastingMinutes(DateTime dt)
+        {
+            DateTime openM = new DateTime(dt.Year, dt.Month, dt.Day, 9, 30, 0);
+            DateTime endM = new DateTime(dt.Year, dt.Month, dt.Day, 11, 30, 0);
+            DateTime openP = new DateTime(dt.Year, dt.Month, dt.Day, 13, 0, 0);
+            DateTime endP = new DateTime(dt.Year, dt.Month, dt.Day, 15, 0, 0);
+
+            if (dt < openM)
+                return 0;
+            else if (dt >= openM && dt <= endM)
+                return dt.Subtract(openM).Minutes;
+            else if (dt > endM && dt < openP)
+                return 120;
+            else if (dt >= openP && dt <= endP)
+                return dt.Subtract(openP).Minutes + 120;
+            else
+                return 240;
+        }
 
         [DllImport("kernel32.dll")]
         private static extern bool SetLocalTime(ref SYSTEMTIME time);

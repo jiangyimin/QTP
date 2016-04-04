@@ -12,7 +12,7 @@ using QTP.Domain;
 
 namespace QTP.Console
 {
-    public partial class RiskTradeUC : UserControl, IStrategyUC
+    public partial class RiskTradeUC : UserControl
     {
         private MyStrategy strategy;
         private bool dataShowed = false;
@@ -22,7 +22,6 @@ namespace QTP.Console
             InitializeComponent();
         }
 
-        #region IStrategyUI
         public MyStrategy Subject
         {
             set 
@@ -50,11 +49,6 @@ namespace QTP.Console
             // TradeUC
             tradeUC.ShowData(strategy);
         }
-
-        public void TimerRefresh()
-        { }
-
-        #endregion
 
         #region event handers
         public void MDLogHandler(string msg)

@@ -10,129 +10,285 @@ using GMSDK;
 
 namespace QTP.Domain
 {
-    public abstract class Monitor
+    public class Monitor
     {
-
-        #region public properties
-
-        // static for quotas
-        public static Type QuotaType
-        {
-            get { return quotaType; }
-        }
-
-        public static Dictionary<string, List<string>> QuotaNames
-        {
-            get { return quotaNames; }
-        }
-
+        #region Properties
         /// <summary>
         /// GM's Instrument and TInstrument(Target)
         /// </summary>
         public Instrument GMInstrument { get; set; }
-        public TInstrument Target { get; set; }
+
+        public TInstrument Target
+        {
+            get { return target; }
+        }
+        public string TargetTitle
+        {
+            get {
+                if (GMInstrument == null)
+                    return "非法代码";
+                if (GMInstrument.is_active == 1)
+                    return GMInstrument.sec_name;
+                else
+                    return GMInstrument.sec_name + "(停牌)";
+            }
+        }
 
         /// <summary>
-        /// 分类：0：观察期  1：候选期   3：持仓期
+        /// 分类：0：观察期  1：候选期   2：持仓期
         /// </summary>
-        public int Category { get; set; }
+        public int Category
+        {
+            get
+            {
+                if (riskPosition != null)
+                    return 2;
+                else
+                    return 0;                
+            }
+        }
 
-        // tick process class
-        public TickTA TickTA { get; set; }
-
+        public TA TA
+        {
+            get { return ta; }
+        }
 
         #endregion
 
         #region protected members
 
-        // static quota names
-        protected static Type quotaType;
-        protected static Dictionary<string, List<string>> quotaNames;
+        // import
+        protected MyStrategy strategy;          // parent
+        protected TInstrument target;
+        protected TA ta;
 
 
-        // strategy
-        protected MyStrategy strategy;
-
-        // Buffered
-        protected bool needBuffer;
+        // MDs: Buffered
         protected List<Bar> barBuffer;
         protected List<Tick> tickBuffer;
+
+
+        // TDs : Position and Order
+        protected RiskPosition riskPosition;
+        protected double stopLossPrice;
+
+        protected Order orderLast;
+
+        #endregion
+
+        #region private member
+
+        // 
+        private bool focus;
+
+        // base factor and Dictionary for PrepareMDLogin Bars ( Method PushBar 's factor = 0)
+        private float baseFactor;
+        private Dictionary<string, float> dictFactorPrepare;
 
         #endregion
 
         #region Public Methods
 
-        public void SetTInstrument(MyStrategy strategy, TInstrument target)
+        public Monitor(MyStrategy strategy, TInstrument target, TAInfo taInfo)
         {
             this.strategy = strategy;
-            this.Target = target;
-            this.TickTA = new TickTA();
+            this.target = target;
 
-            this.needBuffer = true;
+            this.ta = new TA(this, taInfo);
+
             this.barBuffer = new List<Bar>();
             this.tickBuffer = new List<Tick>();
         }
 
         public void SetFocus()
         {
-            this.strategy.FocusInstrument = Target;
+            this.focus = true;
         }
 
-        #endregion
-        
-        #region abstract or virtual 
-
-        // Data Prepare
-        public abstract void Prepare();
-        public abstract void PrepareMDLogin();
-        public abstract int GetCounBarsPrepared();
-
-        // Quotas
-        public abstract object GetLatestQuota(int ktype);
-        public abstract RList<object> GetQuotas(int ktype);
-
-        public abstract RList<KLine> GetKLines(int ktype);
-
-        // On Events
-        public virtual void OnTick(Tick tick)
+        // Prepare DailyBar for Normalize price
+        public void PrepareDaily(DateTime from)
         {
-            if (needBuffer)
+            // Get LastNDailyBars, [0] is latest!
+            var bars = strategy.GetLastNDailyBars(Target.Symbol, TAInfo.PreNBars, Utils.DTString(from));
+            if (bars.Count == 0) throw new Exception("没有用来Normalize的日线数据!");
+            // set factors
+            baseFactor = bars[0].adj_factor;
+            dictFactorPrepare = new Dictionary<string, float>();
+
+            for (int i = bars.Count - 1;  i >=0; i--)
             {
-                tickBuffer.Add(tick);
-                return;
+                DailyBar bar = bars[i];
+
+                // Set dictFactor
+                string key = Utils.DTString(Utils.UtcToDateTime(bar.utc_time));
+                if (bar.adj_factor > 0F)
+                    dictFactorPrepare[key] = bar.adj_factor;
+
+                // Push KLine
+                PushDailyBar(bar);
             }
 
-            if (strategy.MDMode == MDMode.MD_MODE_LIVE)
-                TickTA.Push(tick, true);
-            else
-                TickTA.Push(tick, false);
         }
 
-        public abstract void OnBar(Bar bar);
+        public int PrepareTick(DateTime from)
+        {
+            // tickTA
+            List<Tick> ticks = strategy.GetLastNTicks(Target.Symbol, TAInfo.PreNTicks, Utils.DTLongString(from));
+            for (int i = ticks.Count - 1; i >= 0; i--)
+            {
+                Tick tick = ticks[i];
+                // if tick is not Today, ignore
+                if (Utils.IsToday(tick.utc_time))
+                    ta.PushTick(tick);
+            }
+
+            return ticks.Count;
+        }
+
+        public void PushBar(Bar bar, float factor)
+        {
+            Adj_factor(bar, factor);
+
+            string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
+            KLine k = new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
+            ta.PushKLine(bar.bar_type / 60, k);
+
+            // Process focusInstument
+            if (focus) strategy.FireFocusBarArrived(bar);
+        }
+
+        public KLine GetKLine(DailyBar bar)
+        {
+            Adj_factor(bar);
+            string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
+            return new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
+        }
+
+        public KLine GetKLine(Bar bar, float factor)
+        {
+            Adj_factor(bar, factor);
+            string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
+            return new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
+        }
+
+        public void PushKLine(int ktype, KLine k)
+        {
+            ta.PushKLine(ktype, k);
+        }
+
+        public void PushDailyBar(DailyBar bar)
+        {
+            Adj_factor(bar);
+
+            string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
+            ta.PushKLine(0, new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume));
+        }
+
+        public void StartTA(DateTime from)
+        {
+            lock (this)
+            {
+                // push buffered bars
+                foreach (Bar bar in barBuffer)
+                    PushBar(bar, baseFactor);
+                barBuffer.Clear();
+
+                // push buffeded ticks
+                foreach (Tick tick in tickBuffer)
+                    ta.PushTick(tick);
+                tickBuffer.Clear();
+
+                ta.Enabled = true;
+            }
+
+        }
 
         #endregion
 
-        #region Monitor Position and Order
+        #region some private utils
 
-        // Position and Order
-        protected Order orderLast;
-        protected Position posTrace;
-        protected double stopLossPrice;
+        private void Adj_factor(DailyBar bar)
+        {
+            bar.open = bar.open * bar.adj_factor / baseFactor;
+            bar.close = bar.close * bar.adj_factor / baseFactor;
+            bar.high = bar.high * bar.adj_factor / baseFactor;
+            bar.low = bar.low * bar.adj_factor / baseFactor;
+        }
 
+        private void Adj_factor(Bar bar, float factor)
+        {
+            if (factor != 0F)
+            {
+                bar.open = bar.open * factor / baseFactor;
+                bar.close = bar.close * factor / baseFactor;
+                bar.high = bar.high * factor / baseFactor;
+                bar.low = bar.low * factor / baseFactor;
+            }
+            else    // use dictFactorPrepare
+            {
+                string key = Utils.DTString(Utils.UtcToDateTime(bar.utc_time));
+                if (dictFactorPrepare.ContainsKey(key))
+                    Adj_factor(bar, dictFactorPrepare[key]);
+            }
+        }
+
+        #endregion
+
+        #region MD abstract or virtual
+
+        // On Events
+        public void OnTick(Tick tick)
+        {
+            lock (this)
+            {
+                if (ta.Enabled)
+                {
+                    ta.PushTick(tick);
+                    if (focus) strategy.FireFocusTickArrived(ta.TickTA);
+                }
+                else
+                {
+                    tickBuffer.Add(tick);
+                }
+            }
+        }
+
+        public void OnBar(Bar bar)
+        {
+            lock (this)
+            {
+                if (ta.Enabled)
+                    PushBar(bar, baseFactor);
+                else
+                    barBuffer.Add(bar);
+            }
+        }
+
+        #endregion
+
+        #region TD methods
+
+
+        //public abstract RiskOrder IssueOpenLongSignal();
+        //public abstract RiskOrder IssueCloseLongSignal();
 
         public virtual void OnOrderFilled()
         {
             orderLast = null;
         }
 
-        public abstract void OnPosition(Position pos);
+
+        public virtual void SetPosition(RiskPosition pos)
+        {
+            riskPosition = pos;
+        }
 
         public virtual void SetStopLossPrice()
         {
-            if (posTrace.side == 1)
-                stopLossPrice = posTrace.price * 0.95;
-            else
-                stopLossPrice = posTrace.price * 1.05;
+            //if (riskPosition.side == 1)
+            //    stopLossPrice = riskPosition.price * 0.95;
+            //else
+            //    stopLossPrice = riskPosition.price * 1.05;
         }
 
         #endregion

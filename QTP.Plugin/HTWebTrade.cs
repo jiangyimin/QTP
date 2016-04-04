@@ -150,6 +150,8 @@ namespace QTP.Plugin
             public double av_income_balance { get; set; }
             [DataMember(Order = 15)]
             public double income_balance_ratio { get; set; }
+            [DataMember(Order = 15)]
+            public string cssweb_test { get; set; }     // end item flag
         }
 
         [DataContract]
@@ -206,13 +208,10 @@ namespace QTP.Plugin
         #endregion
 
 
-        public HTWebTrade()
+        public HTWebTrade(Dictionary<string, string> parameters) : base(parameters)
         {
-            loginParameters = new Dictionary<string, string>()
-            {
-                {"accountType", "1"},
-                {"userType", "jy"},
-            };
+            loginParameters["accountType"] = "1";
+            loginParameters["userType"] = "jy";
 
             cashParameters = new Dictionary<string, string>()
             {
@@ -266,10 +265,11 @@ namespace QTP.Plugin
 
         #region abstract 
 
-        public override void Login()
+        protected override void Login()
         {
+            IsLoginOK = false;
             // go_login_page
-            httpHelper.CreateGetHttpResponse(login_pageUrl);
+            httpHelper.CreateGetHttpResponse(login_pageUrl, true);
 
             // RecognizeCode
             string verifycode = null;
@@ -280,7 +280,7 @@ namespace QTP.Plugin
                 if (verifycode.Length == 4)
                     break;
                 i++;
-                Thread.Sleep(200);
+                Thread.Sleep(300);
             }
 
             // set vcode 
@@ -301,13 +301,13 @@ namespace QTP.Plugin
             if (ret) GetTradeInfo();
         }
 
-        public override void Logout()
+        protected override void Logout()
         {
             // go_logout_page
             httpHelper.CreateGetHttpResponse(logout_apiUrl);           
         }
 
-        public override GMSDK.Cash GetCash()
+        protected override GMSDK.Cash GetCash()
         {
             if (!IsLoginOK) return null;
             
@@ -333,7 +333,7 @@ namespace QTP.Plugin
             }
         }
 
-        public override List<GMSDK.Position> GetPositions()
+        protected override List<GMSDK.Position> GetPositions()
         {
             if (!IsLoginOK) return null;
             // set parameter and get response
@@ -348,13 +348,16 @@ namespace QTP.Plugin
                 List<GMSDK.Position> lst = new List<GMSDK.Position>();
                 foreach (HTPosition htp in pr.item)
                 {
+                    if (htp.cssweb_test == "0") continue;
                     GMSDK.Position pos = new GMSDK.Position();
                     pos.exchange = htp.exchange_type == "1" ? "SHSE" : "SZSE";
                     pos.sec_id = htp.stock_code;
                     pos.volume = htp.current_amount;
-                    pos.last_price = htp.last_price;
+                    pos.available = htp.enable_amount;
+                    pos.vwap = htp.cost_price;
                     pos.cost = htp.cost_price * htp.current_amount;
                     pos.fpnl = htp.income_balance;
+                    pos.price = htp.last_price;
 
                     lst.Add(pos);
                 }
@@ -366,7 +369,7 @@ namespace QTP.Plugin
             }
         }
 
-        public override int Buy(string exchange, string sec_id, double price, double volume)
+        protected override int Buy(string exchange, string sec_id, double price, double volume)
         {
             // exchage
             int i = exchange == "SHSE" ? 0 : 1;
@@ -390,7 +393,7 @@ namespace QTP.Plugin
                 return -1;
         }
 
-        public override int Sell(string exchange, string sec_id, double price, double volume)
+        protected override int Sell(string exchange, string sec_id, double price, double volume)
         {
             // exchage
             int i = exchange == "SHSE" ? 0 : 1;

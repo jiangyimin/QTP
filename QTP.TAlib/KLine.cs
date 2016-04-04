@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace QTP.TAlib
 {
+    [Serializable]
     public class KLine
     {
-        public KLine (double utc, float o, float c, float h, float l, double v)
+        public KLine (string symbol, string time, double utc, float o, float c, float h, float l, double v)
         {
+            Symbol = symbol;
+            StrTime = time;
             UTC = utc;
             OPEN = o;
             CLOSE = c;
@@ -18,6 +21,8 @@ namespace QTP.TAlib
             VOLUMN = v;
         }
 
+        public string Symbol { get; set; }
+        public string StrTime { get; set; }
         public double UTC { get; set; }
         public float OPEN { get; set; }
         public float CLOSE { get; set; }

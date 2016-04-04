@@ -25,17 +25,13 @@ namespace QTP.Console
 
         public void Display()
         {
-            if (mon.GMInstrument != null)
-                lblTarge.Text = mon.Target.InstrumentId + mon.GMInstrument.sec_name;
-            else
-                lblTarge.Text = mon.Target.InstrumentId;
+            lblTarge.Text = mon.TargetTitle;
 
-            TickTA tickTA = mon.TickTA;
+            TickTA tickTA = mon.TA.TickTA;
             if (tickTA.LastestTickQuota != null)
                 lblPrice.Text = string.Format("{0:.00}", tickTA.LastestTickQuota.Tick.last_price);
 
             lblTick.Text = String.Format("T: {0}", tickTA.Count);
-            // lblBar1m.Text = String.Format("B1M: {0}", mon.Bar1MsCount);
 
         }
     }

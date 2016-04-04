@@ -43,9 +43,8 @@ namespace QTP.Console
         // klines and quotas
         private RList<KLine> klines;
         private int ktype;
-        private RList<object> quotas;
+        private List<RList<double>> quotas;
         private List<string> names;
-        public Dictionary<string, PropertyInfo> ScalarProps { get; set; }
 
         // pages
         private int page;
@@ -84,15 +83,13 @@ namespace QTP.Console
             dashRedPen.DashStyle = DashStyle.Dot;
         }
 
-        public void DrawChart(RList<KLine> klines, int ktype, RList<object> quotas, List<string> names)
+        public void DrawChart(RList<KLine> klines, int ktype, List<RList<double>> quotas, List<string> names)
         {
             this.klines = klines;
-            this.ktype = ktype;
             this.quotas = quotas;
+            this.ktype = ktype;
             this.names = names;
 
-            if (klines == null) return;
-            
             page = 0;
             maxPage = klines.Count / NumPerPage;
             if (maxPage % NumPerPage != 0) maxPage += 1;
@@ -147,7 +144,7 @@ namespace QTP.Console
 
             // klines and quotas
             if (klines != null && klines.Count > 0) DrawKlines(g, rect);
-            if (names != null && quotas != null && quotas.Count > 0) DrawQuotas(g, rect);
+            if (quotas != null && quotas.Count > 0) DrawQuotas(g, rect);
           
             // Draw mouse
             if (inCrossCursor && mouseLocation != null)
@@ -155,7 +152,7 @@ namespace QTP.Console
                 g.DrawLine(Pens.White, 0, mouseLocation.Y, rect.Right, mouseLocation.Y);     // h
                 g.DrawLine(Pens.White, mouseLocation.X, 0, mouseLocation.X, rect.Bottom);     // v
 
-                if (klines == null || klines.Count == 0) return;
+                if (klines.Count == 0) return;
                 // index of 
                 if (mouseLocation.X > XSuffixBlank && mouseLocation.X < rect.Right - YCoordWidth - XPrefixBlank)
                 {
@@ -170,13 +167,13 @@ namespace QTP.Console
                     string s = string.Format("O:{0:0.00}  C:{1:0.00}  H:{2:0.00}  L:{3:0.00}  V:{4:0}", k.OPEN, k.CLOSE, k.HIGH, k.LOW, k.VOLUMN/100);
                     g.DrawString(s, SystemFonts.MenuFont, Brushes.White, 4, 0);               
 
-                    if (names == null && quotas == null) return;
+                    if (quotas.Count == 0) return;
                     // show quota text
-                    object q = quotas[i];
                     s = null;
-                    foreach (string scalar in names)
+                    for (int j = 0; j < names.Count; j++)
                     {
-                        s += string.Format("{0}: {1:G5}  ", scalar, ScalarProps[scalar].GetValue(q));
+                        RList<double> rlst = quotas[j];
+                        s += string.Format("{0}: {1:G5}  ", names[j], rlst[i]);
                     }
                     g.DrawString(s, SystemFonts.MenuFont, Brushes.White, 4, yKChart + LineHeight);               
                 }
@@ -275,18 +272,18 @@ namespace QTP.Console
             SetQuotaRange(start, len);
 
             int num = 0;
-            foreach (string name in names)
+            for (int index = 0; index < names.Count; index++)
             {
                 // Get pen according num
                 Pen pen = pens[num % 3];
 
-                double quota = Convert.ToDouble(ScalarProps[name].GetValue(quotas[start]));
+                double quota = quotas[index][start];
 
                 int x0 = rect.Width - YCoordWidth - XPrefixBlank - KMid;
                 int y0 = rect.Height - GetQY(quota);
                 for (int i = start + 1; i < start + len; i++)
                 {
-                    quota = Convert.ToDouble(ScalarProps[name].GetValue(quotas[i]));
+                    quota = quotas[index][i];
                     int x1 = rect.Width - YCoordWidth - XPrefixBlank - (i - start) * (KWidth + KGap) - KMid;
                     int y1 = rect.Bottom - GetQY(quota);
 
@@ -322,9 +319,10 @@ namespace QTP.Console
             double max = 0;
             double min = 0;
             bool first = true;
-            foreach (string name in names)
-            {
-                double quota = Convert.ToDouble(ScalarProps[name].GetValue(quotas[start]));
+
+            for (int index = 0; index < names.Count; index++ )
+            {                
+                double quota = quotas[index][start];
 
                 if (first)
                 {
@@ -334,7 +332,7 @@ namespace QTP.Console
 
                 for (int i = start; i < start + len; i++)
                 {
-                    quota = Convert.ToDouble(ScalarProps[name].GetValue(quotas[i]));
+                    quota = quotas[index][i];
                     if (max < quota) max = quota;
                     if (min > quota) min = quota;
                 }

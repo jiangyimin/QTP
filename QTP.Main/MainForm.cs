@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using QTP.DBAccess;
+
 namespace QTP.Main
 {
     public partial class MainForm : Form
@@ -16,6 +18,7 @@ namespace QTP.Main
         #region members
         private StrategyNavUC realStrategiesNavUC;
         private StrategyNavUC simuStrategiesNavUC;
+        private StrategyNavUC btStrategiesNavUC;
 
         // show second timer
         private Timer secondTimer;
@@ -72,6 +75,8 @@ namespace QTP.Main
                 realStrategiesNavUC.Close();
             if (simuStrategiesNavUC != null)
                 simuStrategiesNavUC.Close();
+            if (btStrategiesNavUC != null)
+                btStrategiesNavUC.Close();
 
             System.Diagnostics.Process.GetCurrentProcess().Kill(); 
         }
@@ -81,35 +86,33 @@ namespace QTP.Main
         // 展现实盘策略
         private void btnReal_Click(object sender, EventArgs e)
         {
-            // create first
-            if (realStrategiesNavUC == null)
-            {
-                realStrategiesNavUC = new StrategyNavUC(Global.RealStrategies, this.splitMain.Panel2);
-                realStrategiesNavUC.Dock = DockStyle.Fill;
-                realStrategiesNavUC.Title = "实盘交易";
-
-                splitMain.Panel2.Controls.Add(realStrategiesNavUC);
-            }
-
-            // 置顶
-            realStrategiesNavUC.BringToFront();
+            ShowStrategyNavUC(ref realStrategiesNavUC, Global.RealStrategies, "实盘交易");
         }
 
         // 展现模拟策略
         private void btnSimulate_Click(object sender, EventArgs e)
         {
-            // create first
-            if (simuStrategiesNavUC == null)
-            {
-                simuStrategiesNavUC = new StrategyNavUC(Global.SimuStrategies, this.splitMain.Panel2);
-                simuStrategiesNavUC.Dock = DockStyle.Fill;
-                simuStrategiesNavUC.Title = "虚拟交易";
+            ShowStrategyNavUC(ref simuStrategiesNavUC, Global.SimuStrategies, "虚拟交易");
+        }
 
-                splitMain.Panel2.Controls.Add(simuStrategiesNavUC);
+        private void btnBackTest_Click(object sender, EventArgs e)
+        {
+            ShowStrategyNavUC(ref btStrategiesNavUC, Global.BTStrategies, "策略回测");
+        }
+
+        private void ShowStrategyNavUC(ref StrategyNavUC uc, List<TStrategy> strategies, string title)
+        {
+            if (uc == null)
+            {
+                uc = new StrategyNavUC(strategies, this.splitMain.Panel2);
+                uc.Dock = DockStyle.Fill;
+                uc.Title = title;
+
+                splitMain.Panel2.Controls.Add(uc);
             }
 
             // 置顶
-            simuStrategiesNavUC.BringToFront();
+            uc.BringToFront();
         }
 
         private void btnSetTime_Click(object sender, EventArgs e)
@@ -166,7 +169,9 @@ namespace QTP.Main
             return dt;
 
         }
+
         #endregion
+
 
     }
 }

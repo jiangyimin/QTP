@@ -18,18 +18,28 @@ namespace QTP.Console
             InitializeComponent();
         }
 
-        private delegate void TaskFinishedCallback();
-        public void TaskFinished()
+        private delegate void TaskFinishedCallback(string errorMessage);
+
+        public void TaskFinished(string errorMessage)
         {
             if (this.InvokeRequired == false)
             {
-                timer.Stop();
-                this.DialogResult = DialogResult.OK;
+                if (errorMessage == null)
+                {
+                    timer.Stop();
+                    this.DialogResult = DialogResult.OK;
+                }
+                else
+                {
+                    this.Text = errorMessage;
+                    System.Threading.Thread.Sleep(3000);
+                    this.DialogResult = DialogResult.Abort;
+                }
             }
             else
             {
                 TaskFinishedCallback handler = new TaskFinishedCallback(this.TaskFinished);
-                this.BeginInvoke(handler);
+                this.BeginInvoke(handler, errorMessage);
             }
         }
 

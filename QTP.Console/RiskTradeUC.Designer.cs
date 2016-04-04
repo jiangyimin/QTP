@@ -30,8 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.tradeUC = new QTP.Console.TradeUC();
-            this.accountUC = new QTP.Console.AccountUC();
             this.splitLog = new System.Windows.Forms.SplitContainer();
             this.boxMDLog = new System.Windows.Forms.ListBox();
             this.boxTDLog = new System.Windows.Forms.ListBox();
@@ -42,6 +40,9 @@
             this.掘金持仓ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.web持仓ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.accountUC = new QTP.Console.AccountUC();
+            this.tradeUC = new QTP.Console.TradeUC();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -51,6 +52,10 @@
             this.splitLog.Panel2.SuspendLayout();
             this.splitLog.SuspendLayout();
             this.contextMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -62,8 +67,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.tradeUC);
-            this.splitContainer1.Panel1.Controls.Add(this.accountUC);
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
             // 
             // splitContainer1.Panel2
             // 
@@ -71,22 +75,6 @@
             this.splitContainer1.Size = new System.Drawing.Size(1146, 589);
             this.splitContainer1.SplitterDistance = 823;
             this.splitContainer1.TabIndex = 0;
-            // 
-            // tradeUC
-            // 
-            this.tradeUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tradeUC.Location = new System.Drawing.Point(0, 362);
-            this.tradeUC.Name = "tradeUC";
-            this.tradeUC.Size = new System.Drawing.Size(823, 227);
-            this.tradeUC.TabIndex = 1;
-            // 
-            // accountUC
-            // 
-            this.accountUC.Dock = System.Windows.Forms.DockStyle.Top;
-            this.accountUC.Location = new System.Drawing.Point(0, 0);
-            this.accountUC.Name = "accountUC";
-            this.accountUC.Size = new System.Drawing.Size(823, 362);
-            this.accountUC.TabIndex = 0;
             // 
             // splitLog
             // 
@@ -137,45 +125,80 @@
             this.web持仓ToolStripMenuItem,
             this.toolStripMenuItem2});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(153, 126);
+            this.contextMenu.Size = new System.Drawing.Size(144, 104);
             // 
             // 清理ToolStripMenuItem
             // 
             this.清理ToolStripMenuItem.Name = "清理ToolStripMenuItem";
-            this.清理ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.清理ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.清理ToolStripMenuItem.Text = "清理MDLog";
             this.清理ToolStripMenuItem.Click += new System.EventHandler(this.清理MDLogToolStripMenuItem_Click);
             // 
             // 清理TDLogToolStripMenuItem
             // 
             this.清理TDLogToolStripMenuItem.Name = "清理TDLogToolStripMenuItem";
-            this.清理TDLogToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.清理TDLogToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.清理TDLogToolStripMenuItem.Text = "清理TDLog";
             this.清理TDLogToolStripMenuItem.Click += new System.EventHandler(this.清理TDLogToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(140, 6);
             // 
             // 掘金持仓ToolStripMenuItem
             // 
             this.掘金持仓ToolStripMenuItem.Name = "掘金持仓ToolStripMenuItem";
-            this.掘金持仓ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.掘金持仓ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.掘金持仓ToolStripMenuItem.Text = "掘金持仓";
             this.掘金持仓ToolStripMenuItem.Click += new System.EventHandler(this.掘金持仓ToolStripMenuItem_Click);
             // 
             // web持仓ToolStripMenuItem
             // 
             this.web持仓ToolStripMenuItem.Name = "web持仓ToolStripMenuItem";
-            this.web持仓ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.web持仓ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.web持仓ToolStripMenuItem.Text = "Web持仓";
             this.web持仓ToolStripMenuItem.Click += new System.EventHandler(this.web持仓ToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(140, 6);
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.accountUC);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.tradeUC);
+            this.splitContainer2.Size = new System.Drawing.Size(823, 589);
+            this.splitContainer2.SplitterDistance = 330;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // accountUC
+            // 
+            this.accountUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.accountUC.Location = new System.Drawing.Point(0, 0);
+            this.accountUC.Name = "accountUC";
+            this.accountUC.Size = new System.Drawing.Size(823, 330);
+            this.accountUC.TabIndex = 0;
+            // 
+            // tradeUC
+            // 
+            this.tradeUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tradeUC.Location = new System.Drawing.Point(0, 0);
+            this.tradeUC.Name = "tradeUC";
+            this.tradeUC.Size = new System.Drawing.Size(823, 255);
+            this.tradeUC.TabIndex = 0;
             // 
             // RiskTradeUC
             // 
@@ -194,6 +217,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitLog)).EndInit();
             this.splitLog.ResumeLayout(false);
             this.contextMenu.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -204,8 +231,6 @@
         private System.Windows.Forms.SplitContainer splitLog;
         private System.Windows.Forms.ListBox boxMDLog;
         private System.Windows.Forms.ListBox boxTDLog;
-        private AccountUC accountUC;
-        private TradeUC tradeUC;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem 清理ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 清理TDLogToolStripMenuItem;
@@ -213,6 +238,9 @@
         private System.Windows.Forms.ToolStripMenuItem 掘金持仓ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem web持仓ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private AccountUC accountUC;
+        private TradeUC tradeUC;
 
     }
 }

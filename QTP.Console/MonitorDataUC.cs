@@ -15,21 +15,18 @@ using QTP.TAlib;
 
 namespace QTP.Console
 {
-    public partial class MonitorDataUC : UserControl, IStrategyUC
+    public partial class MonitorDataUC : UserControl
     {
         #region member
-        private const int QuataStartColumnIndex = 4;
+        private const int QuataStartColumnIndex = 5;
 
         // strategy
         private bool dataShowed;
         private MyStrategy strategy;
-        private Monitor currentMonitor;
 
-        // Quotas
-        private Dictionary<string, List<string>> quotaNames;
-        private Dictionary<string, PropertyInfo> scalarProps = new Dictionary<string,PropertyInfo>();
-        private string currentQuota;
-        private int currentKType;  
+        private Monitor currentMonitor;
+        private int currentKType = 0;           // 日线做为缺省类型  
+
 
         public MonitorDataUC()
         {
@@ -38,91 +35,32 @@ namespace QTP.Console
 
         #endregion
 
-        #region IStrategyUC
         public MyStrategy Subject
         {
             set
             {
                 strategy = value;
             }
-
         }
 
         public void ShowData()
         {
-            if (dataShowed) return;
+            if (dataShowed) return;  // 仅一次
             dataShowed = true;
 
             // hooked now
             strategy.FocusTickArrived += new MyStrategy.FocusTickArrivedCallback(tickUC.OnTickArrived);
             strategy.FocusBarArrived += new MyStrategy.FocusBarArrivedCallback(barUC.OnBarArrived);
 
-            // Set Quata Columns
-            Type type = Monitor.QuotaType;
-            quotaNames = Monitor.QuotaNames;
-            int i = 0;
-            foreach (string name in quotaNames.Keys)
-            {
-                foreach (string scalar in quotaNames[name])
-                {
-                    // column
-                    i = dgvPool.Columns.Add(scalar, string.Format("{0}({1})", name, scalar));
-                    dgvPool.Columns[i].Tag = name;
-
-                    // property
-                    scalarProps.Add(scalar, type.GetProperty(scalar));
-                }
-            }
-
-            chartUC.ScalarProps = scalarProps;
-
-            // Fill dgvPool' Data (仅一次)
-            i = 1;
-            foreach (Monitor m in strategy.GetMonitorEnumerator())
-            {                
-                string sec_name = null;
-                if (m.GMInstrument != null) sec_name = m.GMInstrument.sec_name;
-
-                int index = dgvPool.Rows.Add(i++, m.Target.Exchange, m.Target.InstrumentId, sec_name);
-
-                dgvPool.Rows[index].Tag = m;
-            }
-
-            // Dispaly ChartUC of current monitor.
-            dgvPool_RowEnter(null, new DataGridViewCellEventArgs(0, 0));
-
+            FillDataGridView(currentKType);     // 缺省是日线
+            dgvPool_CellEnter(this, new DataGridViewCellEventArgs(0, 0));
         }
 
-        /// <summary>
-        /// Show Latest Quata in dgv
-        /// </summary>
-        public void TimerRefresh()
-        {
-            int rowIndex = 0;
-            foreach (Monitor m in strategy.GetMonitorEnumerator())
-            {
-                DataGridViewRow row = dgvPool.Rows[rowIndex++];
-                int columnIndex = QuataStartColumnIndex;
-
-                // get quota
-                object quota = m.GetLatestQuota(currentKType);
-                if (quota == null) return;
-
-                // show 
-                foreach (string name in quotaNames.Keys)
-                    foreach (string scalar in quotaNames[name])
-                        row.Cells[columnIndex++].Value = scalarProps[scalar].GetValue(quota);
-            }
-        }
-
-        #endregion
 
         #region event handlers
-        private void dgvPool_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgvPool.Rows.Count == 0) return;
 
-            // display ChartUC this instrument.
+        private void dgvPool_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
             if (dgvPool.Rows[e.RowIndex].Tag != null)
             { 
                 Monitor m = (Monitor)dgvPool.Rows[e.RowIndex].Tag;
@@ -130,79 +68,138 @@ namespace QTP.Console
                 {
                     currentMonitor = m;
                     currentMonitor.SetFocus();
-                    DrawChartButtonClick();
 
+                    DrawChart(currentMonitor, currentKType);
                     // display tick at once
-                    tickUC.OnTickArrived(currentMonitor.TickTA);
+                    tickUC.OnTickArrived(currentMonitor.TA.TickTA);
                 }
-            }
-        }
-
-        private void dgvPool_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            DataGridViewColumn col = dgvPool.Columns[e.ColumnIndex];
-            if (col != null && col.Tag != null)
-            {
-                currentQuota = col.Tag as string;
-            }
-
-            DrawChartButtonClick();
-        }
-
-        private void DrawChartButtonClick()
-        {
-            // show klines and Quotas
-            switch (currentKType)
-            {
-                case 1:
-                    btnM1_Click(this, null);
-                    break;
-                case 15:
-                    btnM15_Click(this, null);
-                    break;
-                default:
-                    btnDay_Click(this, null);
-                    break;
             }
         }
 
         private void btnDay_Click(object sender, EventArgs e)
         {
             currentKType = 0;
-            if (currentMonitor != null)
-                DrawChart();
+            FillDataGridView(currentKType);
+        }
+
+        private void btnM60_Click(object sender, EventArgs e)
+        {
+            currentKType = 60;
+            FillDataGridView(currentKType);
+        }
+
+        private void btnM30_Click(object sender, EventArgs e)
+        {
+            currentKType = 30;
+            FillDataGridView(currentKType);
         }
 
 
         private void btnM15_Click(object sender, EventArgs e)
         {
             currentKType = 15;
-            if (currentMonitor != null)
-                DrawChart();
+            FillDataGridView(currentKType);
+        }
+        private void btnM5_Click(object sender, EventArgs e)
+        {
+            currentKType = 5;
+            FillDataGridView(currentKType);
         }
 
         private void btnM1_Click(object sender, EventArgs e)
         {
             currentKType = 1;
-            if (currentMonitor != null)
-                DrawChart();
-        }
-
-        private void DrawChart()
-        {
-            RList<KLine> ks = currentMonitor.GetKLines(currentKType);
-
-            RList<object> qs = null;
-            List<string> names = null;
-            if (currentQuota != null)
-            {
-                names = quotaNames[currentQuota];
-                qs = currentMonitor.GetQuotas(currentKType);
-            }
-
-            chartUC.DrawChart(ks, currentKType, qs, names);
+            FillDataGridView(currentKType);
         }
 
         #endregion
+
+        #region private methods
+
+        private void FillDataGridView(int ktype)
+        {
+            // First Clear dgv
+            dgvPool.Rows.Clear();
+            dgvPool.Columns.Clear();
+
+            // create dgvPool' columns
+            dgvPool.Columns.Add("Column1", "序号");
+            dgvPool.Columns.Add("Column2", "代码");
+            dgvPool.Columns.Add("Column3", "名称");
+            dgvPool.Columns.Add("Column4", "可卖仓位");
+            dgvPool.Columns.Add("Column5", "止损价格");
+
+            int i = 1;      // 序号
+            foreach (Monitor m in strategy.GetMonitorEnumerator())
+            {
+                int index = dgvPool.Rows.Add(i++, m.Target.Symbol, m.TargetTitle, m.Target.Volume, m.Target.StopLossPrice);
+                dgvPool.Rows[index].Tag = m;
+            }
+
+            if (dgvPool.Rows.Count > 0)
+            {
+                Monitor m = currentMonitor == null ? (Monitor)dgvPool.Rows[0].Tag : currentMonitor;
+                // Get QuotaNames by currenKType
+                Dictionary<string, List<string>> quotaNames = m.TA.GetQuotaNames(ktype);
+                FillQuotaToDataGridView(quotaNames, ktype);
+            }
+        }
+
+        private void FillQuotaToDataGridView(Dictionary<string, List<string>> quotaNames, int ktype)
+        {
+            // columns
+            int columnIndex = 0;
+            foreach (string name in quotaNames.Keys)
+            {
+                foreach (string scalar in quotaNames[name])
+                {
+                    // column
+                    columnIndex = dgvPool.Columns.Add(scalar, string.Format("{0}({1})", name, scalar));
+                    dgvPool.Columns[columnIndex].Tag = new KeyValuePair<string, List<string>>(name, quotaNames[name]);
+                }
+            }
+
+            // fill Data
+            int rowIndex = 0;
+            foreach (Monitor m in strategy.GetMonitorEnumerator())
+            {
+                // Get QuotaScalarValues
+                List<double> v = m.TA.GetLatestScalarValues(currentKType);
+                if (v.Count == 0) continue;
+
+                DataGridViewRow row = dgvPool.Rows[rowIndex++];
+
+                int count = 0; 
+                foreach (string name in quotaNames.Keys)
+                {
+                    foreach (string scalar in quotaNames[name])
+                    {
+                        if (count <= v.Count - 1)
+                        {
+                            row.Cells[QuataStartColumnIndex + count].Value = v[count];
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawChart(Monitor m, int ktype)
+        {
+            object tag = dgvPool.Columns[dgvPool.CurrentCell.ColumnIndex].Tag;
+            if (tag == null)
+            {
+                 chartUC.DrawChart(m.TA.GetKLines(ktype), ktype, new List<RList<double>>(), null);
+            }
+            else
+            {
+                KeyValuePair<string, List<string>> pair = (KeyValuePair<string, List<string>>)tag;
+                chartUC.DrawChart(m.TA.GetKLines(ktype), ktype, m.TA.GetScalarValues(pair.Key, ktype), pair.Value);
+            }
+        }
+
+        #endregion
+
+
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
-using GMSDK;
 using QTP.TAlib;
+using GMSDK;
 
 namespace QTP.Domain
 {
@@ -23,21 +23,24 @@ namespace QTP.Domain
         public float AverageRange { get; set; }
 
     }
+
     public class TickTA
     {
+        #region member
+        // parent
+        private Monitor monitor;
+
+
         private RList<TickQuota> lstTickQuota = new RList<TickQuota>();
         private Stopwatch watch = new Stopwatch();
 
-        // used for generater tickBar1M
-        private Bar bar1M, semiBar;
-        private bool isFirstTick;
-        private int lastMinute;
+        #endregion
 
         #region Properties
 
-        public TickQuota LastestTickQuota 
+        public TickQuota LastestTickQuota
         {
-            get 
+            get
             {
                 if (Count > 0) return lstTickQuota[0];
                 return null;
@@ -53,7 +56,7 @@ namespace QTP.Domain
             }
         }
 
-        public int Count 
+        public int Count
         {
             get { return lstTickQuota.Count; }
         }
@@ -62,14 +65,15 @@ namespace QTP.Domain
         {
             get { return watch.ElapsedMilliseconds; }
         }
-
-        public Bar Bar1M
-        {
-            get { return bar1M; }
-        }
         #endregion
 
+        public TickTA(Monitor monitor)
+        {
+            this.monitor = monitor;
+        }
+
         #region Public methods
+
 
         public void Push(Tick tick, bool isLive = false)
         {
@@ -81,7 +85,6 @@ namespace QTP.Domain
 
             if (isLive)      // 需要计算延时和 TickBar1M
             {
-                CalculateBar(tick);
                 tq.Delay = CalculateDelay(tick.utc_time);
             }
 
@@ -106,62 +109,14 @@ namespace QTP.Domain
 
         #region private methods
 
-        private void CalculateBar(Tick tick)
-        {
-            if (semiBar == null)
-            {
-                semiBar = new Bar();
-                bar1M = new Bar();
-                isFirstTick = true;
-                lastMinute = Utils.UtcToDateTime(tick.utc_time).Minute;
-            }
-
-            // judge minute changed
-            DateTime dt = Utils.UtcToDateTime(tick.utc_time);
-            if (dt.Minute > lastMinute)
-            {
-                isFirstTick = true;
-                lastMinute = dt.Minute;
-
-                // copy semiBar to Bar
-                bar1M.high = semiBar.high;
-                bar1M.low = semiBar.low;
-                bar1M.open = semiBar.open;
-                bar1M.close = semiBar.close;
-                bar1M.volume = semiBar.volume;
-                bar1M.strtime = string.Format("{0:00}:{1:00}", DateTime.Now.Minute, DateTime.Now.Second);
-
-                // clear semibar
-                semiBar.high = semiBar.low = semiBar.open = semiBar.close = 0;
-                semiBar.volume = 0.0;
-            }
-
-            // open
-            if (isFirstTick)
-            {
-                semiBar.high = semiBar.low = semiBar.open = semiBar.close = tick.last_price;
-            }
-                
-            // high
-            if (semiBar.high < tick.last_price) semiBar.high = tick.last_price;
-            // low
-            if (semiBar.low > tick.last_price) semiBar.low = tick.last_price;
-            // close
-            semiBar.close = tick.last_price;
-            // volumn
-            semiBar.volume += tick.last_volume;
-
-            isFirstTick = false;
-
-        }
         private float CalculateDelay(double utc_time)
         {
             DateTime dt = Utils.UtcToDateTime(utc_time);
 
-            if (DateTime.Now.CompareTo(dt) < 0 )
+            if (DateTime.Now.CompareTo(dt) < 0)
                 return 0;
 
-            TimeSpan ts = DateTime.Now.Subtract(dt); 
+            TimeSpan ts = DateTime.Now.Subtract(dt);
 
             float ret = ts.Seconds + (float)ts.Milliseconds / 1000;
             return ret;

@@ -11,6 +11,8 @@ namespace QTP.DBAccess
         public string InstrumentId { get; set; }
         public string Exchange { get; set; }
 
+        public int Volume { get; set; }
+        public float StopLossPrice { get; set; }
         public string MonitorClass { get; set; }
         public string Symbol
         {

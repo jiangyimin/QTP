@@ -38,9 +38,9 @@ namespace QTP.DBAccess
             TStrategy t = new TStrategy();
 
             t = MySqlHelper.ExecuteObject<TStrategy>(ConnectionString, string.Format("SELECT * FROM Strategy WHERE Id={0}", id));
-            t.Parse();          // parse fields
 
             t.Pool = GetTStrategyPool(t.PoolId);
+            t.Parse();          // parse fields
 
             t.Instruments = GetTStrategyInstruments(t.PoolId);
 

@@ -33,7 +33,7 @@
             this.lblTarge = new System.Windows.Forms.Label();
             this.panelMD = new System.Windows.Forms.Panel();
             this.lblUnProcessTime = new System.Windows.Forms.Label();
-            this.lblBar1m = new System.Windows.Forms.Label();
+            this.lblBar = new System.Windows.Forms.Label();
             this.lblTick = new System.Windows.Forms.Label();
             this.panelTitle.SuspendLayout();
             this.panelMD.SuspendLayout();
@@ -75,7 +75,7 @@
             // 
             this.panelMD.BackColor = System.Drawing.SystemColors.Info;
             this.panelMD.Controls.Add(this.lblUnProcessTime);
-            this.panelMD.Controls.Add(this.lblBar1m);
+            this.panelMD.Controls.Add(this.lblBar);
             this.panelMD.Controls.Add(this.lblTick);
             this.panelMD.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelMD.Location = new System.Drawing.Point(0, 141);
@@ -92,15 +92,17 @@
             this.lblUnProcessTime.TabIndex = 2;
             this.lblUnProcessTime.Text = "0秒";
             this.lblUnProcessTime.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblUnProcessTime.Visible = false;
             // 
-            // lblBar1m
+            // lblBar
             // 
-            this.lblBar1m.AutoSize = true;
-            this.lblBar1m.Location = new System.Drawing.Point(71, 15);
-            this.lblBar1m.Name = "lblBar1m";
-            this.lblBar1m.Size = new System.Drawing.Size(29, 12);
-            this.lblBar1m.TabIndex = 1;
-            this.lblBar1m.Text = "1B:0";
+            this.lblBar.AutoSize = true;
+            this.lblBar.Location = new System.Drawing.Point(71, 15);
+            this.lblBar.Name = "lblBar";
+            this.lblBar.Size = new System.Drawing.Size(23, 12);
+            this.lblBar.TabIndex = 1;
+            this.lblBar.Text = "B:0";
+            this.lblBar.Visible = false;
             // 
             // lblTick
             // 
@@ -135,7 +137,7 @@
         private System.Windows.Forms.Panel panelMD;
         private System.Windows.Forms.Label lblPrice;
         private System.Windows.Forms.Label lblUnProcessTime;
-        private System.Windows.Forms.Label lblBar1m;
+        private System.Windows.Forms.Label lblBar;
         private System.Windows.Forms.Label lblTick;
     }
 }

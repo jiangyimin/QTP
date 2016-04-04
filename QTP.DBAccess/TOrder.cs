@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QTP.Domain
+namespace QTP.DBAccess
 {
-    public class MyOrder
+    public class TOrder
     {
-        public int OrderId { get; set; }
+        public string Symbol { get; set; }
+        public int Volume { get; set; }
+
 
     }
 }

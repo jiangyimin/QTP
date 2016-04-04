@@ -54,15 +54,6 @@
             this.label12 = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgvPosition = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvPositionW = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -72,6 +63,14 @@
             this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -101,7 +100,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.grpWEB);
-            this.splitContainer1.Size = new System.Drawing.Size(270, 362);
+            this.splitContainer1.Size = new System.Drawing.Size(260, 362);
             this.splitContainer1.SplitterDistance = 198;
             this.splitContainer1.TabIndex = 6;
             // 
@@ -123,7 +122,7 @@
             this.grpGM.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpGM.Location = new System.Drawing.Point(0, 0);
             this.grpGM.Name = "grpGM";
-            this.grpGM.Size = new System.Drawing.Size(270, 198);
+            this.grpGM.Size = new System.Drawing.Size(260, 198);
             this.grpGM.TabIndex = 5;
             this.grpGM.TabStop = false;
             this.grpGM.Text = "GM账户资金";
@@ -245,7 +244,7 @@
             this.grpWEB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpWEB.Location = new System.Drawing.Point(0, 0);
             this.grpWEB.Name = "grpWEB";
-            this.grpWEB.Size = new System.Drawing.Size(270, 160);
+            this.grpWEB.Size = new System.Drawing.Size(260, 160);
             this.grpWEB.TabIndex = 6;
             this.grpWEB.TabStop = false;
             this.grpWEB.Text = "Web账户资金";
@@ -330,7 +329,7 @@
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(270, 0);
+            this.splitContainer2.Location = new System.Drawing.Point(260, 0);
             this.splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
@@ -340,8 +339,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.dgvPositionW);
-            this.splitContainer2.Size = new System.Drawing.Size(715, 362);
-            this.splitContainer2.SplitterDistance = 428;
+            this.splitContainer2.Size = new System.Drawing.Size(725, 362);
+            this.splitContainer2.SplitterDistance = 433;
             this.splitContainer2.TabIndex = 7;
             // 
             // dgvPosition
@@ -354,7 +353,6 @@
             this.Column2,
             this.Column3,
             this.Column4,
-            this.Column5,
             this.Column6,
             this.Column7,
             this.Column8,
@@ -364,70 +362,8 @@
             this.dgvPosition.Name = "dgvPosition";
             this.dgvPosition.ReadOnly = true;
             this.dgvPosition.RowTemplate.Height = 23;
-            this.dgvPosition.Size = new System.Drawing.Size(428, 362);
+            this.dgvPosition.Size = new System.Drawing.Size(433, 362);
             this.dgvPosition.TabIndex = 3;
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "序号";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 60;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "交易所";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 80;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "代码";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 60;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "名称";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Width = 70;
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "方向";
-            this.Column5.Name = "Column5";
-            this.Column5.ReadOnly = true;
-            this.Column5.Width = 60;
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "持仓/今仓";
-            this.Column6.Name = "Column6";
-            this.Column6.ReadOnly = true;
-            // 
-            // Column7
-            // 
-            this.Column7.HeaderText = "价格";
-            this.Column7.Name = "Column7";
-            this.Column7.ReadOnly = true;
-            this.Column7.Width = 80;
-            // 
-            // Column8
-            // 
-            this.Column8.HeaderText = "成本";
-            this.Column8.Name = "Column8";
-            this.Column8.ReadOnly = true;
-            this.Column8.Width = 80;
-            // 
-            // Column9
-            // 
-            this.Column9.HeaderText = "浮赢";
-            this.Column9.Name = "Column9";
-            this.Column9.ReadOnly = true;
-            this.Column9.Width = 80;
             // 
             // dgvPositionW
             // 
@@ -448,7 +384,7 @@
             this.dgvPositionW.Name = "dgvPositionW";
             this.dgvPositionW.ReadOnly = true;
             this.dgvPositionW.RowTemplate.Height = 23;
-            this.dgvPositionW.Size = new System.Drawing.Size(283, 362);
+            this.dgvPositionW.Size = new System.Drawing.Size(288, 362);
             this.dgvPositionW.TabIndex = 4;
             // 
             // dataGridViewTextBoxColumn1
@@ -506,6 +442,61 @@
             this.dataGridViewTextBoxColumn9.ReadOnly = true;
             this.dataGridViewTextBoxColumn9.Width = 80;
             // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "序号";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 60;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "交易所";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 80;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "代码";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 60;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "名称";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 70;
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "持仓/今仓";
+            this.Column6.Name = "Column6";
+            this.Column6.ReadOnly = true;
+            // 
+            // Column7
+            // 
+            this.Column7.HeaderText = "价格";
+            this.Column7.Name = "Column7";
+            this.Column7.ReadOnly = true;
+            this.Column7.Width = 80;
+            // 
+            // Column8
+            // 
+            this.Column8.HeaderText = "成本";
+            this.Column8.Name = "Column8";
+            this.Column8.ReadOnly = true;
+            this.Column8.Width = 80;
+            // 
+            // Column9
+            // 
+            this.Column9.HeaderText = "浮赢";
+            this.Column9.Name = "Column9";
+            this.Column9.ReadOnly = true;
+            this.Column9.Width = 80;
+            // 
             // AccountUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -560,15 +551,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.DataGridView dgvPosition;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private System.Windows.Forms.DataGridView dgvPositionW;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
@@ -578,6 +560,14 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
 
     }
 }

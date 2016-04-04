@@ -10,8 +10,11 @@ namespace QTP.DBAccess
     {
         public string Name { get; set; }
 
-        public string IndexId { get; set; }
-        public string IndexExchange { get; set; }
+        public string ManagerName { get; set; }
+        public string ManagerInfo { get; set; }
+
+        public Type ManagerType { get; set; }
+        public Dictionary<string, string> ManagerParameters { get; set; }
 
     }
 }

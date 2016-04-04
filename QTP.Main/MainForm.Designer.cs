@@ -33,6 +33,7 @@
             this.lblSecond = new System.Windows.Forms.Label();
             this.btnSimulate = new System.Windows.Forms.Button();
             this.btnReal = new System.Windows.Forms.Button();
+            this.btnBackTest = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitMain)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.SuspendLayout();
@@ -48,6 +49,7 @@
             // splitMain.Panel1
             // 
             this.splitMain.Panel1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.splitMain.Panel1.Controls.Add(this.btnBackTest);
             this.splitMain.Panel1.Controls.Add(this.btnSetTime);
             this.splitMain.Panel1.Controls.Add(this.lblSecond);
             this.splitMain.Panel1.Controls.Add(this.btnSimulate);
@@ -102,6 +104,16 @@
             this.btnReal.UseVisualStyleBackColor = true;
             this.btnReal.Click += new System.EventHandler(this.btnReal_Click);
             // 
+            // btnBackTest
+            // 
+            this.btnBackTest.Location = new System.Drawing.Point(10, 148);
+            this.btnBackTest.Name = "btnBackTest";
+            this.btnBackTest.Size = new System.Drawing.Size(45, 39);
+            this.btnBackTest.TabIndex = 2;
+            this.btnBackTest.Text = "回测";
+            this.btnBackTest.UseVisualStyleBackColor = true;
+            this.btnBackTest.Click += new System.EventHandler(this.btnBackTest_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -128,6 +140,7 @@
         private System.Windows.Forms.Button btnReal;
         private System.Windows.Forms.Label lblSecond;
         private System.Windows.Forms.Button btnSetTime;
+        private System.Windows.Forms.Button btnBackTest;
     }
 }
 

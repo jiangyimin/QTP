@@ -31,13 +31,13 @@ namespace QTP.Main
             lblName.Text = strategy.Name;
 
             // groupMonitor
-            lblClassName1.Text = string.Format("监控: {0}", strategy.MonitorClassName);
-            lblParameter1.Text = string.Format("参数: {0}", strategy.MonitorParemeters);
+            //lblClassName1.Text = string.Format("监控: {0}", strategyMonitorClassName);
+            //lblParameter1.Text = string.Format("参数: {0}", strategy.MonitorClassParsString);
             lblNum.Text = string.Format("监控数量:{0}", strategy.Instruments.Count);
 
             // groupRiskM
-            lblClassName2.Text = string.Format("资管: {0}", strategy.RiskMClassName);
-            lblParameter2.Text = string.Format("参数: {0}", strategy.MonitorParemeters);
+            //lblClassName2.Text = string.Format("资管: {0}", strategy.RiskMClassName);
+            //lblParameter2.Text = string.Format("参数: {0}", strategy.RiskMClassParsString);
             lblTradeChannel.Text = string.Format("交易通道:{0}", strategy.TradeChannelName);
         }
 

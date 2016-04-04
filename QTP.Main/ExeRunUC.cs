@@ -28,8 +28,10 @@ namespace QTP.Main
                 if (process != null)
                     process.Kill();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                MessageBox.Show("关闭策略时发生错误： " + ex.Message);
+            }
         }
 
         public void Open(string exePath, string name, string args)

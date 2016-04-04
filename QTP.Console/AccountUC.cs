@@ -54,7 +54,7 @@ namespace QTP.Console
 
         public void ShowWebAccount()
         {
-            Cash cash = strategy.WebTD.GetCash();
+            Cash cash = strategy.WebTD.GetCashWeb();
             if (cash == null) return;
 
             // show GM Cash by heartpulse
@@ -84,11 +84,9 @@ namespace QTP.Console
             else
             {
                 MyStrategy.TradeCashHeartPusleCallback handler = new MyStrategy.TradeCashHeartPusleCallback(this.TradeCash_HeartPusle);
-                this.BeginInvoke(handler, cash, elapsed, isWeb);
+                this.splitContainer1.Panel1.BeginInvoke(handler, cash, elapsed, isWeb);
             }
         }
-
-
 
         #region private utils
 
@@ -123,17 +121,16 @@ namespace QTP.Console
             {
                 string symbol = string.Format("{0}.{1}", pos.exchange, pos.sec_id);
                 string sec_name = MyStrategy.DictInstruments.ContainsKey(symbol) ? MyStrategy.DictInstruments[symbol].sec_name : null;
-                string side = pos.side == (int)OrderSide.Bid ? "买/多" : "卖/空";
                 string vol = string.Format("{0}/{1}", pos.volume, pos.volume_today);
 
                 dgvPosition.Rows.Add(i++, pos.exchange, pos.sec_id, sec_name, vol,
-                    pos.last_price.ToString("N"), pos.cost.ToString("N"), pos.fpnl.ToString("N"));
+                    pos.price.ToString("N"), pos.cost.ToString("N"), pos.fpnl.ToString("N"));
             }
         }
 
         private void ShowWebPositions()
         {
-            List<Position> positions = strategy.WebTD.GetPositions();
+            List<Position> positions = strategy.WebTD.GetPositionsWeb();
             // clear first
             dgvPositionW.Rows.Clear();
 

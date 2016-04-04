@@ -29,9 +29,8 @@
         private void InitializeComponent()
         {
             this.panelTitle = new System.Windows.Forms.Panel();
-            this.lblMDStatus = new System.Windows.Forms.Label();
-            this.nucInterval = new System.Windows.Forms.NumericUpDown();
             this.btnRiskTrade = new System.Windows.Forms.Button();
+            this.lblMDStatus = new System.Windows.Forms.Label();
             this.btnData = new System.Windows.Forms.Button();
             this.btnOverView = new System.Windows.Forms.Button();
             this.lblTDStatus = new System.Windows.Forms.Label();
@@ -39,7 +38,6 @@
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelClient = new System.Windows.Forms.Panel();
             this.panelTitle.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nucInterval)).BeginInit();
             this.SuspendLayout();
             // 
             // panelTitle
@@ -47,7 +45,6 @@
             this.panelTitle.BackColor = System.Drawing.SystemColors.Control;
             this.panelTitle.Controls.Add(this.btnRiskTrade);
             this.panelTitle.Controls.Add(this.lblMDStatus);
-            this.panelTitle.Controls.Add(this.nucInterval);
             this.panelTitle.Controls.Add(this.btnData);
             this.panelTitle.Controls.Add(this.btnOverView);
             this.panelTitle.Controls.Add(this.lblTDStatus);
@@ -59,41 +56,6 @@
             this.panelTitle.Size = new System.Drawing.Size(923, 36);
             this.panelTitle.TabIndex = 1;
             // 
-            // lblMDStatus
-            // 
-            this.lblMDStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblMDStatus.ForeColor = System.Drawing.Color.DarkRed;
-            this.lblMDStatus.Location = new System.Drawing.Point(691, 15);
-            this.lblMDStatus.Name = "lblMDStatus";
-            this.lblMDStatus.Size = new System.Drawing.Size(87, 13);
-            this.lblMDStatus.TabIndex = 8;
-            this.lblMDStatus.Text = "数据服务连接";
-            this.lblMDStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // nucInterval
-            // 
-            this.nucInterval.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.nucInterval.Location = new System.Drawing.Point(873, 10);
-            this.nucInterval.Maximum = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
-            this.nucInterval.Minimum = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            this.nucInterval.Name = "nucInterval";
-            this.nucInterval.Size = new System.Drawing.Size(38, 21);
-            this.nucInterval.TabIndex = 7;
-            this.nucInterval.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.nucInterval.ValueChanged += new System.EventHandler(this.nucInterval_ValueChanged);
-            // 
             // btnRiskTrade
             // 
             this.btnRiskTrade.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -104,6 +66,17 @@
             this.btnRiskTrade.Text = "资金交易";
             this.btnRiskTrade.UseVisualStyleBackColor = true;
             this.btnRiskTrade.Click += new System.EventHandler(this.btnRiskTrade_Click);
+            // 
+            // lblMDStatus
+            // 
+            this.lblMDStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblMDStatus.ForeColor = System.Drawing.Color.DarkRed;
+            this.lblMDStatus.Location = new System.Drawing.Point(725, 15);
+            this.lblMDStatus.Name = "lblMDStatus";
+            this.lblMDStatus.Size = new System.Drawing.Size(87, 13);
+            this.lblMDStatus.TabIndex = 8;
+            this.lblMDStatus.Text = "数据服务连接";
+            this.lblMDStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // btnData
             // 
@@ -131,7 +104,7 @@
             // 
             this.lblTDStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTDStatus.ForeColor = System.Drawing.Color.DarkRed;
-            this.lblTDStatus.Location = new System.Drawing.Point(784, 15);
+            this.lblTDStatus.Location = new System.Drawing.Point(828, 15);
             this.lblTDStatus.Name = "lblTDStatus";
             this.lblTDStatus.Size = new System.Drawing.Size(83, 13);
             this.lblTDStatus.TabIndex = 3;
@@ -177,14 +150,15 @@
             this.ClientSize = new System.Drawing.Size(923, 434);
             this.Controls.Add(this.panelClient);
             this.Controls.Add(this.panelTitle);
+            this.KeyPreview = true;
             this.Name = "MainForm";
             this.Text = "策略运行窗口";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.panelTitle.ResumeLayout(false);
             this.panelTitle.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nucInterval)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -199,7 +173,6 @@
         private System.Windows.Forms.Button btnData;
         private System.Windows.Forms.Button btnOverView;
         private System.Windows.Forms.Panel panelClient;
-        private System.Windows.Forms.NumericUpDown nucInterval;
         private System.Windows.Forms.Label lblMDStatus;
     }
 }

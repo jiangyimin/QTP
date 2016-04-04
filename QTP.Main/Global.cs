@@ -24,6 +24,7 @@ namespace QTP.Main
 
         public static List<TStrategy> RealStrategies = new List<TStrategy>();
         public static List<TStrategy> SimuStrategies = new List<TStrategy>();
+        public static List<TStrategy> BTStrategies = new List<TStrategy>();
 
         #endregion
 
@@ -52,6 +53,7 @@ namespace QTP.Main
                 // Add to list.
                 if (t.RunType == "实盘") RealStrategies.Add(t);
                 if (t.RunType == "虚拟") SimuStrategies.Add(t);
+                if (t.RunType == "回测") BTStrategies.Add(t);
             }
         }
 

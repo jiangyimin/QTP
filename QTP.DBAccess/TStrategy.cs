@@ -12,49 +12,60 @@ namespace QTP.DBAccess
         public int Id { get; set; }
         public string Name { get; set; }
         public string RunType { get; set; }
-
-        public string MonitorClass { get; set; }
-        public string RiskMClass { get; set; }
+        public string TAInfo { get; set; }
+        public string RiskMInfo { get; set; }
         public string GMID { get; set; }
         public string TradeChannel { get; set; }
         public string DLLName { get; set; }
         public int PoolId { get; set; }
+        public string BackTestInfo { get; set; }
 
         public TPool Pool { get; set; }
         public List<TInstrument> Instruments { get; set; }
         public List<TPosition> Positions { get; set; }
 
         #region parsed properties
-        public Type MonitorType { get; set; }
-        public string MonitorClassName { get; set; }
-        public string MonitorParemeters { get; set; }
-
-        public Type RiskMType { get; set; }
-        public string RiskMClassName { get; set; }
-        public string RiskMParemeters { get; set; }
+        public Dictionary<string, string> TAInfoParameters { get; set; }
+        public Dictionary<string, string> RiskMInfoParameters { get; set; }
         public string TradeChannelName { get; set; }
-        public string TradeChannelParameters { get; set; }
+        public Dictionary<string, string> TradeChannelParameters { get; set; }
+        public Dictionary<string, string> BackTestInfoParameters { get; set; }
 
         #endregion
         public void Parse()
         {
-            // Get Type of Monitor and RiskM
+            // parse TInfo
             Assembly assembly = Assembly.LoadFrom(DLLName + ".DLL");
-            string[] ns = MonitorClass.Split('(', ')');
-            MonitorClassName = ns[0];
-            MonitorParemeters = ns[1];
-            MonitorType = assembly.GetType(string.Format("{0}.{1}", DLLName, ns[0]));
+            Pool.ManagerType = assembly.GetType(string.Format("{0}.{1}", DLLName, Pool.ManagerName));
+            Pool.ManagerParameters = GetDictByString(Pool.ManagerInfo);
 
-            ns = RiskMClass.Split('(', ')');
-            RiskMClassName = ns[0];
-            RiskMParemeters = ns[1];
-            RiskMType = assembly.GetType(string.Format("{0}.{1}", DLLName, ns[0]));
+            // TA Monitor and RiskM
+            TAInfoParameters = GetDictByString(TAInfo);
+            RiskMInfoParameters = GetDictByString(RiskMInfo);
 
+            // Tradge Channel
+            string[] ns = TradeChannel.Split('(', ')');
+            TradeChannelName = ns[0];
+            TradeChannelParameters = GetDictByString(ns[1]);
 
-            ns = TradeChannel.Split('(', ')');
-            TradeChannelName = TradeChannel.Split('(')[0];
-            TradeChannelParameters = ns[1];
+            BackTestInfoParameters = GetDictByString(BackTestInfo);
         }
 
+        private Dictionary<string, string> GetDictByString(string parsStr)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            string[] flds = parsStr.Split(';');
+
+            foreach (string fld in flds)
+            {
+                string[] pair = fld.Split('=');
+                if (pair.Length < 2)
+                    break;
+                dict[pair[0].Trim()] = pair[1].Trim();
+            }
+
+            return dict;
+        }
     }
 }

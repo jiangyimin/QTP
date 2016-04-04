@@ -14,6 +14,10 @@ namespace QTP.TAlib
             {
                 return base[this.Count - index - 1];
             }
+            set
+            {
+                base[this.Count - index - 1] = value;
+            }
         }
 
         public RList<object> GetObjectList()

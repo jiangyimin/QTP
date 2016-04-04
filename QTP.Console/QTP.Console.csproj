@@ -67,7 +67,6 @@
     <Compile Include="ChartUC.Designer.cs">
       <DependentUpon>ChartUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="IStrategyUC.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -20,15 +20,12 @@ namespace QTP.Console
         private string[] args;
         private MyStrategy strategy;
 
+        private PopupForm popup;
 
         // three UC
         private MonitorOverviewUC monitorOverviewUC;
         private MonitorDataUC monitorDataUC;
         private RiskTradeUC riskTradeUC;
-
-        // Timer
-        private Timer timerRefresh;
-        private IStrategyUC refreshUC;
 
         #endregion
         public MainForm()
@@ -53,11 +50,6 @@ namespace QTP.Console
             panelClient.Controls.Add(monitorOverviewUC);
             panelClient.Controls.Add(monitorDataUC);
 
-            // timer
-            timerRefresh = new Timer();
-            timerRefresh.Interval = (int)nucInterval.Value * 1000;
-            timerRefresh.Tick += timerRefresh_Tick;
-
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -78,31 +70,35 @@ namespace QTP.Console
             CRUD.ConnectionString =
                 config.ConnectionStrings.ConnectionStrings["QTP_DB"].ConnectionString.ToString();
 
-            PopupForm popup = new PopupForm();
+            popup = new PopupForm();
 
             // async create and initialize strategy 
-            Task task = new Task(Initialize, popup);
-            task.Start();
-            // and using popupWindow to wait for finished 
-            
+            Task.Run(new Action(Initialize));
+
+            // and using popupWindow to wait for finished             
             if (popup.ShowDialog() != DialogResult.OK)
             {
                 this.Close();
                 return;
             }
 
-            // start strategy
-            strategy.Start();
+            if (strategy.RunType == "回测")
+            {
+                btnOverView.Enabled = false;
+                strategy.BackTest.Run();
+            }
+            else
+                // start strategy
+                strategy.Start();
 
             // set title
             lblTitle.Text = string.Format("{0} ({1})", strategy.Name, strategy.PoolName);
             lblRightTitle.Text = string.Format("{0} {1}", strategy.GMID, strategy.RunType);
 
             btnRiskTrade_Click(this, null);
-            timerRefresh.Start();
         }
 
-        private void Initialize(object pop)
+        private void Initialize()
         {
             try
             {
@@ -120,7 +116,8 @@ namespace QTP.Console
             }
             catch (Exception ex)
             {
-                ProcessInitializeExecption(ex.Message);
+                popup.TaskFinished(ex.Message);
+                return;
             }
 
             // new MyStrategy and Prepare preStart Data.
@@ -129,9 +126,9 @@ namespace QTP.Console
             HookStrategyToGUI();
             strategy.Initialize();
 
-            ((PopupForm)pop).TaskFinished();
+            popup.TaskFinished(null);
         }
-
+        
         // Handler for exception when Initializing
         private void ProcessInitializeExecption(string message)
         {
@@ -143,7 +140,7 @@ namespace QTP.Console
             else
             {
                 MyStrategy.InitializeExceptionCallback cb = new MyStrategy.InitializeExceptionCallback(ProcessInitializeExecption);
-                lblTDStatus.BeginInvoke(cb, message);
+                this.BeginInvoke(cb, message);
             }
         }
 
@@ -176,32 +173,28 @@ namespace QTP.Console
         private void btnOverView_Click(object sender, EventArgs e)
         {
             monitorOverviewUC.BringToFront();
-            refreshUC = monitorOverviewUC;
-            refreshUC.ShowData();
+            monitorOverviewUC.ShowData();
         }
 
         private void btnData_Click(object sender, EventArgs e)
         {
             monitorDataUC.BringToFront();
-            refreshUC = monitorDataUC;
-            refreshUC.ShowData();
+            monitorDataUC.ShowData();
         }
 
         private void btnRiskTrade_Click(object sender, EventArgs e)
         {
             riskTradeUC.BringToFront();
-            refreshUC = riskTradeUC;
-            refreshUC.ShowData();
+            riskTradeUC.ShowData();
         }
 
-        private void timerRefresh_Tick(object sender, EventArgs e)
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            refreshUC.TimerRefresh();
+            if (e.KeyCode == Keys.Space)
+            {
+                strategy.BackTest.Continue();
+            }
         }
 
-        private void nucInterval_ValueChanged(object sender, EventArgs e)
-        {
-            timerRefresh.Interval = (int)nucInterval.Value * 1000;
-        }
     }
 }

@@ -13,8 +13,11 @@ using QTP.Domain;
 
 namespace QTP.Console
 {
-    public partial class MonitorOverviewUC : UserControl, IStrategyUC
+    public partial class MonitorOverviewUC : UserControl
     {
+        // Timer
+        private Timer timerRefresh;
+
         /// <summary>
         ///  three FlowLayoutPanel
         /// </summary>
@@ -34,7 +37,7 @@ namespace QTP.Console
         {
             
         }
-        #region IStrategyUC
+
         public MyStrategy Subject
         {
             set 
@@ -47,6 +50,12 @@ namespace QTP.Console
         {
             if (dataShowed) return;
             dataShowed = true;
+
+            // timer
+            timerRefresh = new Timer();
+            timerRefresh.Interval = 5000;
+            timerRefresh.Tick += TimerRefresh;
+            timerRefresh.Start();
 
             for (int i = 0; i < 3; i++)
             {
@@ -72,7 +81,7 @@ namespace QTP.Console
             btnObserve_Click(this, null);
         }
 
-        public void TimerRefresh()
+        public void TimerRefresh(object sender, EventArgs e)
         {
             foreach (Control uc in panelFocus.Controls)
             {
@@ -83,7 +92,6 @@ namespace QTP.Console
             }
         }
 
-        #endregion
 
         #region events handlers
 
