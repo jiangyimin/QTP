@@ -36,7 +36,6 @@ namespace QTP.Console
                 splitContainer2.Panel2Collapsed = true; ;
             }
 
-            ShowGMAccount();
         }
 
 

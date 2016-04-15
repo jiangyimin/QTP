@@ -20,11 +20,17 @@ namespace QTP.Console
             InitializeComponent();
         }
 
+        public void Clear()
+        {
+            boxBars.Items.Clear();
+            boxOrders.Items.Clear();
+        }
+
         public void OnBarArrived(Bar bar)
         {
             if (boxBars.InvokeRequired == false)
             {
-                if (boxBars.Items.Count > 100) 
+                if (boxBars.Items.Count > 320) 
                     boxBars.Items.Clear();
 
                 string msg = string.Format("{0} {1}M", Utils.DTLongString(Utils.UtcToDateTime(bar.utc_time)), bar.bar_type / 60);

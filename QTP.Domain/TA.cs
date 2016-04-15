@@ -17,11 +17,14 @@ namespace QTP.Domain
 
         // construct
         private Monitor monitor;
-        private TAInfo taInfo;
         private bool enabled;
 
         // store of KLines of each ktype
         private Dictionary<int, RList<KLine>> dictKS;
+
+        private List<FormulaInfo> FList;
+
+        private List<BuyPointInfo> BPList;
 
         #endregion
 
@@ -39,10 +42,9 @@ namespace QTP.Domain
 
         #region Public Methods
 
-        public TA(Monitor monitor, TAInfo taInfo)
+        public TA(Monitor monitor, TAInfo taInfo, string dllName)
         {
             this.monitor = monitor;
-            this.taInfo = taInfo;
 
             this.TickTA = new TickTA(monitor);
 
@@ -57,9 +59,19 @@ namespace QTP.Domain
             }
 
             // create Formula in taInfo's List
-            Assembly assembly = Assembly.LoadFrom(taInfo.DLLName + ".DLL");
-            CreateFormula(assembly, taInfo.AList);
-            CreateFormula(assembly, taInfo.BList);          
+            Assembly assembly = Assembly.LoadFrom(dllName + ".DLL");
+            FList = new List<FormulaInfo>();
+            foreach (FormulaInfo fi in taInfo.FList)
+            {
+                FormulaInfo fiClone = fi.Copy();
+
+                Type type = assembly.GetType(string.Format("{0}.{1}_Formula", dllName, fi.Name));
+                fiClone.Formula = (TAFormula)Activator.CreateInstance(type, fi.Parameters);
+
+                FList.Add(fiClone);
+            }
+
+            BPList = taInfo.BuyPoints;
         }
 
 
@@ -87,21 +99,19 @@ namespace QTP.Domain
             dictKS[ktype].Add(k);
 
             // Push To AList and BList
-            foreach (FormulaInfo fi in taInfo.AList)
-                if (fi.KType == ktype) fi.Formula.Push(dictKS[ktype]);
-
-            foreach (FormulaInfo fi in taInfo.BList)
-                if (fi.KType == ktype) fi.Formula.Push(dictKS[ktype]);
+            foreach (FormulaInfo fi in FList)
+                if (fi.KType == ktype) 
+                    fi.Formula.Push(dictKS[ktype]);
 
             if (enabled)
             {
-                 CheckBuyPoints(taInfo.BuyPoints);
+                 CheckBuyPoints(BPList, ktype, k);
             }
         }
 
         public void PushTick(Tick tick)
         {
-            TickTA.Push(tick);
+            TickTA.Push(tick, enabled);
         }
 
         public void Clear()
@@ -115,16 +125,25 @@ namespace QTP.Domain
                 dictKS[ktype].Clear();
             }
 
-            // Clear AList and BList of TAFormula
-            foreach (FormulaInfo fi in taInfo.AList)
+            // Clear FList of TAFormula
+            foreach (FormulaInfo fi in FList)
             {
-                fi.Formula.Clear();
+                // 保留日线(KType=0)
+                if (fi.KType != 0) fi.Formula.Clear();
+            }
+        }
+
+        public double GetATR(int ktype)
+        {
+            foreach (FormulaInfo fi in FList)
+            {
+                if (fi.Formula.Name == "真实波幅" && fi.KType == ktype)
+                {
+                    return fi.Formula.GetStopLessRisk();
+                }
             }
 
-            foreach (FormulaInfo fi in taInfo.BList)
-            {
-                fi.Formula.Clear();
-            }
+            return 0.0;
         }
 
         #endregion
@@ -134,25 +153,17 @@ namespace QTP.Domain
         public Dictionary<string, List<string>> GetQuotaNames(int ktype)
         {
             Dictionary<string, List<string>> dict = new Dictionary<string,List<string>>();
-            foreach (FormulaInfo fi in taInfo.AList)
+            foreach (FormulaInfo fi in FList)
                 if (ktype == fi.KType)
                     dict.Add(fi.Formula.Name, fi.Formula.ScalarNames);
             
-            foreach (FormulaInfo fi in taInfo.BList)
-                if (ktype == fi.KType)
-                    dict.Add(fi.Formula.Name, fi.Formula.ScalarNames);
-
             return dict;
         }
 
         public List<double> GetLatestScalarValues(int ktype)
         {
             List<double> ret = new List<double>();
-            foreach (FormulaInfo fi in taInfo.AList)
-                if (ktype == fi.KType)
-                    ret.AddRange(fi.Formula.GetLatestScalarValues());
-
-            foreach (FormulaInfo fi in taInfo.BList)
+            foreach (FormulaInfo fi in FList)
                 if (ktype == fi.KType)
                     ret.AddRange(fi.Formula.GetLatestScalarValues());
 
@@ -171,16 +182,9 @@ namespace QTP.Domain
         {
             List<RList<double>> ret = new List<RList<double>>();
 
-            foreach (FormulaInfo fi in taInfo.AList)
-                if (ktype == fi.KType)
-                {
-                    foreach (RList<double> rl in fi.Formula.GetScalarValues())
-                        ret.Add(rl);
-                }
-
-            foreach (FormulaInfo fi in taInfo.BList)
-                if (ktype == fi.KType)
-                    ret.AddRange(fi.Formula.GetScalarValues());
+            foreach (FormulaInfo fi in FList)
+                if (name == fi.Formula.Name && ktype == fi.KType)
+                     ret.AddRange(fi.Formula.GetScalarValues());
 
             return ret;
         }
@@ -189,23 +193,31 @@ namespace QTP.Domain
 
         #region private
 
-        private void CreateFormula(Assembly assembly, List<FormulaInfo> lst)
-        {
-            foreach (FormulaInfo fi in lst)
-            {
-                Type type = assembly.GetType(string.Format("{0}.{1}_Formula", taInfo.DLLName, fi.Name));
-
-                fi.Formula = (TAFormula)Activator.CreateInstance(type, fi.Parameters);
-            }
-
-        }
-
-        private void CheckBuyPoints(List<BuyPointInfo> buyPoints)
+        private void CheckBuyPoints(List<BuyPointInfo> buyPoints, int ktype, KLine k)
         {
             foreach (BuyPointInfo bpi in buyPoints)
             {
+                FormulaInfo fi = FList[bpi.Index];
+                if (fi.KType != ktype) continue;
 
+                if (CheckFilters(bpi.Filters))
+                {
+                    if (fi.Formula.IsBuyPoint())
+                    {
+                        monitor.IssueOpenLongSignal(fi.Name, fi.KType, k);
+                    }
+                }
             }
+        }
+
+        private bool CheckFilters(List<int> filters)
+        {
+            foreach (int i in filters)
+            {
+                if (FList[i].Formula.Filter() == false)
+                    return false;
+            }
+            return true;
         }
         #endregion
     }

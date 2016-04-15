@@ -14,16 +14,32 @@ namespace QTP.Domain
 {
     public class MyBackTest
     {
+        internal class Zone
+        {
+            public int x { get; set;}
+
+            public int lastM { get; set; }
+            public void Clear()
+            {
+                x  = lastM = 0;
+            }
+        }
+
         private Stopwatch watch = new Stopwatch();
         private MyStrategy strategy;
         private List<int> periods;
+        
+        // Procuder 
         private bool pause = false;
-       
+        private Dictionary<string, Dictionary<int, Zone>> symbolPeriods = new Dictionary<string,Dictionary<int,Zone>>();
+        private Dictionary<string, List<KLine>> symbolKs = new Dictionary<string, List<KLine>>();
+        private Dictionary<string, List<Bar>> symbolBars = new Dictionary<string, List<Bar>>();
+
         // get from parameters
-        private bool useLocal = true;
+        private bool useLocal;
         private DateTime startTime, endTime;
-        private int interval = 20;
-        private bool save = false;
+        private int interval = 0;
+        private bool save;
         
 
         // committe
@@ -41,6 +57,7 @@ namespace QTP.Domain
         {
             this.strategy = strategy;
             this.periods = periods;
+            this.periods.Remove(1);
 
             if (parameters.ContainsKey("UseLocal")) useLocal = parameters["UseLocal"] == "1";
 
@@ -102,6 +119,20 @@ namespace QTP.Domain
             Pause(string.Format("将要开始生产数据..."));
             watch.Reset(); watch.Start();
 
+            // Create symbolPeriods
+            foreach (Monitor m in strategy.GetMonitorEnumerator())
+            {
+                Dictionary<int, Zone> pZone = new Dictionary<int, Zone>();
+                foreach (int p in periods)
+                {
+                    pZone[p] = new Zone();
+                }
+
+                symbolPeriods[m.Target.Symbol] = pZone;
+                symbolKs[m.Target.Symbol] = new List<KLine>();
+                symbolBars[m.Target.Symbol] = new List<Bar>();
+            }
+
             if (useLocal)
                 ProducerFromKLines();
             else
@@ -120,20 +151,31 @@ namespace QTP.Domain
             int count = 0;
             foreach (string dtString in dictDailyKs.Keys)
             {
+                ClearSymbolDay(true);
                 List<KLine> ks = dictKs[dtString];
 
                 foreach (KLine k in ks)
                 {
                     Monitor m = strategy.GetMonitor(k.Symbol);
-
-                    m.TA.PushKLine(1, k);
+                    PushPeriodKLines(dtString, m, k);
                 }
 
                 List<KLine> dailyKs = dictDailyKs[dtString];
                 foreach (KLine k in dailyKs)
                 {
                     Monitor m = strategy.GetMonitor(k.Symbol);
+
+                    // push last Period Klines of this symbol
+                    Dictionary<int, Zone> pZone = symbolPeriods[k.Symbol];
+                    foreach (int p in pZone.Keys)
+                    {
+                        if (symbolKs[k.Symbol].Count > pZone[p].x)
+                            m.TA.PushKLine(p, SumKLines(symbolKs[k.Symbol], pZone[p].x));
+                    }
+
+                    // and daily K
                     m.TA.PushKLine(0, k);
+
                 }
 
                 count++;              
@@ -150,6 +192,7 @@ namespace QTP.Domain
             Dictionary<string, float> dictFactor = new Dictionary<string, float>();
             foreach (string dtString in dictDailyBars.Keys)
             {
+                ClearSymbolDay(false);
                 List<DailyBar> dailyBars = dictDailyBars[dtString];
 
                 // Create dictFactor (symbol -- factor)               
@@ -165,7 +208,8 @@ namespace QTP.Domain
                 {
                     string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
                     Monitor m = strategy.GetMonitor(symbol);
-                    m.PushBar(bar, dictFactor[symbol]);
+
+                    PushPeriodBars(dtString, m, bar, dictFactor[symbol]);
                 }
 
                 // 推送一天的所有日线bar
@@ -173,6 +217,16 @@ namespace QTP.Domain
                 {
                     string symbol = string.Format("{0}.{1}", daily.exchange, daily.sec_id);
                     Monitor m = strategy.GetMonitor(symbol);
+
+                    // push last Period Bars of this symbol
+                    Dictionary<int, Zone> pZone = symbolPeriods[symbol];
+                    foreach (int p in pZone.Keys)
+                    {
+                        if (symbolBars[symbol].Count > pZone[p].x)
+                            m.PushBar(SumBars(p, symbolBars[symbol], pZone[p].x), dictFactor[symbol]);
+                    }
+
+                    // and daily bar
                     m.PushDailyBar(daily);
                 }
 
@@ -277,6 +331,76 @@ namespace QTP.Domain
             fStream.Close();
         }
 
+        private void ClearSymbolDay(bool isKLine)
+        {
+            foreach (string symbol in symbolPeriods.Keys)
+            {
+                foreach (int p in symbolPeriods[symbol].Keys)
+                {
+                    symbolPeriods[symbol][p].Clear();
+                }
+            }
+
+            if (isKLine)
+            {
+                foreach (string symbol in symbolKs.Keys)
+                    symbolKs[symbol].Clear();
+            }
+            else
+            {
+                foreach (string symbol in symbolBars.Keys)
+                    symbolBars[symbol].Clear();
+            }
+
+        }
+
+        private void PushPeriodKLines(string dtString, Monitor m, KLine k)
+        {
+            // add klines of this symbol
+            List<KLine> klines = symbolKs[k.Symbol];
+
+            // process periods
+            Dictionary<int, Zone> pZone = symbolPeriods[k.Symbol];
+            foreach (int p in pZone.Keys)
+            {
+                int minutes = Utils.GetLastingMinutes(Utils.UtcToDateTime(k.UTC));
+                if (klines.Count > 0 && minutes - pZone[p].lastM >= p)
+                {
+                    m.TA.PushKLine(p, SumKLines(klines, pZone[p].x));
+
+                    pZone[p].x = klines.Count;
+                    pZone[p].lastM = (minutes / p) * p;
+                }
+            }
+
+            m.TA.PushKLine(1, k);
+            klines.Add(k);
+        }
+
+        private void PushPeriodBars(string dtString, Monitor m, Bar bar, float factor)
+        {
+            // add klines of this symbol
+            string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
+            List<Bar> bars = symbolBars[symbol];
+
+            // process periods
+            Dictionary<int, Zone> pZone = symbolPeriods[symbol];
+            foreach (int p in pZone.Keys)
+            {
+                int minutes = Utils.GetLastingMinutes(Utils.UtcToDateTime(bar.utc_time));
+                if (bars.Count > 0 && minutes - pZone[p].lastM >= p)
+                {
+                    m.PushBar(SumBars(p, bars, pZone[p].x), factor);
+
+                    pZone[p].x = bars.Count;
+                    pZone[p].lastM = (minutes / p) * p;
+                }
+            }
+
+            m.PushBar(bar, factor);
+            bars.Add(bar);
+        }
+
         private void Pause(string msg)
         {
             strategy.WriteMDLog(msg, true);
@@ -287,57 +411,48 @@ namespace QTP.Domain
             }
         }
 
+        private KLine SumKLines(List<KLine> ks, int start)
+        {
+            KLine k = ks[start].Copy();
+            k.CLOSE = ks[ks.Count - 1].CLOSE;
+
+            for (int i = start + 1; i < ks.Count; i++)
+            {
+                // high
+                if (k.HIGH < ks[i].HIGH) k.HIGH = ks[i].HIGH;
+                // low
+                if (k.LOW > ks[i].LOW) k.LOW = ks[i].LOW;
+                // volumn
+                k.VOLUME += ks[i].VOLUME;
+            }
+            return k;
+        }
+
+        private Bar SumBars(int p, List<Bar> bars, int start)
+        {
+            Bar bar = new Bar();
+            Bar b0 = bars[start];
+            bar.exchange = b0.exchange;
+            bar.sec_id = b0.sec_id;
+            bar.utc_time = b0.utc_time;
+            bar.bar_type = p * 60;
+            bar.high = b0.high;
+            bar.low = b0.low;
+            bar.open = b0.open;
+            bar.close = bars[bars.Count - 1].close;
+            bar.volume = b0.volume;
+
+            for (int i = start + 1; i < bars.Count; i++)
+            {
+                // high
+                if (bar.high < bars[i].high) bar.high = bars[i].high;
+                // low
+                if (bar.low > bars[i].low) bar.low = bars[i].low;
+                // volumn
+                bar.volume += bars[i].volume;
+            }
+            return bar;
+        }
         #endregion
-
-        //private void CalculateBar(Tick tick)
-        //{
-        //    if (semiBar == null)
-        //    {
-        //        semiBar = new Bar();
-        //        bar1M = new Bar();
-        //        isFirstTick = true;
-        //        lastMinute = Utils.UtcToDateTime(tick.utc_time).Minute;
-        //    }
-
-        //    // judge minute changed
-        //    DateTime dt = Utils.UtcToDateTime(tick.utc_time);
-        //    if (dt.Minute > lastMinute)
-        //    {
-        //        isFirstTick = true;
-        //        lastMinute = dt.Minute;
-
-        //        // copy semiBar to Bar
-        //        bar1M.high = semiBar.high;
-        //        bar1M.low = semiBar.low;
-        //        bar1M.open = semiBar.open;
-        //        bar1M.close = semiBar.close;
-        //        bar1M.volume = semiBar.volume;
-        //        bar1M.strtime = string.Format("{0:00}:{1:00}", DateTime.Now.Minute, DateTime.Now.Second);
-
-        //        // clear semibar
-        //        semiBar.high = semiBar.low = semiBar.open = semiBar.close = 0;
-        //        semiBar.volume = 0.0;
-        //    }
-
-        //    // open
-        //    if (isFirstTick)
-        //    {
-        //        semiBar.high = semiBar.low = semiBar.open = semiBar.close = tick.last_price;
-        //    }
-
-        //    // high
-        //    if (semiBar.high < tick.last_price) semiBar.high = tick.last_price;
-        //    // low
-        //    if (semiBar.low > tick.last_price) semiBar.low = tick.last_price;
-        //    // close
-        //    semiBar.close = tick.last_price;
-        //    // volumn
-        //    semiBar.volume += tick.last_volume;
-
-        //    isFirstTick = false;
-
-        //}
-
-        
     }
 }

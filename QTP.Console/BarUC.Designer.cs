@@ -29,7 +29,9 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.boxBars = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.boxOrders = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblFactor = new System.Windows.Forms.Label();
             this.lblVolumn = new System.Windows.Forms.Label();
@@ -37,8 +39,6 @@
             this.lblOpen = new System.Windows.Forms.Label();
             this.lblLow = new System.Windows.Forms.Label();
             this.lblHigh = new System.Windows.Forms.Label();
-            this.boxBars = new System.Windows.Forms.ListBox();
-            this.boxOrders = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -50,18 +50,38 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(199, 94);
+            this.panel1.Size = new System.Drawing.Size(199, 72);
             this.panel1.TabIndex = 0;
+            // 
+            // boxBars
+            // 
+            this.boxBars.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boxBars.FormattingEnabled = true;
+            this.boxBars.ItemHeight = 12;
+            this.boxBars.Location = new System.Drawing.Point(0, 0);
+            this.boxBars.Name = "boxBars";
+            this.boxBars.Size = new System.Drawing.Size(199, 72);
+            this.boxBars.TabIndex = 0;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.boxOrders);
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 94);
+            this.panel2.Location = new System.Drawing.Point(0, 72);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(199, 228);
+            this.panel2.Size = new System.Drawing.Size(199, 180);
             this.panel2.TabIndex = 2;
+            // 
+            // boxOrders
+            // 
+            this.boxOrders.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boxOrders.FormattingEnabled = true;
+            this.boxOrders.ItemHeight = 12;
+            this.boxOrders.Location = new System.Drawing.Point(0, 83);
+            this.boxOrders.Name = "boxOrders";
+            this.boxOrders.Size = new System.Drawing.Size(199, 97);
+            this.boxOrders.TabIndex = 3;
             // 
             // groupBox1
             // 
@@ -74,7 +94,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(199, 122);
+            this.groupBox1.Size = new System.Drawing.Size(199, 83);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "交易记录";
@@ -133,26 +153,6 @@
             this.lblHigh.TabIndex = 0;
             this.lblHigh.Text = "高";
             // 
-            // boxBars
-            // 
-            this.boxBars.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxBars.FormattingEnabled = true;
-            this.boxBars.ItemHeight = 12;
-            this.boxBars.Location = new System.Drawing.Point(0, 0);
-            this.boxBars.Name = "boxBars";
-            this.boxBars.Size = new System.Drawing.Size(199, 94);
-            this.boxBars.TabIndex = 0;
-            // 
-            // boxOrders
-            // 
-            this.boxOrders.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boxOrders.FormattingEnabled = true;
-            this.boxOrders.ItemHeight = 12;
-            this.boxOrders.Location = new System.Drawing.Point(0, 122);
-            this.boxOrders.Name = "boxOrders";
-            this.boxOrders.Size = new System.Drawing.Size(199, 106);
-            this.boxOrders.TabIndex = 3;
-            // 
             // BarUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -160,7 +160,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "BarUC";
-            this.Size = new System.Drawing.Size(199, 322);
+            this.Size = new System.Drawing.Size(199, 252);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);

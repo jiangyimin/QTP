@@ -12,7 +12,10 @@ namespace QTP.Domain
 {
     public class Bridge : PoolManager
     {
-        public Bridge(MyStrategy strategy, Dictionary<string, string> parameters)
-        { }
+        
+        public Bridge(MyStrategy strategy, TPool pool)
+            : base (strategy, pool)
+        {
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace QTP.Domain
         private const int maxCSize = 100;
 
         protected double currentRisk;
-        protected int currentCSize; 
+        protected int currentCSize;
         protected Cash lastCash;
         protected DateTime lastCashArriveTime;
 
@@ -90,7 +90,7 @@ namespace QTP.Domain
                 }
                 else
                 {
-                    strategy.WriteTDLog(string.Format("账户{0}的持仓没有设置对应的监控器!", monitor.TargetTitle));
+                    strategy.WriteTDLog(string.Format("{0}.{1}的持仓没有设置对应的监控器!", pos.exchange, pos.sec_id));
                 }
             }
         }

@@ -70,9 +70,10 @@ namespace QTP.Console
             CRUD.ConnectionString =
                 config.ConnectionStrings.ConnectionStrings["QTP_DB"].ConnectionString.ToString();
 
+            // async create and initialize strategy 
             popup = new PopupForm();
 
-            // async create and initialize strategy 
+            //Initialize();
             Task.Run(new Action(Initialize));
 
             // and using popupWindow to wait for finished             
@@ -92,7 +93,7 @@ namespace QTP.Console
                 strategy.Start();
 
             // set title
-            lblTitle.Text = string.Format("{0} ({1})", strategy.Name, strategy.PoolName);
+            lblTitle.Text = string.Format("{0} ({1})", strategy.Name, strategy.PM.Name);
             lblRightTitle.Text = string.Format("{0} {1}", strategy.GMID, strategy.RunType);
 
             btnRiskTrade_Click(this, null);
@@ -116,10 +117,11 @@ namespace QTP.Console
             }
             catch (Exception ex)
             {
-                popup.TaskFinished(ex.Message);
+                MessageBox.Show(ex.Message);
+                //popup.TaskFinished(ex.Message);
                 return;
             }
-
+        
             // new MyStrategy and Prepare preStart Data.
             strategy.InitializeExceptionOccur += new MyStrategy.InitializeExceptionCallback(ProcessInitializeExecption);
 

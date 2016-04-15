@@ -48,5 +48,13 @@ namespace QTP.Domain
         {
         }
 
+
+        #region implement ITATrade 
+
+        public override double GetStopLessRisk()
+        {
+            return 2 * yATR[0];
+        }
+        #endregion
     }
 }

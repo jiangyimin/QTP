@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace QTP.Domain
 {
@@ -16,24 +17,29 @@ namespace QTP.Domain
 
         public TAFormula Formula { get; set; }
 
-
         public FormulaInfo(int ktype, string name, string[] pars)
         {
             KType = ktype;
             Name = name;
             Parameters = pars;
         }
+
+        public FormulaInfo Copy()
+        {
+            FormulaInfo fi = new FormulaInfo(this.KType, this.Name, this.Parameters);
+            return fi;
+        }
     }
 
     public class BuyPointInfo
     {
-        public FormulaInfo BuyFormula { get; set; }
+        public int Index { get; set; }
 
-        public List<FormulaInfo> Filters { get; set; }
+        public List<int> Filters { get; set; }
 
-        public BuyPointInfo(FormulaInfo buyF, List<FormulaInfo> filters)
+        public BuyPointInfo(int index, List<int> filters)
         {
-            BuyFormula = buyF;
+            Index = index;
             Filters = filters;
         }
 
@@ -67,81 +73,55 @@ namespace QTP.Domain
         #endregion
 
 
-        private const int maxBPNum = 5;
-
-        public string DLLName { get; set; }
-
-
-        public List<FormulaInfo> AList { get; set; }
-        public List<FormulaInfo> BList { get; set; }
+        public List<FormulaInfo> FList { get; set; }
         public List<BuyPointInfo> BuyPoints { get; set; }
 
-        public TAInfo(string dllName, Dictionary<string, string> parameters)
+        public TAInfo(Dictionary<string, string> parameters)
         {
-            this.DLLName = dllName;
+            CreateStaticMembers(parameters);
             // Parse parmeters
             Parse(parameters);
         }
 
         private void Parse(Dictionary<string, string> pars)
         {
-
-            // Get AList and BList
+            // Get Flist
             int ktype = 0;
             string fname = null;
             string[] fpars = null;
 
-            AList = new List<FormulaInfo>();
-            if (!pars.ContainsKey("AList")) return;
-            foreach (string str in pars["AList"].Split(','))
+            FList = new List<FormulaInfo>();
+            if (!pars.ContainsKey("FList")) return;
+            foreach (string str in pars["FList"].Split(','))
             {
                 ktype = ParseFormula(str.Trim(), ref fname, ref fpars);
-                AList.Add(new FormulaInfo(ktype, fname, fpars));
+                FList.Add(new FormulaInfo(ktype, fname, fpars));
             }
 
-            BList = new List<FormulaInfo>();
-            if (!pars.ContainsKey("BList")) return;
-            foreach (string str in pars["BList"].Split(','))
-            {
-                ktype = ParseFormula(str.Trim(), ref fname, ref fpars);
-                BList.Add(new FormulaInfo(ktype, fname, fpars));
-            }
-
-            ParseBuyPoints(pars);
-        }
-
-        private void ParseBuyPoints(Dictionary<string, string> pars)
-        {
-            // Get BuyPoints
             BuyPoints = new List<BuyPointInfo>();
-            for (int i = 1; i <= maxBPNum; i++)
+            if (!pars.ContainsKey("BPs")) return;
+            foreach (string bpStr in pars["BPs"].Split(','))
             {
-                string key = string.Format("B{0}", i);
-                if (!pars.ContainsKey(key)) break;
+                string[] ss = bpStr.Split('|');
 
-                string[] ss = pars[key].Split('|');
-                FormulaInfo bf = BList[Convert.ToInt32(ss[0]) - 1];
-
-                List<FormulaInfo> filters = new List<FormulaInfo>();
+                List<int> filters = new List<int>();
                 if (ss.Length > 1)
                 {
                     string[] afs = ss[1].Split(' ');
                     foreach (string af in afs)
                     {
-                        filters.Add(AList[Convert.ToInt32(af) - 1]);
+                        filters.Add(Convert.ToInt32(af) - 1);
                     }
                 }
-
-
-                BuyPoints.Add(new BuyPointInfo(bf, filters));
+                BuyPoints.Add(new BuyPointInfo(Convert.ToInt32(ss[0]) - 1, filters));
             }
-
         }
+
         private int ParseFormula(string str, ref string name, ref string[] pars)
         {
             string[] ss = str.Split('|');
 
-            string[] fs = ss[1].Split('<', '>');
+            string[] fs = ss[1].Split('(', ')');
 
             name = fs[0];
 

@@ -42,10 +42,10 @@ namespace QTP.Domain
         private int countTDCashHeartPusle = IntervalTDCashHeart;
 
         // Strategy's status;
-        private bool isRuning;
+        public bool IsInMDLogin { get; set; }
+        private bool isRunning;
         private int countMDConnect;
         private int countTDConnect;
-        private TInstrument focusInstrument;
 
         // StopWatch
         private Stopwatch watch = new Stopwatch();
@@ -73,11 +73,6 @@ namespace QTP.Domain
             get { return strategyT.RunType; }
         }
 
-        public string PoolName
-        {
-            get { return strategyT.Pool.Name; }
-        }
-
         // used for classes in strategy
         public string Symbols
         {
@@ -99,6 +94,10 @@ namespace QTP.Domain
             get { return pm; }
         }
 
+        public RiskM RiskM
+        {
+            get { return riskM; }
+        }
         public MyBackTest BackTest
         {
             get { return backTest; }
@@ -150,21 +149,23 @@ namespace QTP.Domain
             strategyT = s;
             this.gmLogin = login;
 
+            // pm manager
+            pm = (PoolManager)Activator.CreateInstance(strategyT.Pool.ManagerType, this, strategyT.Pool);
             // monitors
-            TAInfo.CreateStaticMembers(strategyT.TAInfoParameters);
-            
+            TAInfo info = new TAInfo(strategyT.TAInfoParameters);           
             monitors = new Dictionary<string, Monitor>();
             foreach (TInstrument ins in strategyT.Instruments)
             {
-                Monitor monitor = new Monitor(this, ins, new TAInfo(strategyT.DLLName, strategyT.TAInfoParameters));
+                Monitor monitor = new Monitor(this, ins, info, strategyT.DLLName);
 
                 symbols += ins.Symbol + ",";
                 monitors.Add(ins.Symbol, monitor);
+
+                if (monitor.Target.Symbol == pm.SymbolBench)
+                    monitor.IsBench = true;
             }
 
-            // PoolManager and RiskM
-
-            pm = (PoolManager)Activator.CreateInstance(strategyT.Pool.ManagerType, this, strategyT.Pool.ManagerParameters);
+            // RiskM
             riskM = new RiskM(this, strategyT.RiskMInfoParameters);
 
             // heartTimer
@@ -201,6 +202,7 @@ namespace QTP.Domain
             else
             {
                 PrepareDaily(DateTime.Now);     // 真实状态是还没有当天的日线生成
+                PrepareMDLogin(DateTime.Now);
             }
 
             // InitWebTrade
@@ -213,7 +215,7 @@ namespace QTP.Domain
         {
             // async run strategy
             Task.Run<int>(new Func<int>(base.Run));
-            isRuning = true;
+            isRunning = true;
 
             // heartTimer
             heartTimer.Start();
@@ -225,7 +227,7 @@ namespace QTP.Domain
 
             heartTimer.Stop();
 
-            if (isRuning)
+            if (isRunning)
                 base.Stop();
         }
 
@@ -327,13 +329,13 @@ namespace QTP.Domain
             {
                 if (ConnectStatusChanged != null) ConnectStatusChanged(false, string.Format("交易已断({0})", countTDConnect));
 
-                WriteMDLog(error_msg);
+                //WriteMDLog(error_msg);
             }
             // 数据服务器断了标志
             if (error_code == 3000)
             {
                 if (ConnectStatusChanged != null) ConnectStatusChanged(true, string.Format("数据已断({0})", countMDConnect));
-                WriteMDLog(error_msg);
+                //WriteMDLog(error_msg);
             }                  
         }
 
@@ -351,13 +353,6 @@ namespace QTP.Domain
             countTDConnect++;
             if (ConnectStatusChanged != null) ConnectStatusChanged(false, string.Format("交易已连接({0})", countTDConnect));
 
-            // Trader 资管 
-            System.Threading.Thread.Sleep(50);      // need wait after login?
-            watch.Reset();
-            watch.Start();
-            riskM.Initialize();
-            watch.Stop();
-            WriteTDLog(string.Format("资管初始化完成【仓位数({0}), 用时({1})】", riskM.CountRiskPositions, watch.ElapsedMilliseconds));
         }
 
         public RiskOrder MyOpenLong(string exchange, string sec_id, double price, double volume)
@@ -416,6 +411,9 @@ namespace QTP.Domain
 
         private void PrepareMDLogin(object from)
         {
+            IsInMDLogin = true;
+
+            Stopwatch watch = new Stopwatch();
             DateTime fromTime = (DateTime)from;
 
             // Get bars of each period
@@ -435,10 +433,20 @@ namespace QTP.Domain
             {
                 count += m.PrepareTick(fromTime);           // monitor 自己读Tick
                 countPush += m.TA.GetCountTick();
-                m.StartTA(fromTime);
+                m.StartTA();
             }
             watch.Stop();
-            WriteMDLog(string.Format("预处理完成! 共{0}/{1}Ts。用时({2})", count, countPush, watch.ElapsedMilliseconds));
+            WriteMDLog(string.Format("TA预处理完成! 共{0}/{1}Ts。用时({2})", count, countPush, watch.ElapsedMilliseconds));
+
+            // Trader 资管 ( get 不能同时，线程不安全）
+            if (RunType != "回测")
+            {
+                watch.Reset(); watch.Start();
+                riskM.Initialize();
+                watch.Stop();
+                WriteTDLog(string.Format("资管初始化完成【仓位数({0}), 用时({1})】", riskM.CountRiskPositions, watch.ElapsedMilliseconds));
+            }
+            IsInMDLogin = false;
         }
 
         private void PushBarsToMonitor(int ktype, DateTime fromTime)
@@ -446,17 +454,19 @@ namespace QTP.Domain
             string start = Utils.GetStartTimeString(ktype, TAInfo.PreNBars, fromTime);
             var bars = GetBars(Symbols, 60 * ktype, start, Utils.DTLongString(fromTime));
 
+            //WriteMDLog(string.Format("{0}, {1} --- {2}", 60 * ktype, start, Utils.DTLongString(fromTime)));
             int count = 0;
             foreach (Bar bar in bars)
             {
                 string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
                 Monitor m = GetMonitor(symbol);
                 m.PushBar(bar, 0F);      // adj_factor为0F时，采用预取的日线对应的adj_factor.
-
-                count += m.TA.GetCountKLine(ktype);
             }
+            foreach (Monitor m in GetMonitorEnumerator())
+                count += m.TA.GetCountKLine(ktype);
+                
 
-            WriteMDLog(string.Format("压入预读的 {0}M 分时K线({1})个", ktype, count));
+            WriteMDLog(string.Format("压入预读的 {0}M 分时K线({1}/{2})个", ktype, bars.Count, count));
         }
 
         private void InitGM()
@@ -520,8 +530,15 @@ namespace QTP.Domain
                 // for GM Trade
                 watch.Reset();
                 watch.Start();
-                Cash cash = this.GetCash();
-                riskM.SetLastCash(cash);
+
+                Cash cash = null;
+
+                if (!IsInMDLogin)
+                {
+                    cash = this.GetCash();
+                    riskM.SetLastCash(cash);
+                }
+
                 watch.Stop();
 
                 if (cash != null && TradeCashHeartPusle != null)
@@ -577,26 +594,6 @@ namespace QTP.Domain
             WriteTDLog(string.Format("外挂交易服务连接状态改变为{0},", status));
         }
         #endregion
-
-        #region Process Monitor's public Parameters
-
-        // static quota names
-        private static Type quotaType;
-        private Dictionary<string, List<string>> quotaNames;
-
-        // static for quotas
-        public Type QuotaType
-        {
-            get { return quotaType; }
-        }
-
-        public Dictionary<string, List<string>> QuotaNames
-        {
-            get { return quotaNames; }
-        }
-
-        #endregion
-
 
     }
 }

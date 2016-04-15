@@ -32,19 +32,19 @@ namespace QTP.Domain
             return dt;
         }
 
-        public static string GetStartTimeString(int bar_type, int num, DateTime from)
+        public static string GetStartTimeString(int ktype, int num, DateTime from)
         {
             DateTime start = new DateTime(from.Year, from.Month, from.Day, 15, 0, 0);
 
             // 日线
-            if (bar_type == 0)
+            if (ktype == 0)
             {
                 start = from.Subtract(new TimeSpan(num, 0, 0, 0, 0));
                 return start.ToString("yyyy-MM-dd");
             }
             else
             {
-                int numMinutes = bar_type * num;
+                int numMinutes = ktype * num;
                 int days = numMinutes / 240;
                 start = from.Subtract(new TimeSpan(days, 0, 0, 0, 0));
 
@@ -76,7 +76,7 @@ namespace QTP.Domain
             }
         }
 
-        private static int GetLastingMinutes(DateTime dt)
+        public static int GetLastingMinutes(DateTime dt)
         {
             DateTime openM = new DateTime(dt.Year, dt.Month, dt.Day, 9, 30, 0);
             DateTime endM = new DateTime(dt.Year, dt.Month, dt.Day, 11, 30, 0);
@@ -86,11 +86,11 @@ namespace QTP.Domain
             if (dt < openM)
                 return 0;
             else if (dt >= openM && dt <= endM)
-                return dt.Subtract(openM).Minutes;
+                return (int)dt.Subtract(openM).TotalMinutes;
             else if (dt > endM && dt < openP)
                 return 120;
             else if (dt >= openP && dt <= endP)
-                return dt.Subtract(openP).Minutes + 120;
+                return (int)dt.Subtract(openP).TotalMinutes + 120;
             else
                 return 240;
         }

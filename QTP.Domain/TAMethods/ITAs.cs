@@ -31,6 +31,22 @@ namespace QTP.Domain
 
 
         #region implement ITATrade
+
+        public virtual bool Filter()
+        {
+            return false;
+        }
+
+        public virtual bool IsBuyPoint()
+        {
+            return false;
+        }
+
+        public virtual double GetStopLessRisk()
+        {
+            return 0.0;
+        }
+
         #endregion
     }
 
@@ -50,5 +66,10 @@ namespace QTP.Domain
 
     public interface ITATrade
     {
+        bool Filter();
+
+        bool IsBuyPoint();
+
+        double GetStopLessRisk();
     }
 }

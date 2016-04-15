@@ -34,6 +34,10 @@ namespace QTP.Domain
             }
         }
 
+        // Is Focus, output Bar Arrived
+        public bool Focus { get; set; }
+
+        public bool IsBench { get; set; }
         /// <summary>
         /// 分类：0：观察期  1：候选期   2：持仓期
         /// </summary>
@@ -78,9 +82,6 @@ namespace QTP.Domain
 
         #region private member
 
-        // 
-        private bool focus;
-
         // base factor and Dictionary for PrepareMDLogin Bars ( Method PushBar 's factor = 0)
         private float baseFactor;
         private Dictionary<string, float> dictFactorPrepare;
@@ -89,12 +90,12 @@ namespace QTP.Domain
 
         #region Public Methods
 
-        public Monitor(MyStrategy strategy, TInstrument target, TAInfo taInfo)
+        public Monitor(MyStrategy strategy, TInstrument target, TAInfo taInfo, string dllName)
         {
             this.strategy = strategy;
             this.target = target;
 
-            this.ta = new TA(this, taInfo);
+            this.ta = new TA(this, taInfo, dllName);
 
             this.barBuffer = new List<Bar>();
             this.tickBuffer = new List<Tick>();
@@ -102,7 +103,11 @@ namespace QTP.Domain
 
         public void SetFocus()
         {
-            this.focus = true;
+            foreach (Monitor m in strategy.GetMonitorEnumerator())
+            {
+                m.Focus = false;
+            }
+            this.Focus = true;
         }
 
         // Prepare DailyBar for Normalize price
@@ -121,7 +126,7 @@ namespace QTP.Domain
 
                 // Set dictFactor
                 string key = Utils.DTString(Utils.UtcToDateTime(bar.utc_time));
-                if (bar.adj_factor > 0F)
+                if (!IsBench)
                     dictFactorPrepare[key] = bar.adj_factor;
 
                 // Push KLine
@@ -132,6 +137,7 @@ namespace QTP.Domain
 
         public int PrepareTick(DateTime from)
         {
+
             // tickTA
             List<Tick> ticks = strategy.GetLastNTicks(Target.Symbol, TAInfo.PreNTicks, Utils.DTLongString(from));
             for (int i = ticks.Count - 1; i >= 0; i--)
@@ -142,33 +148,38 @@ namespace QTP.Domain
                     ta.PushTick(tick);
             }
 
-            return ticks.Count;
+            return ta.TickTA.Count;
         }
 
         public void PushBar(Bar bar, float factor)
         {
-            Adj_factor(bar, factor);
+            if (!IsBench)
+                Adj_factor(bar, factor);
 
             string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
-            KLine k = new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
+            KLine k = new KLine(symbol, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
             ta.PushKLine(bar.bar_type / 60, k);
 
             // Process focusInstument
-            if (focus) strategy.FireFocusBarArrived(bar);
+            if (Focus) strategy.FireFocusBarArrived(bar);
         }
 
         public KLine GetKLine(DailyBar bar)
         {
-            Adj_factor(bar);
+            if (!IsBench)
+                Adj_factor(bar);
+
             string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
-            return new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
+            return new KLine(symbol, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
         }
 
         public KLine GetKLine(Bar bar, float factor)
         {
-            Adj_factor(bar, factor);
+            if (!IsBench)
+                Adj_factor(bar, factor);
+
             string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
-            return new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
+            return new KLine(symbol, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume);
         }
 
         public void PushKLine(int ktype, KLine k)
@@ -178,28 +189,29 @@ namespace QTP.Domain
 
         public void PushDailyBar(DailyBar bar)
         {
-            Adj_factor(bar);
+            if (!IsBench)
+                Adj_factor(bar);
 
             string symbol = string.Format("{0}.{1}", bar.exchange, bar.sec_id);
-            ta.PushKLine(0, new KLine(symbol, bar.strtime, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume));
+            ta.PushKLine(0, new KLine(symbol, bar.utc_time, bar.open, bar.close, bar.high, bar.low, bar.volume));
         }
 
-        public void StartTA(DateTime from)
+        public void StartTA()
         {
-            lock (this)
-            {
-                // push buffered bars
-                foreach (Bar bar in barBuffer)
-                    PushBar(bar, baseFactor);
-                barBuffer.Clear();
+             lock (this)
+             {
+                 // push buffered bars
+                 foreach (Bar bar in barBuffer)
+                     PushBar(bar, baseFactor);
+                 barBuffer.Clear();
 
-                // push buffeded ticks
-                foreach (Tick tick in tickBuffer)
-                    ta.PushTick(tick);
-                tickBuffer.Clear();
+                 // push buffeded ticks
+                 foreach (Tick tick in tickBuffer)
+                     ta.PushTick(tick);
+                 tickBuffer.Clear();
 
-                ta.Enabled = true;
-            }
+                 ta.Enabled = true;
+             }
 
         }
 
@@ -244,7 +256,7 @@ namespace QTP.Domain
                 if (ta.Enabled)
                 {
                     ta.PushTick(tick);
-                    if (focus) strategy.FireFocusTickArrived(ta.TickTA);
+                    if (Focus) strategy.FireFocusTickArrived(ta.TickTA);
                 }
                 else
                 {
@@ -269,7 +281,13 @@ namespace QTP.Domain
         #region TD methods
 
 
-        //public abstract RiskOrder IssueOpenLongSignal();
+        public RiskOrder IssueOpenLongSignal(string fname, int ktype, KLine thisK)
+        {
+            double stoplessRisk = ta.GetATR(60);
+
+            strategy.WriteTDLog(string.Format("{0}({1} {2})", thisK.Symbol, Utils.DTLongString(Utils.UtcToDateTime(thisK.UTC)), thisK.CLOSE));
+            return null;
+        }
         //public abstract RiskOrder IssueCloseLongSignal();
 
         public virtual void OnOrderFilled()

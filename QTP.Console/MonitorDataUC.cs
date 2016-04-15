@@ -70,8 +70,10 @@ namespace QTP.Console
                     currentMonitor.SetFocus();
 
                     DrawChart(currentMonitor, currentKType);
-                    // display tick at once
+
+                    // tickUC and BarUC 
                     tickUC.OnTickArrived(currentMonitor.TA.TickTA);
+                    barUC.Clear();
                 }
             }
         }
@@ -163,11 +165,12 @@ namespace QTP.Console
             int rowIndex = 0;
             foreach (Monitor m in strategy.GetMonitorEnumerator())
             {
+
+                DataGridViewRow row = dgvPool.Rows[rowIndex++];
+
                 // Get QuotaScalarValues
                 List<double> v = m.TA.GetLatestScalarValues(currentKType);
                 if (v.Count == 0) continue;
-
-                DataGridViewRow row = dgvPool.Rows[rowIndex++];
 
                 int count = 0; 
                 foreach (string name in quotaNames.Keys)
